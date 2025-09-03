@@ -1,3 +1,35 @@
-/*Escriba un programa en C++ que permita almacenar la informacion de pacientes en una estructura.
-Cada paciente debe contener como datos el nombre, edad, peso y altura. Dentro de la funcion main debe
-exponer tres ejemplos de “pacientes” entregando la informacion de cada uno de ellos por la salida estandar*/
+#include <iostream> 
+using namespace std; 
+
+// Estructura para almacenar la informacion de los pacientes
+struct Paciente { 
+    string nombre;
+    int edad;
+    float peso;
+    int altura;
+};
+
+
+// Imprime pacientes
+void imprimirPaciente(const Paciente& paciente) { 
+    cout << "\n" << "> Nombre: " << paciente.nombre;
+    cout << "\n" << "> Edad: " << paciente.edad;
+    cout << "\n" << "> Peso: " << paciente.peso << " kg";
+    cout << "\n" << "> Altura: " << paciente.altura << " cm";
+    cout << "\n__________________";
+}
+
+
+// Funcion principal
+int main(){ 
+    // Ejemplos de pacientes
+    Paciente paciente1 = {"Cuca", 33, 74.5, 135};
+    Paciente paciente2 = {"Gertrudis", 21, 60.0, 165};
+    Paciente paciente3 = {"ElefanteGuerreroPsiquicoAncestral", 100, 140.7, 200};
+
+    imprimirPaciente(paciente1); // Imprime paciente 1
+    imprimirPaciente(paciente2); // Imprime paciente 2
+    imprimirPaciente(paciente3); // Imprime paciente 3
+
+    return 0; 
+}
