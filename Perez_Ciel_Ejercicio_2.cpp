@@ -1,4 +1,6 @@
 #include <iostream> 
+#include <stdio.h> // Libreria para entrada y salida estandar
+#include <stdlib.h> // Libreria para gestion de memoria dinamica
 using namespace std; 
 
 // Estructura para almacenar la informacion de los pacientes
@@ -7,12 +9,7 @@ struct Paciente {
     int edad;
     float peso;
     int altura;
-};
-
-// Nodo de la lista enlazada
-struct Nodo {
-    Paciente datos;
-    Nodo* siguiente;
+    Paciente* next;
 };
 
 
@@ -24,8 +21,20 @@ struct Nodo {
     cout << "\n" << "> Altura: " << paciente.altura << " cm";
     cout << "\n__________________";
 }*/
+// Crea paciente
+Paciente* creaPaciente (string nombre_, int edad_, float peso_, int altura_){ 
+	Paciente* newPaciente = new Paciente; // Reserva dinamica de memoria
+    newPaciente->nombre = nombre_; 
+	newPaciente->edad = edad_; 
+    newPaciente->peso = peso_; 
+    newPaciente->altura = altura_;
+	newPaciente->next = NULL; 
+	return newPaciente;
+}
 
-void agregarPaciente(Nodo*& head, const Paciente& paciente) {
+
+
+/*void agregarPaciente(Nodo*& head, const Paciente& paciente) {
     Nodo* nuevo = new Nodo{paciente, nullptr};
     if (head == nullptr) {
         head = nuevo;
@@ -36,7 +45,7 @@ void agregarPaciente(Nodo*& head, const Paciente& paciente) {
         }
         temp->siguiente = nuevo;
     }
-}
+}*/
 
 /*void eliminarPaciente(Paciente pacientes[], int &numPacientes, int indice) {///***
     if (indice < 0 || indice >= numPacientes) {
@@ -49,20 +58,35 @@ void agregarPaciente(Nodo*& head, const Paciente& paciente) {
     numPacientes--;
 }*/
 
+// Liberar memoria
+void liberarPacientes(Paciente *head) {
+	Paciente *current = head; // Se asigna la cabeza de lista como nodo actual
+	while (current != NULL) { // Se recorre hasta el ultimo nodo
+		Paciente *next = current->next; // Se guarda referencia al siguiente nodo
+		free(current); // Se libera la memoria del nodo actual
+		current = next; // Se avanza al siguiente nodo
+	}
+}
+
 
 // Funcion principal
 int main(){     
-    Nodo* ptrPaciente = nullptr; // Puntero a paciente vacio
+    Paciente *head = NULL; // Punero a la cabeza de lista
+	Paciente *newPatient; // Puntero temporal para la creacion de nuevos nodos
 
     // Ejemplos de pacientes
-    Paciente paciente1 = {"Cuca", 33, 74.5, 135};
-    Paciente paciente2 = {"Gertrudis", 21, 60.0, 165};
-    Paciente paciente3 = {"ElefanteGuerreroPsiquicoAncestral", 100, 140.7, 200};
+    newPatient = creaPaciente("Cuca", 33, 74.5, 135);
+    /*agregarPaciente(&head, newPatient); // Se agrega a la lista
+    newPatient = creaPaciente("Gertrudis", 21, 60.0, 165);
+    agregarPaciente(&head, newPatient);
+    newPatient = creaPaciente("ElefanteGuerreroPsiquicoAncestral", 100, 140.7, 200);
+    agregarPaciente(&head, newPatient); // Se agrega a la lista*/
 
-    // Almacena los pacientes en la lista dinamica por medio de la funcion agregarPaciente
-    agregarPaciente(ptrPaciente, paciente1);
-    agregarPaciente(ptrPaciente, paciente2);
-    agregarPaciente(ptrPaciente, paciente3);
+
+    // Almacena los pacientes en la lista dinamica por medio de la funcion creaPaciente
+    /*creaPaciente(ptrPaciente, paciente1);
+    creaPaciente(ptrPaciente, paciente2);
+    creaPaciente(ptrPaciente, paciente3);*/
 
     /*pacientes.push_back(paciente1);
     pacientes.push_back(paciente2);
@@ -72,5 +96,6 @@ int main(){
     imprimirPaciente(pacientes[1]); // Imprime paciente 2
     imprimirPaciente(pacientes[2]); // Imprime paciente 3*/
 
+    liberarPacientes(head); // Se libera la memoria de la lista
     return 0; 
 }
