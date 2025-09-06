@@ -13,6 +13,7 @@ struct Paciente {
 };
 
 
+
 // Funciones: Imprimir, Agregar y Eliminar pacientes
     // Crea paciente
 Paciente* creaPaciente (string nombre_, int edad_, float peso_, float altura_){ 
@@ -60,6 +61,7 @@ void liberarPacientes(Paciente *head) {
 		actual = next; // Se avanza al siguiente nodo
 	}
 }
+
 
 
 // Calculos con datos de pacientes
@@ -136,6 +138,7 @@ void pacienteIMC(Paciente *head) {
 }
 
 
+
 // Interacciones con el usuario
     // funcion para capturar datos de pacientes
 void capturarDatosPaciente(int &contador_pacientes_totales, string &nombre, int &edad, float &peso, float &altura) {
@@ -151,45 +154,79 @@ void capturarDatosPaciente(int &contador_pacientes_totales, string &nombre, int 
 }
 
 
-// Menu
+// Menu interactuable
+int menu() {
+    int opcion = 0;
+    cout << "\n++++++++++++\nSeleccione una opcion:\n";
+    cout << "1. Agregar paciente\n";
+    cout << "2. Mostrar pacientes\n";
+    cout << "3. Calcular promedios de edad y peso\n";
+    cout << "4. Calcular IMC por paciente\n";
+    cout << "5. Salir\n";
+    cout << "Opcion: ";
+    cin >> opcion;
+    while (opcion < 1 || opcion > 5) {
+        cout << "[Debe elegir una opcion valida (1-5)] : ";
+        cin >> opcion;
+    }
+    return opcion;
+}
 
 
 // Funcion principal
 int main(){     
     Paciente *head = NULL; // Punero a la cabeza de lista
     Paciente *newPatient; // Puntero temporal para la creacion de nuevos nodos
+    int opcion = 0;
 
-    int contador_pacientes_totales;
-    string nombre;
-    int edad;
-    float peso;
-    float altura;
+    // Al ver las opciones, revisa la que eligió el usuario y sigue respecto a eso
+    while (opcion != 5) { // Y se reitera hasta que el usuario elija salir
+        opcion = menu();
+        cout << "____________" << endl;
 
-    cout << "Cuantos pacientes desea agregar? : ";
-    cin >> contador_pacientes_totales;
+        // Opcion 1: Usuario agrega pacientes
+        if (opcion == 1) {
+                // Variables iniciales
+            int contador_pacientes_totales;
+            string nombre;
+            int edad;
+            float peso;
+            float altura;
 
-    while (contador_pacientes_totales != 0){
-        contador_pacientes_totales -= 1;
-        capturarDatosPaciente(contador_pacientes_totales, nombre, edad, peso, altura);
-        newPatient = creaPaciente(nombre, edad, peso, altura);
-        agregarPaciente(&head, newPatient);
+            cout << "Cuantos pacientes desea agregar? : ";
+            cin >> contador_pacientes_totales;
+
+            while (contador_pacientes_totales != 0){
+                contador_pacientes_totales -= 1;
+                capturarDatosPaciente(contador_pacientes_totales, nombre, edad, peso, altura);
+                newPatient = creaPaciente(nombre, edad, peso, altura);
+                agregarPaciente(&head, newPatient);
+            }
+
+        }
+
+        // Opcion 2: Imprime los pacientes
+        if (opcion == 2) {
+            imprimirPaciente(head); // Imprime los pacientes de la lista
+        }
+
+        // Opcion 3: Calcula promedios
+        if (opcion == 3) {
+            // Calculos con datos de pacientes
+            float promedioPeso_ = promedioPeso(head); // Promedio de peso
+            int promedioEdad_ = promedioEdad(head); // Promedio de edad
+
+            // Imprimir valores grupales obtenidos
+            cout << "\n+ El peso en promedio es: " << promedioPeso_ << endl;
+            cout << "+ La edad en promedio es: " << promedioEdad_ << endl;
+        }
+
+        // Opcion 4: Calcula IMC por paciente
+        if (opcion == 4) {
+            pacienteIMC(head); // calcula e imprime IMP por paciente + manda a checkear si es normal, muy alto o muy bajo
+        }
+        
     }
-
-    
-
-    // Esto otro debería darse por interacciones via consola*****
-    imprimirPaciente(head); // Imprime los pacientes de la lista
-
-
-    // Calculos con datos de pacientes
-    float promedioPeso_ = promedioPeso(head); // Promedio de peso
-    int promedioEdad_ = promedioEdad(head); // Promedio de edad
-    pacienteIMC(head); // calcula e imprime IMP por paciente + manda a checkear si es normal, muy alto o muy bajo
-    
-    // Imprimir valores grupales obtenidos
-    cout << "\n+ El peso en promedio es: " << promedioPeso_ << endl;
-    cout << "+ La edad en promedio es: " << promedioEdad_ << endl;
-
-    liberarPacientes(head); // Se libera la memoria de la lista
-    return 0; 
+    liberarPacientes(head); // Se libera la memoria de la lista    
+    return 0;
 }
