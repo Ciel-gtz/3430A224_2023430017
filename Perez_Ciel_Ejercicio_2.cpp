@@ -56,7 +56,7 @@ void liberarPacientes(Paciente *head) {
 	Paciente *actual = head; // Se asigna la cabeza de lista como nodo actual
 	while (actual != NULL) { // Se recorre hasta el ultimo nodo
 		Paciente *next = actual->next; // Se guarda referencia al siguiente nodo
-		free(actual); // Se libera la memoria del nodo actual
+		delete(actual); // Se libera la memoria del nodo actual
 		actual = next; // Se avanza al siguiente nodo
 	}
 }
