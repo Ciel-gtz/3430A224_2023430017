@@ -27,14 +27,13 @@ Paciente* creaPaciente (string nombre_, int edad_, float peso_, int altura_){
 
     // Imprimir pacientes
 void imprimirPaciente(Paciente *head) {
-	printf ("\nList of Patients:\n\n");
 	Paciente *actual = head; // Se asigna la cabeza de lista como nodo actual
 	while (actual != NULL) { // Se recorre hasta el ultimo nodo
         cout << "\n" << "> Nombre: " << actual->nombre;
         cout << "\n" << "> Edad: " << actual->edad;
         cout << "\n" << "> Peso: " << actual->peso << " kg";
         cout << "\n" << "> Altura: " << actual->altura << " cm";
-        cout << "\n__________________";
+        cout << "\n__________________" << endl;
 	actual = actual->next; // Se avanza entre los nodos de la lista para ir al siguiente paciente
 	}
 }
@@ -52,18 +51,7 @@ void agregarPaciente(Paciente **head, Paciente *newPaciente) {
     }
 }
 
-/*void eliminarPaciente(Paciente pacientes[], int &numPacientes, int indice) {///***
-    if (indice < 0 || indice >= numPacientes) {
-        cout << "Indice invalido." << endl;
-        return;
-    }
-    for (int i = indice; i < numPacientes - 1; i++) {
-        pacientes[i] = pacientes[i + 1];
-    }
-    numPacientes--;
-}*/
-
-// Liberar memoria
+    // Liberar memoria
 void liberarPacientes(Paciente *head) {
 	Paciente *actual = head; // Se asigna la cabeza de lista como nodo actual
 	while (actual != NULL) { // Se recorre hasta el ultimo nodo
