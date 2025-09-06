@@ -15,14 +15,14 @@ struct Paciente {
     string nombre;
     int edad;
     float peso;
-    int altura;
+    float altura;
     Paciente* next;
 };
 
 
 // Funciones: Imprimir, Agregar y Eliminar pacientes
     // Crea paciente
-Paciente* creaPaciente (string nombre_, int edad_, float peso_, int altura_){ 
+Paciente* creaPaciente (string nombre_, int edad_, float peso_, float altura_){ 
 	Paciente* newPaciente = new Paciente; // Reserva dinamica de memoria
     newPaciente->nombre = nombre_; 
 	newPaciente->edad = edad_; 
@@ -39,7 +39,7 @@ void imprimirPaciente(Paciente *head) {
         cout << "\n" << "> Nombre: " << actual->nombre;
         cout << "\n" << "> Edad: " << actual->edad;
         cout << "\n" << "> Peso: " << actual->peso << " kg";
-        cout << "\n" << "> Altura: " << actual->altura << " cm";
+        cout << "\n" << "> Altura: " << actual->altura << " m";
         cout << "\n__________________\n";
 	actual = actual->next; // Se avanza entre los nodos de la lista para ir al siguiente paciente
 	}
@@ -63,13 +63,14 @@ void liberarPacientes(Paciente *head) {
 	Paciente *actual = head; // Se asigna la cabeza de lista como nodo actual
 	while (actual != NULL) { // Se recorre hasta el ultimo nodo
 		Paciente *next = actual->next; // Se guarda referencia al siguiente nodo
-		free(actual); // Se libera la memoria del nodo actual
+		delete(actual); // Se libera la memoria del nodo actual
 		actual = next; // Se avanza al siguiente nodo
 	}
 }
 
 
-// Promedio peso
+// Calculos con datos de pacientes
+    // Promedio peso
 float promedioPeso(Paciente *head) {
 	Paciente *actual = head; // Se asigna la cabeza de lista como nodo actual
 
@@ -88,7 +89,7 @@ float promedioPeso(Paciente *head) {
     return promedio;
 }
 
-// Promedio edad
+    // Promedio edad
 int promedioEdad(Paciente *head) {
 	Paciente *actual = head; // Se asigna la cabeza de lista como nodo actual
 
@@ -107,7 +108,40 @@ int promedioEdad(Paciente *head) {
     return promedio;
 }
 
+// Checkear IMC
+void check_IMC(float imc_calculado) {
+    // Revisa los rangos de IMC y lo imprime dependiendo en que categoria caiga
+    if (imc_calculado < 18.5) {
+        cout << "  | El IMC es bajo\n" << endl;
+    } else if (imc_calculado >= 18.5 && imc_calculado <= 24.9) {
+        cout << "  | El IMC es normal\n" << endl;
+    } else {
+        cout << "  | El IMC es alto\n" << endl;
+    }
+}
+
 // IMC individual
+void pacienteIMC(Paciente *head) {
+    Paciente *actual = head; // Se asigna la cabeza de lista como nodo actual
+
+    cout << "\n[ Indice de Masa Corporal (IMC) por paciente ]\n";
+
+    while (actual != NULL) { // Revisa el IMC individualmente por paciente
+        float peso_actual = actual->peso;
+        float altura_actual = actual->altura;
+
+        // Calculo IMC
+        float imc_calculado = peso_actual / (altura_actual * altura_actual);
+
+        // Imprimir IMC por paciente
+        cout << "> El IMC de " << actual->nombre << " es de " << imc_calculado << endl;
+        // Checkear si es normal, muy alto o muy bajo
+        check_IMC(imc_calculado);
+        
+    actual = actual->next; // Se avanza entre los nodos de la lista para ir al siguiente paciente
+    }
+}
+
 
 
 // Funcion principal
@@ -116,20 +150,23 @@ int main(){
 	Paciente *newPatient; // Puntero temporal para la creacion de nuevos nodos
 
     // Ejemplos de pacientes
-    newPatient = creaPaciente("Cuca", 33, 74.5, 135);
+    newPatient = creaPaciente("Cuca", 33, 74.5, 1.35);
     agregarPaciente(&head, newPatient); // Se agrega a la lista
-    newPatient = creaPaciente("Gertrudis", 21, 60.0, 165);
+    newPatient = creaPaciente("Gertrudis", 21, 60.0, 1.65);
     agregarPaciente(&head, newPatient);
-    newPatient = creaPaciente("BailarinaCapuccina", 45, 44, 150);
+    newPatient = creaPaciente("BailarinaCapuccina", 45, 41, 1.50);
     agregarPaciente(&head, newPatient); // Se agrega a la lista
 
     imprimirPaciente(head); // Imprime los pacientes de la lista
+
+
+    // Calculos con datos de pacientes
     float promedioPeso_ = promedioPeso(head); // Promedio de peso
     int promedioEdad_ = promedioEdad(head); // Promedio de edad
-    //pacienteIMC(head); // IMP por paciente
+    pacienteIMC(head); // calcula e imprime IMP por paciente + manda a checkear si es normal, muy alto o muy bajo
     
-    // Imprimir valores obtenidos
-    cout << "\n\n+ El peso en promedio es: " << promedioPeso_ << endl;
+    // Imprimir valores grupales obtenidos
+    cout << "\n+ El peso en promedio es: " << promedioPeso_ << endl;
     cout << "+ La edad en promedio es: " << promedioEdad_ << endl;
 
     liberarPacientes(head); // Se libera la memoria de la lista
