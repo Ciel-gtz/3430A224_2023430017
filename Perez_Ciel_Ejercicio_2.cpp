@@ -13,15 +13,8 @@ struct Paciente {
 };
 
 
-    // Funciones: Imprimir, Agregar y Eliminar pacientes
-/*void imprimirPaciente(Paciente paciente) { 
-    cout << "\n" << "> Nombre: " << paciente.nombre;
-    cout << "\n" << "> Edad: " << paciente.edad;
-    cout << "\n" << "> Peso: " << paciente.peso << " kg";
-    cout << "\n" << "> Altura: " << paciente.altura << " cm";
-    cout << "\n__________________";
-}*/
-// Crea paciente
+// Funciones: Imprimir, Agregar y Eliminar pacientes
+    // Crea paciente
 Paciente* creaPaciente (string nombre_, int edad_, float peso_, int altura_){ 
 	Paciente* newPaciente = new Paciente; // Reserva dinamica de memoria
     newPaciente->nombre = nombre_; 
@@ -32,20 +25,32 @@ Paciente* creaPaciente (string nombre_, int edad_, float peso_, int altura_){
 	return newPaciente;
 }
 
+    // Imprimir pacientes
+void imprimirPaciente(Paciente *head) {
+	printf ("\nList of Patients:\n\n");
+	Paciente *actual = head; // Se asigna la cabeza de lista como nodo actual
+	while (actual != NULL) { // Se recorre hasta el ultimo nodo
+        cout << "\n" << "> Nombre: " << actual->nombre;
+        cout << "\n" << "> Edad: " << actual->edad;
+        cout << "\n" << "> Peso: " << actual->peso << " kg";
+        cout << "\n" << "> Altura: " << actual->altura << " cm";
+        cout << "\n__________________";
+	actual = actual->next; // Se avanza entre los nodos de la lista para ir al siguiente paciente
+	}
+}
 
-
-/*void agregarPaciente(Nodo*& head, const Paciente& paciente) {
-    Nodo* nuevo = new Nodo{paciente, nullptr};
-    if (head == nullptr) {
-        head = nuevo;
+    // Agregar paciente al final de la lista
+void agregarPaciente(Paciente **head, Paciente *newPaciente) {
+    if (*head == NULL) { // Si la lista esta vacia se crea la cabeza
+        *head = newPaciente;
     } else {
-        Nodo* temp = head;
-        while (temp->siguiente != nullptr) {
-            temp = temp->siguiente;
+        Paciente *actual = *head; // Se asigna la cabeza de lista como nodo actual
+        while (actual->next != NULL) {
+            actual = actual->next; // Se avanza entre los nodos de la lista
         }
-        temp->siguiente = nuevo;
+        actual->next = newPaciente; // Inserta al final
     }
-}*/
+}
 
 /*void eliminarPaciente(Paciente pacientes[], int &numPacientes, int indice) {///***
     if (indice < 0 || indice >= numPacientes) {
@@ -60,11 +65,11 @@ Paciente* creaPaciente (string nombre_, int edad_, float peso_, int altura_){
 
 // Liberar memoria
 void liberarPacientes(Paciente *head) {
-	Paciente *current = head; // Se asigna la cabeza de lista como nodo actual
-	while (current != NULL) { // Se recorre hasta el ultimo nodo
-		Paciente *next = current->next; // Se guarda referencia al siguiente nodo
-		free(current); // Se libera la memoria del nodo actual
-		current = next; // Se avanza al siguiente nodo
+	Paciente *actual = head; // Se asigna la cabeza de lista como nodo actual
+	while (actual != NULL) { // Se recorre hasta el ultimo nodo
+		Paciente *next = actual->next; // Se guarda referencia al siguiente nodo
+		free(actual); // Se libera la memoria del nodo actual
+		actual = next; // Se avanza al siguiente nodo
 	}
 }
 
@@ -76,26 +81,14 @@ int main(){
 
     // Ejemplos de pacientes
     newPatient = creaPaciente("Cuca", 33, 74.5, 135);
-    /*agregarPaciente(&head, newPatient); // Se agrega a la lista
+    agregarPaciente(&head, newPatient); // Se agrega a la lista
     newPatient = creaPaciente("Gertrudis", 21, 60.0, 165);
     agregarPaciente(&head, newPatient);
     newPatient = creaPaciente("ElefanteGuerreroPsiquicoAncestral", 100, 140.7, 200);
-    agregarPaciente(&head, newPatient); // Se agrega a la lista*/
+    agregarPaciente(&head, newPatient); // Se agrega a la lista
 
+    imprimirPaciente(head); // Imprime los pacientes de la lista
 
-    // Almacena los pacientes en la lista dinamica por medio de la funcion creaPaciente
-    /*creaPaciente(ptrPaciente, paciente1);
-    creaPaciente(ptrPaciente, paciente2);
-    creaPaciente(ptrPaciente, paciente3);*/
-
-    /*pacientes.push_back(paciente1);
-    pacientes.push_back(paciente2);
-    pacientes.push_back(paciente3);*/
-
-    /*imprimirPaciente(pacientes[0]); // Imprime paciente 1
-    imprimirPaciente(pacientes[1]); // Imprime paciente 2
-    imprimirPaciente(pacientes[2]); // Imprime paciente 3*/
-
-    liberarPacientes(head); // Se libera la memoria de la lista
+    liberarPacientes(head); // Se libera la memoria de la lista // Este seria el eliminar pacientes
     return 0; 
 }
