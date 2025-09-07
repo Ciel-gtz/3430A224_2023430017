@@ -1,4 +1,5 @@
 #include <iostream> 
+#include <fstream> // Libreria para manejo de archivos
 #include <stdio.h> // Libreria para entrada y salida estandar
 #include <stdlib.h> // Libreria para gestion de memoria dinamica
 using namespace std; 
@@ -103,7 +104,7 @@ int promedioEdad(Paciente *head) {
     return promedio;
 }
 
-// Checkear IMC
+    // Checkear IMC
 void check_IMC(float imc_calculado) {
     // Revisa los rangos de IMC y lo imprime dependiendo en que categoria caiga
     if (imc_calculado < 18.5) {
@@ -115,7 +116,7 @@ void check_IMC(float imc_calculado) {
     }
 }
 
-// IMC individual
+    // IMC individual
 void pacienteIMC(Paciente *head) {
     Paciente *actual = head; // Se asigna la cabeza de lista como nodo actual
 
@@ -137,6 +138,52 @@ void pacienteIMC(Paciente *head) {
     }
 }
 
+
+
+// Manejo de archivos
+    // Cargar CSV
+void cargarCSV(Paciente **head) {
+    ifstream iFile; // Declara el archivo de entrada
+    iFile.open("pacientes.csv"); // Abre el archivo en modo lectura
+
+    // Variables vacias**
+    string nombre, texto, line;
+    int location, edad;
+    float peso, altura;
+
+    getline(iFile, line); // Lee y descarta el header
+
+
+    while (getline(iFile, line)) {
+
+        // nombre
+        location = line.find(',');
+        nombre = line.substr(0, location);
+
+        // edad
+        texto = line.substr(location + 1);
+        location = texto.find(',');
+        edad = stoi(texto.substr(0, location));
+
+        // peso
+        texto = texto.substr(location + 1);
+        location = texto.find(',');
+        peso = stof(texto.substr(0, location));
+
+        // altura
+        texto = texto.substr(location + 1);
+        altura = stof(texto);
+
+        
+         // crear y agregar
+        Paciente *newPatient = creaPaciente(nombre, edad, peso, altura);
+        agregarPaciente(head, newPatient);
+    }
+
+    iFile.close(); // Cierra el archivo
+}
+
+    // Agregar pacientes a CSV
 
 
 // Interacciones con el usuario
@@ -162,10 +209,12 @@ int menu() {
     cout << "2. Mostrar pacientes\n";
     cout << "3. Calcular promedios de edad y peso\n";
     cout << "4. Calcular IMC por paciente\n";
-    cout << "5. Salir\n";
+    cout << "5. Leer CSV\n";   /****** */
+    cout << "6. Agregar pacientes a CSV\n"; /******** */
+    cout << "7. Salir + borrar memoria\n";
     cout << "Opcion: ";
     cin >> opcion;
-    while (opcion < 1 || opcion > 5) {
+    while (opcion < 1 || opcion > 7) {
         cout << "[Debe elegir una opcion valida (1-5)] : ";
         cin >> opcion;
     }
@@ -180,29 +229,28 @@ int main(){
     int opcion = 0;
 
     // Al ver las opciones, revisa la que eligió el usuario y sigue respecto a eso
-    while (opcion != 5) { // Y se reitera hasta que el usuario elija salir
+    while (opcion != 7) { // Y se reitera hasta que el usuario elija salir
         opcion = menu();
         cout << "____________" << endl;
 
         // Opcion 1: Usuario agrega pacientes
         if (opcion == 1) {
-                // Variables iniciales
-            int contador_pacientes_totales;
+            // Variables iniciales
+            int contador_pacientes_totales, edad;
             string nombre;
-            int edad;
-            float peso;
-            float altura;
+            float peso, altura;
 
+            // Crea contador
             cout << "Cuantos pacientes desea agregar? : ";
             cin >> contador_pacientes_totales;
 
+            // Agrega informacion de pacientes mientras el contador sea distinto de 0
             while (contador_pacientes_totales != 0){
                 contador_pacientes_totales -= 1;
                 capturarDatosPaciente(contador_pacientes_totales, nombre, edad, peso, altura);
                 newPatient = creaPaciente(nombre, edad, peso, altura);
                 agregarPaciente(&head, newPatient);
             }
-
         }
 
         // Opcion 2: Imprime los pacientes
@@ -225,8 +273,20 @@ int main(){
         if (opcion == 4) {
             pacienteIMC(head); // calcula e imprime IMP por paciente + manda a checkear si es normal, muy alto o muy bajo
         }
-        
+
+        // Opcion 5: Cargar CSV
+        if (opcion == 5) {
+            cargarCSV(&head);
+            // Aqui se implementaria la carga de un archivo CSV
+        }
+
+        // Opcion 6: Agregar pacientes a CSV
+        if (opcion == 6) {
+            cout << "Agregando pacientes a CSV)\n";
+            // Aqui se implementaria la adición de pacientes a un archivo CSV
+        }
     }
+
     liberarPacientes(head); // Se libera la memoria de la lista    
     return 0;
 }
