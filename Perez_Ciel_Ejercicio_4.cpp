@@ -184,6 +184,21 @@ void cargarCSV(Paciente **head) {
 }
 
     // Agregar pacientes a CSV
+    void agregarPacientesCSV(Paciente *head) {
+        ofstream oFile;
+        oFile.open("pacientes.csv", ios::out); // Reescribe el archivo
+
+        // Escribir el header
+        oFile << "nombre,edad,peso,altura\n";
+
+        Paciente *actual = head;
+        while (actual != NULL) {
+            oFile << actual->nombre << "," << actual->edad << "," << actual->peso << "," << actual->altura << "\n";
+            actual = actual->next;
+        }
+
+        oFile.close();
+    }
 
 
 // Interacciones con el usuario
@@ -209,10 +224,10 @@ int menu() {
     cout << "2. Mostrar pacientes\n";
     cout << "3. Calcular promedios de edad y peso\n";
     cout << "4. Calcular IMC por paciente\n";
-    cout << "5. Leer CSV\n";   /****** */
-    cout << "6. Agregar pacientes a CSV\n"; /******** */
+    cout << "5. Leer CSV\n";
+    cout << "6. Guardar informacion a CSV\n";
     cout << "7. Salir + borrar memoria\n";
-    cout << "Opcion: ";
+    cout << "Opcion: \n[Aviso: primero debe cargar el CSV si no quiere borrar la informacion presente en el archivo]" << endl;
     cin >> opcion;
     while (opcion < 1 || opcion > 7) {
         cout << "[Debe elegir una opcion valida (1-5)] : ";
@@ -277,12 +292,14 @@ int main(){
         // Opcion 5: Cargar CSV
         if (opcion == 5) {
             cargarCSV(&head);
+            cout << "¡CSV cargado exitosamente!\n";
             // Aqui se implementaria la carga de un archivo CSV
         }
 
         // Opcion 6: Agregar pacientes a CSV
         if (opcion == 6) {
-            cout << "Agregando pacientes a CSV)\n";
+            agregarPacientesCSV(head);
+            cout << "¡Pacientes agregados exitosamente al CSV!\n";
             // Aqui se implementaria la adición de pacientes a un archivo CSV
         }
     }
