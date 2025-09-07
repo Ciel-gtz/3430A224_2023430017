@@ -2,6 +2,7 @@
 #include <fstream> // Libreria para manejo de archivos
 #include <stdio.h> // Libreria para entrada y salida estandar
 #include <stdlib.h> // Libreria para gestion de memoria dinamica
+#include <limits> // Libreria para manejo de limites numericos
 using namespace std; 
 
 // Estructura para almacenar la informacion de los pacientes
@@ -222,17 +223,51 @@ void eliminarPaciente(Paciente*& head, const string& nombre_del) {
 }
 
 
+// Control de entrada para evitar errores
+    // Tipo int
+int control_int() {
+    int value;
+    while (true){
+        cin >> value;
+        if (!cin) {
+        cout << "Solo se permiten numeros : ";
+        cin.clear();
+        cin.ignore(numeric_limits<streamsize>::max(), '\n');
+        continue;
+        } else {
+            return value;
+        }
+    }
+}
+
+    // Tipo float
+float control_float() {
+    float value;
+    while (true){
+        cin >> value;
+        if (!cin) {
+        cout << "X Solo se permiten numeros : ";
+        cin.clear();
+        cin.ignore(numeric_limits<streamsize>::max(), '\n');
+        continue;
+        } else {
+            return value;
+        }
+    }
+}
+
+
 // Interacciones con el usuario
     // funcion para capturar datos de pacientes
 void capturarDatosPaciente(int &contador_pacientes_totales, string &nombre, int &edad, float &peso, float &altura) {
     cout << "\n| Cual es el nombre de este paciente? [Ejemplo: Juan] > ";
     cin >> nombre;
     cout << "| Cual es la edad de este paciente? [Ejemplo: 57] > ";
-    cin >> edad;
+    edad = control_int();
     cout << "| Cual es el peso (kg) de este paciente? [Ejemplo: 74.5] > ";
-    cin >> peso;
+    peso = control_float();
     cout << "| Cual es la altura (m) de este paciente? [Ejemplo: 1.80] > ";
-    cin >> altura;
+    altura = control_float();
     cout << "| [ El paciente " << nombre << " ha sido agregado exitosamente!]\n" << endl;
 }
 
@@ -250,10 +285,10 @@ int menu() {
     cout << "7. Eliminar un paciente\n";
     cout << "8. Salir + borrar memoria\n";
     cout << "Opcion: \n[Aviso: primero debe cargar el CSV si no quiere borrar la informacion presente en el archivo]" << endl;
-    cin >> opcion;
+    opcion = control_int();
     while (opcion < 1 || opcion > 8) {
         cout << "[Debe elegir una opcion valida (1-8)] : ";
-        cin >> opcion;
+        opcion = control_int();
     }
     return opcion;
 }
@@ -279,7 +314,8 @@ int main(){
 
             // Crea contador
             cout << "Cuantos pacientes desea agregar? : ";
-            cin >> contador_pacientes_totales;
+            // Y controla que el usuario solo coloque numeros
+            contador_pacientes_totales = control_int();
 
             // Agrega informacion de pacientes mientras el contador sea distinto de 0
             while (contador_pacientes_totales != 0){
