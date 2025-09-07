@@ -184,21 +184,42 @@ void cargarCSV(Paciente **head) {
 }
 
     // Agregar pacientes a CSV
-    void agregarPacientesCSV(Paciente *head) {
-        ofstream oFile;
-        oFile.open("pacientes.csv", ios::out); // Reescribe el archivo
+void agregarPacientesCSV(Paciente *head) {
+    ofstream oFile;
+    oFile.open("pacientes.csv", ios::out); // Reescribe el archivo
 
-        // Escribir el header
-        oFile << "nombre,edad,peso,altura\n";
+    // Escribir el header
+    oFile << "nombre,edad,peso,altura\n";
 
-        Paciente *actual = head;
-        while (actual != NULL) {
-            oFile << actual->nombre << "," << actual->edad << "," << actual->peso << "," << actual->altura << "\n";
-            actual = actual->next;
-        }
-
-        oFile.close();
+    Paciente *actual = head;
+    while (actual != NULL) {
+        oFile << actual->nombre << "," << actual->edad << "," << actual->peso << "," << actual->altura << "\n";
+        actual = actual->next;
     }
+
+    oFile.close();
+}
+
+    // Elimina un paciente por nombre
+void eliminarPaciente(Paciente*& head, const string& nombre_del) {
+    Paciente *actual = head;
+    Paciente *anterior = NULL;
+    cout << "\nx+ Eliminando a " << nombre_del << " +x" << endl;
+
+    while (actual != NULL) {
+        if (actual->nombre == nombre_del) {
+            if (anterior == NULL) {
+                head = actual->next;
+            } else {
+                anterior->next = actual->next;
+            }
+            delete actual; // Liberar memoria del nodo eliminado
+            return; // Salir después de eliminar el nodo
+        }
+        anterior = actual;
+        actual = actual->next;
+    }
+}
 
 
 // Interacciones con el usuario
@@ -224,13 +245,14 @@ int menu() {
     cout << "2. Mostrar pacientes\n";
     cout << "3. Calcular promedios de edad y peso\n";
     cout << "4. Calcular IMC por paciente\n";
-    cout << "5. Leer CSV\n";
+    cout << "5. Cargar CSV\n";
     cout << "6. Guardar informacion a CSV\n";
-    cout << "7. Salir + borrar memoria\n";
+    cout << "7. Eliminar un paciente\n";
+    cout << "8. Salir + borrar memoria\n";
     cout << "Opcion: \n[Aviso: primero debe cargar el CSV si no quiere borrar la informacion presente en el archivo]" << endl;
     cin >> opcion;
-    while (opcion < 1 || opcion > 7) {
-        cout << "[Debe elegir una opcion valida (1-5)] : ";
+    while (opcion < 1 || opcion > 8) {
+        cout << "[Debe elegir una opcion valida (1-8)] : ";
         cin >> opcion;
     }
     return opcion;
@@ -244,7 +266,7 @@ int main(){
     int opcion = 0;
 
     // Al ver las opciones, revisa la que eligió el usuario y sigue respecto a eso
-    while (opcion != 7) { // Y se reitera hasta que el usuario elija salir
+    while (opcion != 8) { // Y se reitera hasta que el usuario elija salir
         opcion = menu();
         cout << "____________" << endl;
 
@@ -301,6 +323,14 @@ int main(){
             agregarPacientesCSV(head);
             cout << "¡Pacientes agregados exitosamente al CSV!\n";
             // Aqui se implementaria la adición de pacientes a un archivo CSV
+        }
+
+        // Opcion 7: Eliminar un paciente
+        if (opcion == 7) {
+            string nombre_eliminar;
+            cout << "Cual es el nombre del paciente que desea eliminar? : ";
+            cin >> nombre_eliminar;
+            eliminarPaciente(head, nombre_eliminar); // Elimina a un paciente por nombre
         }
     }
 
