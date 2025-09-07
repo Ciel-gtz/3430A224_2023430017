@@ -61,6 +61,27 @@ void liberarPacientes(Paciente *head) {
 	}
 }
 
+    // Elimina un paciente por nombre
+void eliminarPaciente(Paciente*& head, const string& nombre_del) {
+    Paciente *actual = head;
+    Paciente *anterior = NULL;
+    cout << "\n+ Eliminando a " << nombre_del << endl;
+
+    while (actual != NULL) {
+        if (actual->nombre == nombre_del) {
+            if (anterior == NULL) {
+                head = actual->next;
+            } else {
+                anterior->next = actual->next;
+            }
+            delete actual; // Liberar memoria del nodo eliminado
+            return; // Salir después de eliminar el nodo
+        }
+        anterior = actual;
+        actual = actual->next;
+    }
+}
+
 
 // Funcion principal
 int main(){     
@@ -77,6 +98,12 @@ int main(){
 
     imprimirPaciente(head); // Imprime los pacientes de la lista
 
-    liberarPacientes(head); // Se libera la memoria de la lista // Este seria el eliminar pacientes
+    eliminarPaciente(head, "Gertrudis"); // Elimina a un paciente por nombre
+
+    cout << "___________\nPacientes actualizados:" << endl;
+
+    imprimirPaciente(head);
+
+    liberarPacientes(head); // Se libera la memoria de la lista
     return 0; 
 }

@@ -58,6 +58,27 @@ void agregarPaciente(Paciente **head, Paciente *newPaciente) {
     }
 }
 
+    // Elimina un paciente por nombre
+void eliminarPaciente(Paciente*& head, const string& nombre_del) {
+    Paciente *actual = head;
+    Paciente *anterior = NULL;
+    cout << "\nx+ Eliminando a " << nombre_del << " +x" << endl;
+
+    while (actual != NULL) {
+        if (actual->nombre == nombre_del) {
+            if (anterior == NULL) {
+                head = actual->next;
+            } else {
+                anterior->next = actual->next;
+            }
+            delete actual; // Liberar memoria del nodo eliminado
+            return; // Salir después de eliminar el nodo
+        }
+        anterior = actual;
+        actual = actual->next;
+    }
+}
+
     // Liberar memoria
 void liberarPacientes(Paciente *head) {
 	Paciente *actual = head; // Se asigna la cabeza de lista como nodo actual
@@ -168,6 +189,12 @@ int main(){
     // Imprimir valores grupales obtenidos
     cout << "\n+ El peso en promedio es: " << promedioPeso_ << endl;
     cout << "+ La edad en promedio es: " << promedioEdad_ << endl;
+
+    eliminarPaciente(head, "Gertrudis"); // Elimina a un paciente por nombre
+
+    cout << "__________________\n+ Pacientes actualizados:" << endl;
+
+    imprimirPaciente(head);
 
     liberarPacientes(head); // Se libera la memoria de la lista
     return 0; 
