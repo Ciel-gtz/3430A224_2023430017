@@ -128,7 +128,6 @@ int main() {
                 break;
 
             case 2:
-                int hola;
                 pila.Pop(pila.pila, pila.TOPE, pila.BAND);
                 break;
 
