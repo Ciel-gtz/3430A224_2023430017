@@ -114,16 +114,16 @@ int elegir_pila(int pilas_contenedores){
     // Primero revisa que contenedor quiere editar el usuario
     int pila_editar = -1;
     cout << "> Que pila desea editar?\n ";
-    while (pila_editar > pilas_contenedores || pila_editar < 0) {
-        cout << "x+ El valor debe estar entre [ 0 - " << pilas_contenedores << " ] : ";
+    while (pila_editar > pilas_contenedores || pila_editar < 1) {
+        cout << "x+ Pilas existentes -> [ 1 - " << pilas_contenedores << " ] : ";
         pila_editar = control_int();
     }
-    return pila_editar;
+    return pila_editar - 1;
 }
 
 int contenedores_pila(int cantidad_contenedores) {
     int valor = -1;
-    cout << "> Cuantos contenedores desea agregar?\n- Notese que estos tendrán su etiqueta/nombre automaticamente agregado" << endl;
+    cout << "\n> Cuantos contenedores desea agregar?\n- Notese que estos tendrán su etiqueta/nombre automaticamente agregado" << endl;
     while (valor < 0 || valor > cantidad_contenedores) {
         cout << "x+ El valor elegido debe estar entre [ 0 - " << cantidad_contenedores << " ] : ";
         valor = control_int();
@@ -131,14 +131,37 @@ int contenedores_pila(int cantidad_contenedores) {
     return valor;
 }
 
+// Apoyo opcion 3
+void mostrar_pilas(vector<Contenedor> &pilas, int pilas_contenedores, int cantidad_contenedores) {
+    cout << "\n> Contenedores por columnas:\n";
+
+    // Recorre de arriba (TOPE máximo) hacia abajo (1)
+    for (int fila = cantidad_contenedores; fila >= 1; fila--) { // Se recorre de la fila mas alta; cuando fila sea 0, se detiene; fila = fila - 1 
+        for (int columna = 0; columna < pilas_contenedores; columna++) {
+            if (pilas[columna].TOPE >= fila) {
+                cout << "[" << pilas[columna].pila[fila] << "]\t"; // \t es el equivalente a un tabulador, para que aparezca la informacion ordenada
+            } else {
+                cout << "[   ]\t"; // espacio vacio si no hay contenedor
+            }
+        }
+        cout << "\n"; // Para mostrarlos como columnas
+    }
+    // Se muestran los indices de las columnas
+    for (int columna = 0; columna < pilas_contenedores; columna++) {
+        cout << " " << columna + 1 << "\t";
+    }
+    cout << "\n";
+}
+
+
 
 int main(int argc, char* argv[]) {
     // Toma los valores via terminal al ejecutar el programa y los asigna 
     int cantidad_contenedores = atoi(argv[1]); // Equivalente a filas
     int pilas_contenedores = atoi(argv[2]); // Equivalente a columnas
 
-    cout << cantidad_contenedores << " -> Es su numero de contenedores por pila\n" 
-    << pilas_contenedores << " -> Es su numero de pilas de contenedores" << endl;
+    cout << "\n" << cantidad_contenedores << " -> Es su numero de contenedores por pila\n" 
+    << pilas_contenedores << " -> Es su numero de pilas de contenedores [equivalente al rango 0 - " << pilas_contenedores - 1 << " ]" << endl;
     
     // Se asigna en un vector el numero de pila de contenedores
     vector<Contenedor> pila(pilas_contenedores);
@@ -172,6 +195,9 @@ int main(int argc, char* argv[]) {
                 // Agrega el nombre con un push a la pila elegida por la cantidad de contenedores que el usuario quiso agregar
                 pila[pila_elegida].Push(pila[pila_elegida].BAND, pila[pila_elegida].TOPE, pila[pila_elegida].MAX, pila[pila_elegida].pila, etiqueta);
                 }
+
+                cout << "La pila ha sido editada" << endl;
+                mostrar_pilas(pila, pilas_contenedores, cantidad_contenedores);
                 break;
 
             case 2:
@@ -180,8 +206,7 @@ int main(int argc, char* argv[]) {
                 break;
 
             case 3:
-                pila[0].Mostrar(pila[0].pila, pila[0].TOPE);
-                pila[1].Mostrar(pila[1].pila, pila[1].TOPE);
+                mostrar_pilas(pila, pilas_contenedores, cantidad_contenedores);
                 break;
 
             case 4:
