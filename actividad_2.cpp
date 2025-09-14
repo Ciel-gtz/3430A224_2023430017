@@ -7,11 +7,6 @@
 using namespace std;
 
 struct Contenedor {
-    int n;
-    int m;
-    vector<Contenedor> pilas;
-
-
     int MAX;          // Capacidad logica (<= 50)
     int TOPE;         // 0 => vacia; 1..MAX => elementos
     bool BAND;        // Bandera de estado
@@ -116,18 +111,29 @@ int menu() {
 
 
 int main(int argc, char* argv[]) {
-    Contenedor pila;
-    pila.MAX = 50;
+    // Toma los valores via terminal al ejecutar el programa y los asigna 
+    int cantidad_contenedores = atoi(argv[1]); 
+    int pilas_contenedores = atoi(argv[2]); 
+
+    cout << cantidad_contenedores << " -> Es su numero de contenedores por pila\n" 
+    << pilas_contenedores << " -> Es su numero de pilas de contenedores" << endl;
+    
+    // Y se asigna como máximo cantidad_contenedores
+    /*Contenedor pila;
+    pila.MAX = cantidad_contenedores;
     pila.TOPE = 0;
-    pila.BAND = false;
+    pila.BAND = false;*/
+
+    vector<Contenedor> pila(pilas_contenedores);
+
+    for (int i = 0; i < pilas_contenedores; i++) {
+        pila[i].MAX = cantidad_contenedores;
+        pila[i].TOPE = 0;
+        pila[i].BAND = false;
+    }
 
     int opcion;
     int valor;
-
-    for (int i = 1; i < argc; i++) { // empezar en 1 (argv[0] es el nombre del programa)
-        int valor_aux = atoi(argv[i]); // conversion a entero
-        cout << "Argumento " << i << ": " << valor_aux << endl;
-    }
 
     while (opcion != 4) {
         opcion = menu();
@@ -137,16 +143,19 @@ int main(int argc, char* argv[]) {
                 cout << "\n> Ingrese el valor a agregar: ";
                 cin.ignore(); // Limpiar buffer
                 valor = control_int();
-                pila.Push(pila.BAND, pila.TOPE, pila.MAX, pila.pila, valor);
+                pila[0].Push(pila[0].BAND, pila[0].TOPE, pila[0].MAX, pila[0].pila, valor);
+                pila[1].Push(pila[1].BAND, pila[1].TOPE, pila[1].MAX, pila[1].pila, valor);
                 break;
 
             case 2:
                 int hola;
-                pila.Pop(pila.pila, pila.TOPE, pila.BAND);
+                pila[0].Pop(pila[0].pila, pila[0].TOPE, pila[0].BAND);
+                pila[1].Pop(pila[1].pila, pila[1].TOPE, pila[1].BAND);
                 break;
 
             case 3:
-                pila.Mostrar(pila.pila, pila.TOPE);
+                pila[0].Mostrar(pila[0].pila, pila[0].TOPE);
+                pila[1].Mostrar(pila[1].pila, pila[1].TOPE);
                 break;
 
             case 4:
