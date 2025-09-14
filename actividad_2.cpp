@@ -97,7 +97,7 @@ int menu() {
     int opcion = 0;
     cout << "++++++++++++\nMenu\n";
     cout << "1. Agregar contenedor\n";
-    cout << "2. Mover contenedor\n";
+    cout << "2. Mover/eliminar contenedor\n";
     cout << "3. Mostrar contenedores\n";
     cout << "4. Salir\n++++++++++++\n";
     cout << "> Seleccione una opcion: ";
@@ -131,7 +131,7 @@ int contenedores_pila(int cantidad_contenedores) {
     return valor;
 }
 
-// Apoyo opcion 3
+// Opcion 3
 void mostrar_pilas(vector<Contenedor> &pilas, int pilas_contenedores, int cantidad_contenedores) {
     cout << "\n> Contenedores por columnas:\n";
 
@@ -141,7 +141,7 @@ void mostrar_pilas(vector<Contenedor> &pilas, int pilas_contenedores, int cantid
             if (pilas[columna].TOPE >= fila) {
                 cout << "[" << pilas[columna].pila[fila] << "]\t"; // \t es el equivalente a un tabulador, para que aparezca la informacion ordenada
             } else {
-                cout << "[   ]\t"; // espacio vacio si no hay contenedor
+                cout << "[    ]\t"; // espacio vacio si no hay contenedor
             }
         }
         cout << "\n"; // Para mostrarlos como columnas
@@ -154,7 +154,7 @@ void mostrar_pilas(vector<Contenedor> &pilas, int pilas_contenedores, int cantid
 }
 
 
-
+// El main
 int main(int argc, char* argv[]) {
     // Toma los valores via terminal al ejecutar el programa y los asigna 
     int cantidad_contenedores = atoi(argv[1]); // Equivalente a filas
@@ -173,7 +173,7 @@ int main(int argc, char* argv[]) {
         pila[i].BAND = false;
     }
 
-    int opcion, pila_elegida, cantidad_repeticiones;
+    int opcion, pila_elegida, cantidad_repeticiones, decide;
     string etiqueta;
 
     // Se ven las opciones del menu
@@ -198,12 +198,42 @@ int main(int argc, char* argv[]) {
 
                 cout << "La pila ha sido editada" << endl;
                 mostrar_pilas(pila, pilas_contenedores, cantidad_contenedores);
+                etiqueta = ""; // Se restaura etiqueta a su valor inicial
                 break;
 
             case 2:
-                pila[0].Pop(pila[0].pila, pila[0].TOPE, pila[0].BAND);
-                pila[1].Pop(pila[1].pila, pila[1].TOPE, pila[1].BAND);
-                break;
+                mostrar_pilas(pila, pilas_contenedores, cantidad_contenedores);
+                // Primero se saca un contenedor de una pila
+                pila_elegida = elegir_pila(pilas_contenedores);
+                etiqueta = pila[pila_elegida].Pop(pila[pila_elegida].pila, pila[pila_elegida].TOPE, pila[pila_elegida].BAND);
+
+                // Esto por si hubo un error al momento de sacar (ej: no se saco nada)
+                if (etiqueta == "") { 
+                    break;
+                }
+
+                // confirmar si se quiere borrar o mover
+                while (decide != 1 && decide != 0) {
+                    cout << "\n> Este contenedor lo quiere eliminar o mover? [0: eliminar, 1: mover] : ";
+                    decide = control_int();
+                }
+
+                if (decide == 0) {
+                    cout << "x+ El contenedor " << etiqueta << " ha sido eliminado +x" << endl;
+                    etiqueta = ""; 
+                    decide = 2; // Se restaura valor decide a otro numero cualquiera distinto de 0 o 1
+                    break;
+                } else if (decide == 1) {
+                    // Se busca mover a alguna pila
+                    cout << "> A qué lugar quisiera mover este contenedor? : ";
+                    pila_elegida = elegir_pila(pilas_contenedores);
+                    pila[pila_elegida].Push(pila[pila_elegida].BAND, pila[pila_elegida].TOPE, pila[pila_elegida].MAX, pila[pila_elegida].pila, etiqueta);
+                    mostrar_pilas(pila, pilas_contenedores, cantidad_contenedores);
+                    etiqueta = "";
+                    decide = 2;
+                    break;
+                }                
+                break; // Lo dejo por si pasa algun bug raro XD
 
             case 3:
                 mostrar_pilas(pila, pilas_contenedores, cantidad_contenedores);
@@ -211,6 +241,7 @@ int main(int argc, char* argv[]) {
 
             case 4:
                 cout << "> Saliendo del programa...\n";
+                pila.clear(); // Borrar memoria
                 break;
 
             default:
