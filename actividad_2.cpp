@@ -10,7 +10,7 @@ struct Contenedor {
     int MAX;          // Capacidad logica (<= 50)
     int TOPE;         // 0 => vacia; 1..MAX => elementos
     bool BAND;        // Bandera de estado
-    int pila[50]; // Arreglo estatico (indices 1..MAX)
+    string pila[50]; // Arreglo estatico (indices 1..MAX)
 
 
     // Checkeo de pila
@@ -34,7 +34,7 @@ struct Contenedor {
 
 
     // Push y Pop con pila (LIFO)
-    void Push(bool &BAND, int &TOPE, int MAX, int pila[], int DATO) { 
+    void Push(bool &BAND, int &TOPE, int MAX, string pila[], string DATO) { 
         Pila_llena(TOPE, MAX, BAND); // Revisa si se pueden agregar mas datos
         if (BAND == true) {
             cout << "x+ Desbordamiento, pila llena +x\n";
@@ -45,27 +45,27 @@ struct Contenedor {
         }
     }
 
-    int Pop(int pila[], int &TOPE, bool &BAND) { 
+    string Pop(string pila[], int &TOPE, bool &BAND) { 
         Pila_vacia(TOPE, BAND); // Revisa si se pueden eliminar datos
         if (BAND == true) {
             cout << "x+ Subdesbordamiento, pila vacia +x\n";
-            return 0;
+            return "";
         } else if (BAND == false) { // Si se comprueba que no esta vacia...
-            int DATO = pila[TOPE]; // Guarda el ultimo dato...
+            string DATO = pila[TOPE]; // Guarda el ultimo dato...
             TOPE -= 1; // Se reduce el tope...
             cout << "- Retirado: \"" << DATO << "\"\n"; // Y se muestra cual era el ultimo dato
-            return DATO; // Se devuelve el valor retirado (en caso de que se necesite, aunque en este caso especificamente no lo necesitamos asi que se podria hacer que esta funcion sea void en vez de int)
+            return DATO; // Se devuelve el dato retirado (en caso de que se necesite, aunque en este caso especificamente no lo necesitamos asi que se podria hacer que esta funcion sea void en vez de int)
         }
-        return 0; 
+        return ""; 
     }
 
 
     // Mostrar los valores dentro de la pila
-    void Mostrar(int pila[], int TOPE) {
+    void Mostrar(string pila[], int TOPE) {
         if (TOPE == 0) {
             cout << "\nx+ La pila esta vacia +x\n";
         } else {
-            cout << "\n> Contenido de la pila\n(Ordenado de ultimo a primero insertado):\n [ ";
+            cout << "\n> Contenido de la pila:\n [ ";
             for (int i = TOPE; i >= 1; i--) {
                 cout << pila[i] << " ";
             }
@@ -96,9 +96,9 @@ int control_int() {
 int menu() {
     int opcion = 0;
     cout << "++++++++++++\nMenu\n";
-    cout << "1. Push (Agregar nuevo valor)\n";
-    cout << "2. Pop (Retirar ultimo valor)\n";
-    cout << "3. Mostrar (Ver valores en la pila)\n";
+    cout << "1. Agregar contenedor\n";
+    cout << "2. Mover contenedor\n";
+    cout << "3. Mostrar contenedores\n";
     cout << "4. Salir\n++++++++++++\n";
     cout << "> Seleccione una opcion: ";
     opcion = control_int();
@@ -109,46 +109,72 @@ int menu() {
     return opcion;
 }
 
+// Apoyo opcion 1
+int elegir_pila(int pilas_contenedores){
+    // Primero revisa que contenedor quiere editar el usuario
+    int pila_editar = -1;
+    cout << "> Que pila desea editar?\n ";
+    while (pila_editar > pilas_contenedores || pila_editar < 0) {
+        cout << "x+ El valor debe estar entre [ 0 - " << pilas_contenedores << " ] : ";
+        pila_editar = control_int();
+    }
+    return pila_editar;
+}
+
+int contenedores_pila(int cantidad_contenedores) {
+    int valor = -1;
+    cout << "> Cuantos contenedores desea agregar?\n- Notese que estos tendrán su etiqueta/nombre automaticamente agregado" << endl;
+    while (valor < 0 || valor > cantidad_contenedores) {
+        cout << "x+ El valor elegido debe estar entre [ 0 - " << cantidad_contenedores << " ] : ";
+        valor = control_int();
+    }
+    return valor;
+}
+
 
 int main(int argc, char* argv[]) {
     // Toma los valores via terminal al ejecutar el programa y los asigna 
-    int cantidad_contenedores = atoi(argv[1]); 
-    int pilas_contenedores = atoi(argv[2]); 
+    int cantidad_contenedores = atoi(argv[1]); // Equivalente a filas
+    int pilas_contenedores = atoi(argv[2]); // Equivalente a columnas
 
     cout << cantidad_contenedores << " -> Es su numero de contenedores por pila\n" 
     << pilas_contenedores << " -> Es su numero de pilas de contenedores" << endl;
     
-    // Y se asigna como máximo cantidad_contenedores
-    /*Contenedor pila;
-    pila.MAX = cantidad_contenedores;
-    pila.TOPE = 0;
-    pila.BAND = false;*/
-
+    // Se asigna en un vector el numero de pila de contenedores
     vector<Contenedor> pila(pilas_contenedores);
 
+    // Se crean listas vacias, asignandoles el band false y el maximo de contenedores por pila como la cantidad que el usuario coloco
     for (int i = 0; i < pilas_contenedores; i++) {
         pila[i].MAX = cantidad_contenedores;
         pila[i].TOPE = 0;
         pila[i].BAND = false;
     }
 
-    int opcion;
-    int valor;
+    int opcion, pila_elegida, cantidad_repeticiones;
+    string etiqueta;
 
+    // Se ven las opciones del menu
     while (opcion != 4) {
         opcion = menu();
 
         switch (opcion) {
             case 1:
-                cout << "\n> Ingrese el valor a agregar: ";
-                cin.ignore(); // Limpiar buffer
-                valor = control_int();
-                pila[0].Push(pila[0].BAND, pila[0].TOPE, pila[0].MAX, pila[0].pila, valor);
-                pila[1].Push(pila[1].BAND, pila[1].TOPE, pila[1].MAX, pila[1].pila, valor);
+                static int contador_global = 0;
+                // Primero pregunta a que pila se desea agregar un contenedor
+                pila_elegida = elegir_pila(pilas_contenedores);
+                cantidad_repeticiones = contenedores_pila(cantidad_contenedores);
+
+                // Agregar los contenedores con etiqueta automática
+                for (int i = 0; i < cantidad_repeticiones; i++) {
+                    // Generar etiqueta: "pilaIndex#tContador"
+                    etiqueta = to_string(pila_elegida) + "#t" + to_string(contador_global++);
+                
+                // Agrega el nombre con un push a la pila elegida por la cantidad de contenedores que el usuario quiso agregar
+                pila[pila_elegida].Push(pila[pila_elegida].BAND, pila[pila_elegida].TOPE, pila[pila_elegida].MAX, pila[pila_elegida].pila, etiqueta);
+                }
                 break;
 
             case 2:
-                int hola;
                 pila[0].Pop(pila[0].pila, pila[0].TOPE, pila[0].BAND);
                 pila[1].Pop(pila[1].pila, pila[1].TOPE, pila[1].BAND);
                 break;
