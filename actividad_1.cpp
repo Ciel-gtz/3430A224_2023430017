@@ -1,70 +1,73 @@
 #include <iostream>
 #include <string>
-#include <limits> // Libreria para manejo de limites numericos
+#include <cstdlib>
+#include <limits>
+#include <vector> 
+
 using namespace std;
 
-struct Pila {
-    int MAX;          // Capacidad logica (<= 50)
-    int TOPE;         // 0 => vacia; 1..MAX => elementos
-    bool BAND;        // Bandera de estado
-    int pila[50]; // Arreglo estatico (indices 1..MAX)
+struct Nodo {
+    string nombre;
+    string carrera;
+    float promedio;
+    Nodo* siguiente;
 
 
-    // Checkeo de pila
-    bool Pila_vacia(int TOPE, bool &BAND) {   
+    // Checkeo de cola
+    bool cola_vacia(int TOPE, bool &BAND) {   
         if (TOPE == 0) {
-            BAND = true; // La pila esta vacia
+            BAND = true; // La cola esta vacia
         } else {
-            BAND = false; // La pila NO esta vacia
+            BAND = false; // La cola NO esta vacia
         }
         return BAND;
     }
 
-    bool Pila_llena(int TOPE, int MAX, bool &BAND) {   
+    bool cola_llena(int TOPE, int MAX, bool &BAND) {   // Siempre devuelve falso por ser lista dinámica
         if (TOPE == MAX){
-            BAND = true; // La pila esta llena
+            BAND = true; // La cola esta llena
         } else {
-            BAND = false; // La pila NO esta llena
+            BAND = false; // La cola NO esta llena
         }
         return BAND;
     }
 
 
-    // Push y Pop con pila (LIFO)
-    void Push(bool &BAND, int &TOPE, int MAX, int pila[], int DATO) { 
-        Pila_llena(TOPE, MAX, BAND); // Revisa si se pueden agregar mas datos
+    // Insertar_cola y Eliminar_cola [FIFO]*** AUN NO ES FIFO
+    void Insertar_cola(bool &BAND, int &TOPE, int MAX, string cola[], string DATO) { 
+        cola_llena(TOPE, MAX, BAND); // Revisa si se pueden agregar mas datos
         if (BAND == true) {
-            cout << "x+ Desbordamiento, pila llena +x\n";
+            cout << "x+ Desbordamiento, cola llena +x\n";
         } else if (BAND == false) { // Si se comprueba que no esta llena...
             TOPE += 1; // Aumenta el tope...
-            pila[TOPE] = DATO; // Y se agrega el DATO del usuario
+            cola[TOPE] = DATO; // Y se agrega el DATO del usuario
             cout << "+ Agregado: \"" << DATO << "\"\n";
         }
     }
 
-    int Pop(int pila[], int &TOPE, bool &BAND) { 
-        Pila_vacia(TOPE, BAND); // Revisa si se pueden eliminar datos
+    string Eliminar_cola(string cola[], int &TOPE, bool &BAND) { 
+        cola_vacia(TOPE, BAND); // Revisa si se pueden eliminar datos
         if (BAND == true) {
-            cout << "x+ Subdesbordamiento, pila vacia +x\n";
-            return 0;
+            cout << "x+ Subdesbordamiento, cola vacia +x\n";
+            return "";
         } else if (BAND == false) { // Si se comprueba que no esta vacia...
-            int DATO = pila[TOPE]; // Guarda el ultimo dato...
+            string DATO = cola[TOPE]; // Guarda el ultimo dato...
             TOPE -= 1; // Se reduce el tope...
             cout << "- Retirado: \"" << DATO << "\"\n"; // Y se muestra cual era el ultimo dato
-            return DATO; // Se devuelve el valor retirado (en caso de que se necesite, aunque en este caso especificamente no lo necesitamos asi que se podria hacer que esta funcion sea void en vez de int)
+            return DATO; // Se devuelve el dato retirado (en caso de que se necesite, aunque en este caso especificamente no lo necesitamos asi que se podria hacer que esta funcion sea void en vez de int)
         }
-        return 0; 
+        return ""; 
     }
 
 
-    // Mostrar los valores dentro de la pila
-    void Mostrar(int pila[], int TOPE) {
+    // Mostrar los valores dentro de la cola
+    void Mostrar(string cola[], int TOPE) {
         if (TOPE == 0) {
-            cout << "\nx+ La pila esta vacia +x\n";
+            cout << "\nx+ La cola esta vacia +x\n";
         } else {
-            cout << "\n> Contenido de la pila\n(Ordenado de ultimo a primero insertado):\n [ ";
+            cout << "\n> Contenido de la cola:\n [ ";
             for (int i = TOPE; i >= 1; i--) {
-                cout << pila[i] << " ";
+                cout << cola[i] << " ";
             }
             cout << "]" << endl;
         }
@@ -73,8 +76,23 @@ struct Pila {
 
 
 // Control de entrada para evitar errores
-int control_int() {
+int control_int() { // Con int
     int value;
+    while (true){
+        cin >> value;
+        if (!cin) {
+        cout << "x+ Solo se permiten numeros : ";
+        cin.clear();
+        cin.ignore(numeric_limits<streamsize>::max(), '\n');
+        continue;
+        } else {
+            return value;
+        }
+    }
+}
+
+float control_float() { // Con float
+    float value;
     while (true){
         cin >> value;
         if (!cin) {
@@ -93,9 +111,9 @@ int control_int() {
 int menu() {
     int opcion = 0;
     cout << "++++++++++++\nMenu\n";
-    cout << "1. Push (Agregar nuevo valor)\n";
-    cout << "2. Pop (Retirar ultimo valor)\n";
-    cout << "3. Mostrar (Ver valores en la pila)\n";
+    cout << "1. Insertar un nuevo estudiante en la cola.\n"; // Insertar_cola
+    cout << "2. Eliminar estudiante al frente de la cola\n"; // Eliminar_cola
+    cout << "3. Mostrar contenidos de la cola\n"; // Mostrar_cola
     cout << "4. Salir\n++++++++++++\n";
     cout << "> Seleccione una opcion: ";
     opcion = control_int();
@@ -106,37 +124,43 @@ int menu() {
     return opcion;
 }
 
-
+// El main
 int main() {
-    Pila pila;
-    pila.MAX = 50;
-    pila.TOPE = 0;
-    pila.BAND = false;
+    /*
+    // Se asigna en un vector el numero de cola de Nodoes
+    vector<Nodo> cola(colas_Nodoes);
+
+    // Se crean listas vacias, asignandoles el band false y el maximo de Nodoes por cola como la cantidad que el usuario coloco
+    for (int i = 0; i < colas_Nodoes; i++) {
+        cola[i].MAX = cantidad_Nodoes;
+        cola[i].TOPE = 0;
+        cola[i].BAND = false;
+    }*/
 
     int opcion;
-    int valor;
+    
 
+    // Se ven las opciones del menu
     while (opcion != 4) {
         opcion = menu();
 
         switch (opcion) {
-            case 1:
-                cout << "\n> Ingrese el valor a agregar: ";
-                cin.ignore(); // Limpiar buffer
-                valor = control_int();
-                pila.Push(pila.BAND, pila.TOPE, pila.MAX, pila.pila, valor);
+            case 1: // Insertar_cola
+                // static int contador_global = 0;
+                
                 break;
 
-            case 2:
-                pila.Pop(pila.pila, pila.TOPE, pila.BAND);
+            case 2: // Eliminar_cola
+                
+                break; 
+
+            case 3: // Mostrar_cola
+            
                 break;
 
-            case 3:
-                pila.Mostrar(pila.pila, pila.TOPE);
-                break;
-
-            case 4:
+            case 4: // Salir
                 cout << "> Saliendo del programa...\n";
+                //cola.clear(); // Borrar memoria
                 break;
 
             default:
