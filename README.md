@@ -37,7 +37,21 @@ En este ejemplo del problema, se selecciona automáticamente la opción 2, ya qu
 <h2>En actividad_2.cpp :</h2>
 </div>
 
-[TEXT]
+- Se elimina controlFLOAT, ya que no es necesario aquí.
+- Se agrega eliminarEspecifico() para realización de la opción 2, utilizando el bool que retorna para verificar si se imprime que se borró la proteína o para decir que hubo un error general al intentar borrar una proteína en específico
+- Al ser muchas opciones juntas, para una mejor visualización <sub>tanto para mí como para el usuario</sub> se agregaron emojis ➡️ por la posibilidad de cualquier error visual que suceda por esto, se incluye el menú sin emojis aquí:
+```
+++++++++++++
+Menu
+1. Insertar un nuevo residuo al final de la secuencia.
+2. Modificar el resn de un residuo.
+3. Eliminar un residuo en una posicion especifica.
+4. Mostrar la lista de residuos.
+5. Exportar la lista a un archivo en formato Graphviz (.dot)
+6. Generar imagen .png a partir del archivo .dot
+7. Salir
+++++++++++++
+```
 
 <div>
 <h2></h2>
