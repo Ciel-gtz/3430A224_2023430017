@@ -1,8 +1,7 @@
 #include <iostream>
 #include <string>
-#include <cstdlib>
 #include <limits>
-#include <vector> 
+
 
 using namespace std;
 
@@ -11,72 +10,82 @@ struct Nodo {
     string carrera;
     float promedio;
     Nodo* siguiente;
-
-
-    // Checkeo de cola
-    bool cola_vacia(int TOPE, bool &BAND) {   
-        if (TOPE == 0) {
-            BAND = true; // La cola esta vacia
-        } else {
-            BAND = false; // La cola NO esta vacia
-        }
-        return BAND;
-    }
-
-    bool cola_llena(int TOPE, int MAX, bool &BAND) {   // Siempre devuelve falso por ser lista dinámica
-        if (TOPE == MAX){
-            BAND = true; // La cola esta llena
-        } else {
-            BAND = false; // La cola NO esta llena
-        }
-        return BAND;
-    }
-
-
-    // Insertar_cola y Eliminar_cola [FIFO]*** AUN NO ES FIFO
-    void Insertar_cola(bool &BAND, int &TOPE, int MAX, string cola[], string DATO) { 
-        cola_llena(TOPE, MAX, BAND); // Revisa si se pueden agregar mas datos
-        if (BAND == true) {
-            cout << "x+ Desbordamiento, cola llena +x\n";
-        } else if (BAND == false) { // Si se comprueba que no esta llena...
-            TOPE += 1; // Aumenta el tope...
-            cola[TOPE] = DATO; // Y se agrega el DATO del usuario
-            cout << "+ Agregado: \"" << DATO << "\"\n";
-        }
-    }
-
-    string Eliminar_cola(string cola[], int &TOPE, bool &BAND) { 
-        cola_vacia(TOPE, BAND); // Revisa si se pueden eliminar datos
-        if (BAND == true) {
-            cout << "x+ Subdesbordamiento, cola vacia +x\n";
-            return "";
-        } else if (BAND == false) { // Si se comprueba que no esta vacia...
-            string DATO = cola[TOPE]; // Guarda el ultimo dato...
-            TOPE -= 1; // Se reduce el tope...
-            cout << "- Retirado: \"" << DATO << "\"\n"; // Y se muestra cual era el ultimo dato
-            return DATO; // Se devuelve el dato retirado (en caso de que se necesite, aunque en este caso especificamente no lo necesitamos asi que se podria hacer que esta funcion sea void en vez de int)
-        }
-        return ""; 
-    }
-
-
-    // Mostrar los valores dentro de la cola
-    void Mostrar(string cola[], int TOPE) {
-        if (TOPE == 0) {
-            cout << "\nx+ La cola esta vacia +x\n";
-        } else {
-            cout << "\n> Contenido de la cola:\n [ ";
-            for (int i = TOPE; i >= 1; i--) {
-                cout << cola[i] << " ";
-            }
-            cout << "]" << endl;
-        }
-    }
 };
 
 
+// Checkeo de cola VACIA
+bool Cola_vacia(Nodo* frente) {
+    if (frente == nullptr) {
+        // cola vacia
+        return true;
+    } else {
+        // cola con al menos 1 elemento
+        return false;
+    }
+}
+
+
+
+// Insertar_cola y Eliminar_cola [FIFO]
+void Insertar_cola(Nodo*& frente, Nodo*& fin, string nombre, string carrera, float promedio) {
+    Nodo* nuevo = new Nodo();
+    nuevo->nombre = nombre;
+    nuevo->carrera = carrera;
+    nuevo->promedio = promedio;
+    nuevo->siguiente = nullptr;
+
+    // Si la cola esta vacia: el nodo es frente y fin
+    if (fin == nullptr) {
+        frente = fin = nuevo;
+    } 
+    // si no: se agrega al final.
+    else {
+        fin->siguiente = nuevo;
+        fin = nuevo;
+    }
+
+    cout << "\t+ Se ha agregado '" << nombre << "' a la cola +\n";
+}
+
+void Eliminar_cola(Nodo*& frente, Nodo*& fin, string& nombre, string& carrera, float& promedio) {
+    Nodo* nodoActual = frente;
+    nombre = nodoActual->nombre;
+    carrera = nodoActual->carrera;
+    promedio = nodoActual->promedio;
+    frente = nodoActual->siguiente;
+
+    // esta parte de la cola ahora queda disponible
+    if (frente == nullptr) {
+        fin = nullptr; 
+    }
+
+    delete nodoActual;
+}
+
+
+
+// Mostrar lo presente en cola
+void mostrar(Nodo* frente) {
+    cout << "\n> Contenido actual de la cola :\n";
+    int indice = 1;
+    Nodo* actual = frente;
+
+    // Header
+    cout << "\tn°: [  nombre  ;  carrera  ;  promedio  ]" << endl;
+
+    // Imprime la info
+    while (actual != nullptr) {
+        cout << "\t" << indice << " : [ '" << actual->nombre << "' ;  '" << actual->carrera << "'  ; '" << actual->promedio << "' ]" << endl;
+        actual = actual->siguiente;
+        indice++; // equivalente a indice = indice + 1;
+    }
+}
+
+
+
 // Control de entrada para evitar errores
-int control_int() { // Con int
+    // Con int
+int control_int() { 
     int value;
     while (true){
         cin >> value;
@@ -90,8 +99,8 @@ int control_int() { // Con int
         }
     }
 }
-
-float control_float() { // Con float
+    // Con float
+float control_float() { 
     float value;
     while (true){
         cin >> value;
@@ -107,61 +116,89 @@ float control_float() { // Con float
 }
 
 
+
 // Menu de opciones
 int menu() {
     int opcion = 0;
-    cout << "++++++++++++\nMenu\n";
+    cout << "\n++++++++++++\nMenu\n";
     cout << "1. Insertar un nuevo estudiante en la cola.\n"; // Insertar_cola
     cout << "2. Eliminar estudiante al frente de la cola\n"; // Eliminar_cola
     cout << "3. Mostrar contenidos de la cola\n"; // Mostrar_cola
-    cout << "4. Salir\n++++++++++++\n";
+    cout << "4. Salir\n++++++++++++\n\n";
     cout << "> Seleccione una opcion: ";
     opcion = control_int();
     while (opcion < 1 || opcion > 4) {
-        cout << "[Debe elegir una opcion valida (1-4)] : ";
+        cout << "\t[Debe elegir una opcion valida (1-4)] : ";
         opcion = control_int();
     }
     return opcion;
 }
 
-// El main
+
+
 int main() {
-    /*
-    // Se asigna en un vector el numero de cola de Nodoes
-    vector<Nodo> cola(colas_Nodoes);
-
-    // Se crean listas vacias, asignandoles el band false y el maximo de Nodoes por cola como la cantidad que el usuario coloco
-    for (int i = 0; i < colas_Nodoes; i++) {
-        cola[i].MAX = cantidad_Nodoes;
-        cola[i].TOPE = 0;
-        cola[i].BAND = false;
-    }*/
-
-    int opcion;
+    // Valores iniciales
+    Nodo* frente = nullptr;
+    Nodo* fin = nullptr;
+    int opcion, indice;
+    string nombre, carrera;
+    float promedio;
+    bool vaciaORnot;
     
 
-    // Se ven las opciones del menu
+    // Dirige a las opciones del menu segun lo que el usuario elija
     while (opcion != 4) {
+
+        // Revisa si esta vacia la cola al iniciar cada vez: para no reiterar el codigo
+        vaciaORnot = Cola_vacia(frente);
+
+        // Muestra el menu + pide opcion
         opcion = menu();
 
+        // Segun la opcion, hace algo
         switch (opcion) {
-            case 1: // Insertar_cola
-                // static int contador_global = 0;
-                
+            // Insertar_cola
+            case 1: 
+                cout << "+ Nombre y carrera [Ejemplo: Juan Informatica] : ";
+                cin >> nombre, cin >> carrera;
+                cout << "+ Promedio [Con punto, no coma]: ";
+                promedio = control_float();
+                cin.ignore();
+                Insertar_cola(frente, fin, nombre, carrera, promedio);
                 break;
 
-            case 2: // Eliminar_cola
-                
+
+            // Eliminar_cola
+            case 2: 
+            // Primero revisa si la cola esta vacia o no
+                if (vaciaORnot == true) { 
+                    // Si esta vacia, tira aviso
+                    cout << "La cola esta vacia.\n";
+                } else {
+                    // Y si no lo esta, se elimina
+                    Eliminar_cola(frente, fin, nombre, carrera, promedio);
+                    cout << "\t- Se ha eliminado al primer estudiante de la cola [FIFO] -" << endl;
+                }
                 break; 
 
+
             case 3: // Mostrar_cola
-            
+                if (vaciaORnot == true) {
+                    cout << "La cola esta vacia.\n";
+                } else {
+                    mostrar(frente);
+                }
                 break;
+
 
             case 4: // Salir
                 cout << "> Saliendo del programa...\n";
-                //cola.clear(); // Borrar memoria
+                // Liberar toda la memoria de la cola antes de salir
+                while (!Cola_vacia(frente) == true) {
+                    Eliminar_cola(frente, fin, nombre, carrera, promedio);
+                }
                 break;
+
 
             default:
                 cout << "x+ Opcion no valida. Intente de nuevo +x.\n";
