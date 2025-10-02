@@ -17,8 +17,7 @@ bool checkColaVacia(Nodo* frente) {
         // cola vacia
         return true;
     } else {  
-        // cola con al menos 1 elemento
-        return false;
+        return false; // si quedo vacia, ambos punteros a null
     }
 }
 
@@ -140,7 +139,7 @@ int main() {
     Nodo* frente = nullptr;
     Nodo* fin = nullptr;
     string nombre, carrera;
-    int opcion, indice;
+    int opcion;
     float promedio;
     bool vaciaORnot, llenaORnot;
     
