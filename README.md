@@ -5,7 +5,6 @@
 - Se realiza una lista dinámica en <strong>FIFO (First In First Out)</strong>, al contrario que en el [laboratorio2](https://github.com/Ciel-gtz/3430A224_2023430017/blob/laboratorio2/actividad_2.cpp), el cual fue realizado con <strong>LIFO (Last In First Out)</strong>.
 - Se reutiliza el código <strong>control_int()</strong>.
 - Se incluye un menú con el cual el usuario puede interactuar.
-- 
 
 El pdf de la guía indicaba colocar una función llamada Cola_llena, el cual, como su nombre indica, tenía el propósito de revisar si la cola estaba llena o no, pero, al ser una lista dinámica (sin límite establecido) esta es básicamente imposible de definir. Se implementó, en este caso:
 ```
@@ -37,9 +36,30 @@ En este ejemplo del problema, se selecciona automáticamente la opción 2, ya qu
 <h2>En actividad_2.cpp :</h2>
 </div>
 
+*para que corra el programa Utilice: ./actividad_2 <ruta_archivo.pdb>
+*Este código depende mucho el cómo se escriba el pdb por la forma en que lo lee, ya que siempre se tomarán las primeras 3 letras para 'nombre' y del resto de la línea se eliminan las primeras 4 letras:
+```
+while (getline(pdb_file, line)) {
+        // Trabaja con las lineas del archivo
+        nombre = line.substr(0, 3); 
+
+        codigo = line.substr(4);
+        insertarCola(frente, fin, nombre, codigo);
+    }
+```
+así que los datos del archivo deben estar escritos en formato de forma:
+```
+ARG  34
+GLY  35
+VAL  36
+```
+<sub>nombre+espacio+código</sub>
+
+
 - Se elimina controlFLOAT, ya que no es necesario aquí.
 - Se agrega eliminarEspecifico() para realización de la opción 2, utilizando el bool que retorna para verificar si se imprime que se borró la proteína o para decir que hubo un error general al intentar borrar una proteína en específico
-- Al ser muchas opciones juntas, para una mejor visualización <sub>tanto para mí como para el usuario</sub> se agregaron emojis ➡️ por la posibilidad de cualquier error visual que suceda por esto, se incluye el menú sin emojis aquí:
+- Al ser muchas opciones juntas, para una mejor visualización <sub>tanto para mí como para el usuario</sub> se agregaron emojis al menú.
++ por la posibilidad de cualquier error visual que suceda por esto, se incluye el menú sin emojis aquí:
 ```
 ++++++++++++
 Menu

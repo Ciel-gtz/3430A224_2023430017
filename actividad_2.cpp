@@ -1,4 +1,5 @@
 #include <iostream>
+#include <fstream>
 #include <string>
 #include <limits>
 
@@ -131,11 +132,11 @@ int menu() {
     int opcion = 0;
     cout << "\n\n++++++++++++\nMenu\n";
     cout << "1. ⭕ Insertar un nuevo residuo al final de la secuencia.\n";
-    cout << "2. ✍️  Modificar el resn de un residuo.\n";
+    cout << "2. ✍️  Modificar el resn de un residuo.\n"; //XXX
     cout << "3. ❌ Eliminar un residuo en una posicion especifica.\n";
     cout << "4. 👁️  Mostrar la lista de residuos.\n";
-    cout << "5. 📃 Exportar la lista a un archivo en formato Graphviz (.dot)\n";
-    cout << "6. 🖨️  Generar imagen .png a partir del archivo .dot\n";
+    cout << "5. 📃 Exportar la lista a un archivo en formato Graphviz (.dot)\n"; //XXX
+    cout << "6. 🖨️  Generar imagen .png a partir del archivo .dot\n"; //XXX
     cout << "7. 🚪🏃 Salir\n++++++++++++\n\n";
     cout << "> Seleccione una opcion: ";
     opcion = controlINT();
@@ -147,15 +148,42 @@ int menu() {
 }
 
 
-int main() {
+int main(int argc, char* argv[]) {
     // Valores iniciales
     Nodo* frente = nullptr;
     Nodo* fin = nullptr;
-    string nombre, codigo;
+    string nombre, codigo, line, archivoPDB;
     int opcion, temp;
     float promedio;
     bool vaciaORnot, llenaORnot;
     
+    // Se lee el archivo que el usuario ingrese
+    if (argc < 2) {
+        // Si no se ingresa archivo, se avisa y se sale
+        cerr << "⚠️ Utilice: ./actividad_2 <ruta_archivo.pdb>" << endl;
+        return 1; // Se retorna 1 para indicar error
+    }
+
+    archivoPDB = argv[1];
+    ifstream pdb_file(archivoPDB);
+
+    if (!pdb_file) {
+        cerr << "⚠️ No se pudo abrir el archivo: " << archivoPDB << endl;
+        return 1;
+    }
+
+    while (getline(pdb_file, line)) {////////
+        // Trabaja con las lineas del archivo
+        nombre = line.substr(0, 3); // Usa las primeras 3 letras del archivo
+
+        codigo = line.substr(4);// Utiliza el resto de la linea, se incluye el espacio del ejemplo de archivo en substr
+        insertarCola(frente, fin, nombre, codigo);
+    }
+
+    // Y cierra el archivo, ya que los datos ya han sido guardados
+    pdb_file.close();
+
+    // Continua con las opciones del menu
     while (opcion != 7) {
         vaciaORnot = checkColaVacia(frente);
 
