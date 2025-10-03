@@ -58,6 +58,7 @@ VAL  36
 
 - Se elimina controlFLOAT, ya que no es necesario aquí.
 - Se agrega eliminarEspecifico() para realización de la opción 2, utilizando el bool que retorna para verificar si se imprime que se borró la proteína o para decir que hubo un error general al intentar borrar una proteína en específico
+- <strong>nombreProteina</strong> equivale a resn y <strong>codigoPDB</strong> equivale a resid, estos nombres pedidos en el pdf se cambiaron para tener una mayor claridad al momento de realizar el código
 - Al ser muchas opciones juntas, para una mejor visualización <sub>tanto para mí como para el usuario</sub> se agregaron emojis al menú.
 + por la posibilidad de cualquier error visual que suceda por esto, se incluye el menú sin emojis aquí:
 ```

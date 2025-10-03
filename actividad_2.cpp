@@ -6,8 +6,8 @@
 using namespace std;
 
 struct Nodo {
-    string nombreProteina; //resn
-    string codigoPDB; //resid
+    string nombreProteina; //resn -> 3 letras
+    string codigoPDB; //resid -> numerico
     Nodo* siguiente;
 };
 
@@ -57,8 +57,8 @@ void eliminarCola(Nodo*& frente, Nodo*& fin, string& nombre, string& codigo) {
     delete nodoActual;
 }
 
-// borrar en una posición específica
-bool eliminarEspecifico(Nodo*& pila, int posicion) {
+// Borrar en una posicion especifica
+bool eliminarEspecifico(Nodo*& pila, int& posicion) {
     if (pila == nullptr || posicion < 1) {
         return false;
     }
@@ -89,6 +89,29 @@ bool eliminarEspecifico(Nodo*& pila, int posicion) {
     return true;
 }
 
+// Editar en una posicion especifica
+bool modificarEspecifico(Nodo* frente, int& posicion, string nombre) {
+    if (frente == nullptr || posicion < 1) {
+        return false; // Cola vacía o posición inválida
+    }
+
+    Nodo* actual = frente;
+    int contador = 1;
+
+    // Recorremos hasta llegar a la posición pedida
+    while (actual != nullptr && contador < posicion) {
+        actual = actual->siguiente;
+        contador++;
+    }
+
+    if (actual == nullptr) {
+        return false; // posición fuera de rango
+    }
+
+    // Cortamos el nuevo nombre a 3 letras para mantener el formato
+    actual->nombreProteina = nombre;
+    return true;
+}
 
 // Mostrar lo presente en cola
 void mostrarCola(Nodo* frente) {
@@ -172,15 +195,15 @@ int main(int argc, char* argv[]) {
         return 1;
     }
 
-    while (getline(pdb_file, line)) {////////
+    while (getline(pdb_file, line)) {
         // Trabaja con las lineas del archivo
         nombre = line.substr(0, 3); // Usa las primeras 3 letras del archivo
 
-        codigo = line.substr(4);// Utiliza el resto de la linea, se incluye el espacio del ejemplo de archivo en substr
+        codigo = line.substr(4);// Utiliza el resto de la linea, se incluye el espacio del ejemplo de archivo en .substr
         insertarCola(frente, fin, nombre, codigo);
     }
 
-    // Y cierra el archivo, ya que los datos ya han sido guardados
+    // Y cierra el archivo, ya que los datos ya han sido guardados en la cola
     pdb_file.close();
 
     // Continua con las opciones del menu
@@ -194,7 +217,7 @@ int main(int argc, char* argv[]) {
             // Insertar a la cola
             case 1: 
                 // Pido que el usuario ingrese un nombre, se corta por si el usuario puso algo muy largo
-                cout << "+ Nombre de la proteina [Ejemplo: TYR]: ";
+                cout << "+ Nombre de la proteina [0 para no editar nada]: ";
                 cin >> nombre;
                 nombre = nombre.substr(0, 3); // Para guardarlo en el mismo formato de 3 letras
 
@@ -207,9 +230,18 @@ int main(int argc, char* argv[]) {
                 insertarCola(frente, fin, nombre, codigo);
                 break;
 
-            // Modificar resn
+            // Modificar resn (nombre)
             case 2: 
-               
+                // Primero pide la posicion y el nuevo nombre
+                cout << "+ Posicion de la proteina a modificar [Numerico]: ";
+                temp = controlINT(); 
+
+                cout << "+ Nombre nuevo de la proteina [Ejemplo: TYR]: ";
+                cin >> nombre;
+                nombre = nombre.substr(0, 3); 
+
+                // Se modifica en la cola
+                modificarEspecifico(frente, temp, nombre);
                 break; 
 
             // Eliminar especifico
@@ -253,7 +285,7 @@ int main(int argc, char* argv[]) {
             // Salir del programa
             case 7: 
                 cout << "> Saliendo del programa...\n";
-                // Liberar toda la memoria de la cola antes de salir
+                // Libera toda la memoria de la cola antes de salir
                 while (!checkColaVacia(frente)) {
                     eliminarCola(frente, fin, nombre, codigo);
                 }
