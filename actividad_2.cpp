@@ -24,7 +24,7 @@ bool checkColaVacia(Nodo* frente) {
 }
 
 
-// insertarCola y eliminarCola [FIFO]
+// inserta valores a la cola en FIFO
 void insertarCola(Nodo*& frente, Nodo*& fin, string nombre, string codigo) {
     Nodo* nuevo = new Nodo();
     nuevo->nombreProteina = nombre;
@@ -44,7 +44,7 @@ void insertarCola(Nodo*& frente, Nodo*& fin, string nombre, string codigo) {
     cout << "\t+ Proteina '" << nombre << "' agregada a la cola +\n";
 }
 
-// Se mantiene eliminarCola para usar en la opcion 7 como limpieza de memoria
+// Se mantiene eliminarCola en FIFO para usar en la opcion 7 como limpieza de memoria
 void eliminarCola(Nodo*& frente, Nodo*& fin, string& nombre, string& codigo) { 
     Nodo* nodoActual = frente;
     nombre = nodoActual->nombreProteina;
@@ -57,6 +57,7 @@ void eliminarCola(Nodo*& frente, Nodo*& fin, string& nombre, string& codigo) {
 
     delete nodoActual;
 }
+
 
 // Borrar en una posicion especifica
 bool eliminarEspecifico(Nodo*& pila, int& posicion) {
@@ -114,11 +115,17 @@ bool modificarEspecifico(Nodo* frente, int& posicion, string nombre) {
     return true;
 }
 
+
+// Se crea el archivo .dot con nombre dado por el usuario + formato 
 void crearArchivo(Nodo* frente, string outputDot) {
+    // Se le agrega el formato .dot faltante al nombre del archivo
+    outputDot = outputDot + ".dot";
+
     // Abrir archivo .dot para escritura
     ofstream outfile;
-
-    outfile.open(outputDot); // abre o crea el archivo
+    
+    // Abre o crea el archivo
+    outfile.open(outputDot);
     if (!outfile.is_open()) {
         cerr << "⚠️  No se pudo crear el archivo " << outputDot << endl;
         return;
@@ -127,7 +134,7 @@ void crearArchivo(Nodo* frente, string outputDot) {
     // Escribir encabezado de Graphviz
     outfile << "digraph G {\n";
     outfile << "rankdir = LR;\n";
-    outfile << "node [style=filled fillcolor=yellow];\n";
+    outfile << "node [style=filled fillcolor=\"#47e388ff\"];\n";
 
     // Recorremos la cola y escribimos conexiones
     Nodo* actual = frente;
@@ -140,8 +147,29 @@ void crearArchivo(Nodo* frente, string outputDot) {
     // Cerrar Graphviz
     outfile << "}\n";
     outfile.close();
-    cout << "+ Archivo graphviz '" << outputDot << "' generado.\n";
+    cout << "+ Archivo graphviz '" << outputDot << "' creado.\n";
 }
+
+void crearImagen(string outputDot) {
+    string outputPng;
+    // Se le agrega el formato .dot y .png faltante a los nombres de los archivos
+    outputPng = outputDot+ ".png";
+    outputDot = outputDot + ".dot";
+
+    // Ejecutar comando bash (Graphviz) para generar PNG
+    string comando = "dot -Tpng " + outputDot + " -o " + outputPng;
+    cout << comando << "\n";
+
+    int resultado = system(comando.c_str());
+
+    if (resultado == 0){
+        cout << "+x Imagen graphviz generada en '" << outputPng << "' x+" << endl;
+    } else {
+        cout << "⚠️ -> Revise que esté instalado el software graphviz.\n⚠️ -> Revise el comando de generacion de imagen.\n⚠️ -> Revise el archivo input para la generacion de imagen." << endl; 
+
+    }   
+}
+
 
 // Mostrar lo presente en cola
 void mostrarCola(Nodo* frente) {
@@ -163,7 +191,6 @@ void mostrarCola(Nodo* frente) {
 
 
 // Control de entrada para evitar errores
-    // Con int
 int controlINT() { 
     int value;
     while (true){
@@ -188,7 +215,7 @@ int menu() {
     cout << "2. ✍️  Modificar el resn de un residuo.\n";
     cout << "3. ❌ Eliminar un residuo en una posicion especifica.\n";
     cout << "4. 👁️  Mostrar la lista de residuos.\n";
-    cout << "5. 📃 Exportar la lista a un archivo en formato Graphviz (.dot)\n"; //XXX
+    cout << "5. 📃 Exportar la lista a un archivo en formato Graphviz (.dot)\n";
     cout << "6. 🖨️  Generar imagen .png a partir del archivo .dot\n"; //XXX
     cout << "7. 🚪🏃 Salir\n++++++++++++\n\n";
     cout << "> Seleccione una opcion: ";
@@ -199,6 +226,7 @@ int menu() {
     }
     return opcion;
 }
+
 
 
 int main(int argc, char* argv[]) {
@@ -228,7 +256,7 @@ int main(int argc, char* argv[]) {
         // Trabaja con las lineas del archivo
         nombre = line.substr(0, 3); // Usa las primeras 3 letras del archivo
 
-        codigo = line.substr(4);// Utiliza el resto de la linea, se incluye el espacio del ejemplo de archivo en .substr
+        codigo = line.substr(5);// Utiliza el resto de la linea, se incluyen los espacios del ejemplo de archivo en .substr
         insertarCola(frente, fin, nombre, codigo);
     }
 
@@ -309,14 +337,27 @@ int main(int argc, char* argv[]) {
                 cout << "> Cual sera el nombre de su archivo nuevo? : ";
                 cin >> outputDot;
 
-                // Se crea el nombre del archivo con la entrada del usuario
-                outputDot = outputDot + ".dot";
-                
                 crearArchivo(frente, outputDot);
                 break;
 
             // Generar imagen .png a partir de .dot
             case 6:  
+                if (!outputDot.empty()) { // Para que el usuario no tenga que reiterar poner el nombre del archivo
+                    cout << "⚠️  Se va a utilizar '" << outputDot << ".dot' para la imagen .png" << endl;
+                    cout << "> ¿Desea cambiar el archivo a usar? [1 -> si; 0 -> no] : ";
+                    temp = controlINT();
+
+                    if (temp == 0) {
+                        // No se reescribe y se utiliza el nombre del caso 5
+                        crearImagen(outputDot);
+                        break;
+                    }
+                }
+                // O el usuario eligio 0 o directamente estaba vacio outputDot
+                cout << "> Cual es el nombre del archivo .dot a usar? : ";
+                cin >> outputDot;
+
+                crearImagen(outputDot);
                 break;
 
             // Salir del programa

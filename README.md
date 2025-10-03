@@ -43,7 +43,7 @@ ARG  34
 GLY  35
 VAL  36
 ```
-<span style="color: gray;">nombre+espacio+código</span>
+<span style="color: gray;">nombre+espacio+espacio+código</span>
 
 
 - Se elimina controlFLOAT, ya que no es necesario aquí.
