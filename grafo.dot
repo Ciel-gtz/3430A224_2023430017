@@ -1,0 +1,18 @@
+digraph G {
+rankdir = LR;
+node [style=filled fillcolor=yellow];
+ALA 27->TYR 28;
+TYR 28->THR 29;
+THR 29->ASN 30;
+ASN 30->SER 31;
+SER 31->PHE 32;
+PHE 32->THR 33;
+THR 33->ARG 34;
+ARG 34->GLY 35;
+GLY 35->VAL 36;
+VAL 36->TYR 37;
+TYR 37->TYR 38;
+TYR 38->PRO 39;
+PRO 39->ASP 40;
+ASP 40->LYS 41;
+}

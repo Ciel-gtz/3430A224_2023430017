@@ -36,24 +36,14 @@ En este ejemplo del problema, se selecciona automáticamente la opción 2, ya qu
 <h2>En actividad_2.cpp :</h2>
 </div>
 
-*para que corra el programa Utilice: ./actividad_2 <ruta_archivo.pdb>
-*Este código depende mucho el cómo se escriba el pdb por la forma en que lo lee, ya que siempre se tomarán las primeras 3 letras para 'nombre' y del resto de la línea se eliminan las primeras 4 letras:
-```
-while (getline(pdb_file, line)) {
-        // Trabaja con las lineas del archivo
-        nombre = line.substr(0, 3); 
-
-        codigo = line.substr(4);
-        insertarCola(frente, fin, nombre, codigo);
-    }
-```
-así que los datos del archivo deben estar escritos en formato de forma:
+### Para que corra el programa utilice <span style="color: gray;">./actividad_2 <ruta_archivo.pdb></span>. Ya que está hecho el ejemplo .pdb, puede directamente utilizar <span style="color: gray;">./actividad_2 ./proteinasEjemplo.pdb</span>
+⚠️ Este código depende mucho el cómo se escriba el pdb por la forma en que lo lee, ya que siempre se tomarán las primeras 3 letras para 'nombre' y del resto de la línea se eliminan las primeras 4 letras (incluye al espacio del archivo .pdb después de cada nombre), así que los datos del archivo deben estar escritos en el siguiente formato:
 ```
 ARG  34
 GLY  35
 VAL  36
 ```
-<sub>nombre+espacio+código</sub>
+<span style="color: gray;">nombre+espacio+código</span>
 
 
 - Se elimina controlFLOAT, ya que no es necesario aquí.

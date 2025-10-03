@@ -1,5 +1,6 @@
 #include <iostream>
 #include <fstream>
+#include <cstdlib>
 #include <string>
 #include <limits>
 
@@ -92,25 +93,54 @@ bool eliminarEspecifico(Nodo*& pila, int& posicion) {
 // Editar en una posicion especifica
 bool modificarEspecifico(Nodo* frente, int& posicion, string nombre) {
     if (frente == nullptr || posicion < 1) {
-        return false; // Cola vacía o posición inválida
+        return false; // Posicion invalida/inexistente
     }
 
     Nodo* actual = frente;
     int contador = 1;
 
-    // Recorremos hasta llegar a la posición pedida
+    // Se recorre hasta la posicion deseada
     while (actual != nullptr && contador < posicion) {
         actual = actual->siguiente;
         contador++;
     }
 
     if (actual == nullptr) {
-        return false; // posición fuera de rango
+        return false; // Posicion fuera de rango
     }
 
-    // Cortamos el nuevo nombre a 3 letras para mantener el formato
+    // Se modifica el nombre de la proteina
     actual->nombreProteina = nombre;
     return true;
+}
+
+void crearArchivo(Nodo* frente, string outputDot) {
+    // Abrir archivo .dot para escritura
+    ofstream outfile;
+
+    outfile.open(outputDot); // abre o crea el archivo
+    if (!outfile.is_open()) {
+        cerr << "⚠️  No se pudo crear el archivo " << outputDot << endl;
+        return;
+    }
+
+    // Escribir encabezado de Graphviz
+    outfile << "digraph G {\n";
+    outfile << "rankdir = LR;\n";
+    outfile << "node [style=filled fillcolor=yellow];\n";
+
+    // Recorremos la cola y escribimos conexiones
+    Nodo* actual = frente;
+    while (actual != nullptr && actual->siguiente != nullptr) {
+        // Escribe el nombre y el codigo actual -> nombre y codigo siguiente
+        outfile << actual->nombreProteina << actual->codigoPDB << "->" << actual->siguiente->nombreProteina << actual->siguiente->codigoPDB << ";\n";
+        actual = actual->siguiente;
+    }
+
+    // Cerrar Graphviz
+    outfile << "}\n";
+    outfile.close();
+    cout << "+ Archivo graphviz '" << outputDot << "' generado.\n";
 }
 
 // Mostrar lo presente en cola
@@ -126,7 +156,7 @@ void mostrarCola(Nodo* frente) {
     while (actual != nullptr) {
         cout << indice << "  :\t['" << actual->nombreProteina << "'\t->\t'" << actual->codigoPDB << "'\t  ]" << endl;
         actual = actual->siguiente;
-        indice++; // equivalente a indice = indice + 1;
+        indice++;
     }
 
 }
@@ -155,7 +185,7 @@ int menu() {
     int opcion = 0;
     cout << "\n\n++++++++++++\nMenu\n";
     cout << "1. ⭕ Insertar un nuevo residuo al final de la secuencia.\n";
-    cout << "2. ✍️  Modificar el resn de un residuo.\n"; //XXX
+    cout << "2. ✍️  Modificar el resn de un residuo.\n";
     cout << "3. ❌ Eliminar un residuo en una posicion especifica.\n";
     cout << "4. 👁️  Mostrar la lista de residuos.\n";
     cout << "5. 📃 Exportar la lista a un archivo en formato Graphviz (.dot)\n"; //XXX
@@ -175,15 +205,14 @@ int main(int argc, char* argv[]) {
     // Valores iniciales
     Nodo* frente = nullptr;
     Nodo* fin = nullptr;
-    string nombre, codigo, line, archivoPDB;
     int opcion, temp;
-    float promedio;
     bool vaciaORnot, llenaORnot;
+    string nombre, codigo, line, archivoPDB, outputDot;
     
     // Se lee el archivo que el usuario ingrese
     if (argc < 2) {
         // Si no se ingresa archivo, se avisa y se sale
-        cerr << "⚠️ Utilice: ./actividad_2 <ruta_archivo.pdb>" << endl;
+        cerr << "⚠️  Utilice: ./actividad_2 <ruta_archivo.pdb>" << endl;
         return 1; // Se retorna 1 para indicar error
     }
 
@@ -191,7 +220,7 @@ int main(int argc, char* argv[]) {
     ifstream pdb_file(archivoPDB);
 
     if (!pdb_file) {
-        cerr << "⚠️ No se pudo abrir el archivo: " << archivoPDB << endl;
+        cerr << "⚠️  No se pudo abrir el archivo: " << archivoPDB << endl;
         return 1;
     }
 
@@ -276,6 +305,14 @@ int main(int argc, char* argv[]) {
 
             // Exportar a .dot
             case 5:
+                // Pide el nombre del archivo
+                cout << "> Cual sera el nombre de su archivo nuevo? : ";
+                cin >> outputDot;
+
+                // Se crea el nombre del archivo con la entrada del usuario
+                outputDot = outputDot + ".dot";
+                
+                crearArchivo(frente, outputDot);
                 break;
 
             // Generar imagen .png a partir de .dot
