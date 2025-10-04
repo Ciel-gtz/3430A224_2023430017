@@ -37,8 +37,8 @@ En este ejemplo del problema, se selecciona automáticamente la opción 2, ya qu
 </div>
 
 Para que corra el programa utilice `./actividad_2 <ruta_archivo.pdb>`. Como ya está hecho el ejemplo .pdb, puede directamente utilizar `./actividad_2 ./proteinasEjemplo.pdb` para correr el ejemplo ya hecho. Igualmente, si se hace uso equivocado de esto, el programa va a dar un aviso cuando, por ejemplo, no se agrega nada después de ./actividad_2.
-O también, otra opción sería ejecutar el archivo bash, el cual atomáticamente va a tomar el archivo <proteinasEjemplo.pdb>, haciendo que solo sea necesario escribir en la terminal `./correrPrograma.bash` para que el programa inicie. 
-Si se desea editar el archivo a abrir cada vez, entonces, se sugiere abrir el archivo bash y cambiarlo manualmente en `INPUT="proteinasEjemplo.pdb"`. Tengo entendido que se puede hacer que el bash te pida también el archivo y correrlo de modo <sub>./correrPrograma.bash <archivo.pdb></sub> pero, este método es tan similar a solo ejecutar <sub>actividad_2</sub> que se siente reiterativo si lo dejara de esa forma, por ello se prefirió utilizar la línea INPUT.
+O también, otra opción sería ejecutar el archivo bash, el cual atomáticamente va a tomar el archivo <strong><proteinasEjemplo.pdb></strong>, haciendo que solo sea necesario escribir en la terminal `./correrPrograma.bash` para que el programa inicie. 
+Si se desea editar el archivo a abrir cada vez, entonces, se sugiere abrir el archivo bash y cambiarlo manualmente en `INPUT="proteinasEjemplo.pdb"`. Tengo entendido que se puede hacer que el bash te pida también el archivo y correrlo de modo <strong>./correrPrograma.bash <archivo.pdb></strong> pero, este método es tan similar a solo ejecutar <strong>actividad_2</strong> que se siente reiterativo si lo dejara de esa forma, por ello se prefirió utilizar la línea INPUT.
 
 - Al ser muchas opciones juntas, para una mejor visualización <sub>tanto para mí como para el usuario</sub> se agregaron emojis al menú. Pero, por la posibilidad de cualquier error visual que pueda suceder por esto, se incluye el menú sin emojis aquí:
 ```
