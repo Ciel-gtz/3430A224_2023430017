@@ -1,0 +1,22 @@
+digraph G {
+node [style=filled fillcolor="#47e388ff"];
+_12->_23;
+_12->_32;
+_23i[shape=point];
+_23->_23i;
+_23->_4;
+_4i[shape=point];
+_4->_4i;
+_4d[shape=point];
+_4->_4d;
+_32->_34;
+_32d[shape=point];
+_32->_32d;
+_34i[shape=point];
+_34->_34i;
+_34->_5;
+_5i[shape=point];
+_5->_5i;
+_5d[shape=point];
+_5->_5d;
+}

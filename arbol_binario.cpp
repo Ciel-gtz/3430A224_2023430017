@@ -11,7 +11,7 @@ struct Nodo {
 };
 
 // Crear un nuevo nodo
-Nodo* crearNodo(int data) {
+Nodo* crearNodo(const int data) {
     Nodo* newNode = new Nodo;
     newNode->info = data;
     newNode->izquierda = nullptr;
@@ -26,7 +26,7 @@ Nodo* crearNodo(int data) {
 char userDecision(){ // from: https://stackoverflow.com/questions/43972500/how-to-only-accept-y-or-n-in-users-input-in-c
     char userAnswer;
     do {
-        cout << "⚠️ [s/n] : ";
+        cout << "! [s/n] : ";
         cin >> userAnswer;
         cin.ignore(numeric_limits<streamsize>::max(), '\n');
         userAnswer = (char)tolower(userAnswer); // from: https://www.geeksforgeeks.org/cpp/tolower-function-in-cpp/
@@ -59,7 +59,6 @@ void crearArbol(Nodo* &apnodo) {
         int valor;
         cout << "\n> Ingrese valor para el nodo : ";
         valor = controlINT();
-        /// HERE?
         apnodo = crearNodo(valor);
     }
 
@@ -110,6 +109,7 @@ bool existeEnArbol(Nodo* nodo, int valor) {
     }
 }
 
+
 // Ediciones del Arbol...
 
 // Insercion en Arbol
@@ -137,6 +137,64 @@ void insertarEnArbol(Nodo* &apnodo, int infor) {
 }
 
 // Eliminar de ArbolNOTYET
+
+
+// Sobre el grafo...
+
+// Recorrer el arbol en preorden y escribir en el archivo
+void recorrer(Nodo* nodo, ofstream& fp) {
+    if (nodo != nullptr) {
+        string nodoID = "_" + to_string(nodo->info); // sin _ me salen errores, con . tmb salen errores
+
+        if (nodo->izquierda != nullptr) {
+            fp << nodoID << "->_" << nodo->izquierda->info << ";" << endl;
+        } else {
+            string cadena = nodoID + "i";
+            fp << cadena << "[shape=point];" << endl;
+            fp << nodoID << "->" << cadena << ";" << endl;
+        }
+
+        if (nodo->derecha != nullptr) {
+            fp << nodoID << "->_" << nodo->derecha->info << ";" << endl;
+        } else {
+            string cadena = nodoID + "d";
+            fp << cadena << "[shape=point];" << endl;
+            fp << nodoID << "->" << cadena << ";" << endl;
+        }
+
+        recorrer(nodo->izquierda, fp);
+        recorrer(nodo->derecha, fp);
+    } else {
+        return;
+    }
+}
+
+
+// Generar y mostrar la visualizacion del Arbol
+void visualizarArbol(Nodo* root) {
+    ofstream fp("arbolW.txt");
+
+    if (!fp.is_open()) {
+        cerr << "Error al abrir el archivo arbolW.txt" << endl;
+        return;
+    }
+
+    fp << "digraph G {\n";
+    fp << "node [style=filled fillcolor=\"#47e388ff\"];\n";
+
+    recorrer(root, fp);
+
+    fp << "}" << endl;
+
+    fp.close();
+
+    system("dot -Tpng -o arbolW.png arbolW.txt");
+    system("eog arbolW.png");
+}
+
+
+
+
 
 
 // Funciones recursivas para imprimir el arbol...
@@ -176,11 +234,11 @@ void printPostOrden(Nodo* Nodo) {
 int menu() {
     int opcion = 0;
     cout << "\n\n++++++++++++\nMenu\n";
-    cout << "1. ⭕ Insertar nuevo nodo.\n"; // NOTYET : insertar numero ELEMENTOS UNICOS (recorrer -> insertar)
+    cout << "1. ⭕ Insertar nuevo nodo.\n"; 
     cout << "2. ❌ Eliminar nodo.\n"; // NOTYET : eliminar num buscado (recorrer -> eliminar)
     cout << "3. ✍️  Modificar nodo.\n"; // NOTYET : modificar num buscado (recorrer -> eliminar)
     cout << "4. 👁️  Mostrar recorridos del arbol.\n";
-    cout << "5. 🖨️  Generar grafo.\n"; // NOTYET
+    cout << "5. 🖨️  Generar grafo.\n";
     cout << "6. 🚪🏃 Salir.\n++++++++++++\n\n";
     cout << "> Seleccione una opcion: ";
     opcion = controlINT();
@@ -245,7 +303,7 @@ int main() {
 
             // 5. 🖨️ Generar grafo.
             case 5:
-            
+                visualizarArbol(raiz);
                 break;
 
             // 6. 🚪🏃 Salir.
