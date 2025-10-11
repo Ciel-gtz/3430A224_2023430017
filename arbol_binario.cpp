@@ -131,7 +131,7 @@ Nodo* buscarNodo(Nodo* nodo, int valor) {
 
 
 /* =========================||
-Ediciones del Arbol...*/
+Ediciones en Arbol...*/
 // Insercion en Arbol
 void insertarNodo(Nodo* &apnodo, int infor) {
     if (apnodo == nullptr) {
@@ -202,7 +202,31 @@ void eliminarNodo(Nodo* &apnodo, int valor) {
     }
 }
 
+// Editar en Arbol
+void editarNodo(Nodo* raiz, int valorViejo) {
+    int valorNuevo;
+    cout << "> Nuevo valor para el nodo '" << valorViejo << "' : ";
+    valorNuevo = controlINT();
 
+    // Buscar el nodo con el valor viejo
+    Nodo* nodoEditar = buscarNodo(raiz, valorViejo);
+
+    if (nodoEditar == nullptr) {
+        cout << "⚠️  El nodo '" << valorViejo << "' no existe en el arbol.\n";
+        return;
+    }
+
+    // Antes de editar, revisa si el nuevo valor ya existe
+    Nodo* nodoDuplicado = buscarNodo(raiz, valorNuevo);
+    if (nodoDuplicado != nullptr) {
+        cout << "⚠️  Ya existe el nodo '" << valorNuevo << "'.\n";
+        return;
+    }
+
+    // Editar valor
+    nodoEditar->info = valorNuevo;
+    cout << "+x El nodo '" << valorViejo << "' ha sido actualizado a '" << valorNuevo << "' x+" << endl;
+}
 
 
 /* =========================||
@@ -240,7 +264,7 @@ void visualizarArbol(Nodo* root) {
     ofstream fp("arbolW.txt");
 
     if (!fp.is_open()) {
-        cerr << "Error al abrir el archivo arbolW.txt" << endl;
+        cerr << "⚠️  Error al abrir el archivo arbolW.txt" << endl;
         return;
     }
 
@@ -344,6 +368,7 @@ int main() {
                 
                 break;
             }
+
             // 2. ❌ Eliminar nodo.
             case 2: {
                 cout << "Nodos elegibles: [ ";
@@ -359,14 +384,23 @@ int main() {
                 } else {
                     cout << "⚠️  El nodo " << valor << " no existe.\n";   
                 }
+
                 break; 
             }
+
             // 3. ✍️ Modificar nodo.
             case 3: {
+                cout << "Nodos elegibles: [ ";
+                printPreOrden(raiz);
+                cout << " ] > Nodo a editar : ";
+
+                valor = controlINT();
                 
+                editarNodo(raiz, valor);
 
                 break;
             }
+
             // 4. 👁️ Mostrar recorridos del arbol.
             case 4: {
                 cout << "\n[ Recorrido en preorden:   ";
@@ -381,16 +415,21 @@ int main() {
             
                 break;
             }
+
             // 5. 🖨️ Generar grafo.
             case 5:{
                 visualizarArbol(raiz);
+
                 break;
             }
+
             // 6. 🚪🏃 Salir.
             case 6:  {
                 cout << "> Saliendo del programa...\n";
+
                 break;
             }
+            
             default:{
                 cout << "⚠️  Opcion no valida. Intente de nuevo .\n";
             }
