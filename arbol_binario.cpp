@@ -1,6 +1,7 @@
 #include <limits>
 #include <fstream>
 #include <iostream>
+#include <vector> // Para guardar valores iniciales en lista
 
 using namespace std;
 
@@ -53,12 +54,55 @@ int controlINT() {
 }
 
 
+// Busca un valor en el arbol y devuelve un puntero al nodo si existe, nullptr si no
+Nodo* buscarNodo(Nodo* nodo, int valor) {
+    if (nodo == nullptr){
+        return nullptr;
+    }
+
+    if (nodo->info == valor){
+        return nodo;
+    } 
+
+    Nodo* encontrado = buscarNodo(nodo->izquierda, valor);
+
+    if (encontrado != nullptr){
+        return encontrado;
+    }
+    
+    return buscarNodo(nodo->derecha, valor);
+}
+
+
+
 // Funcion recursiva para construir el arbol manualmente
-void crearArbol(Nodo* &apnodo) {
+void crearArbol(Nodo* &apnodo, vector<int>& lista) {
     if (apnodo == nullptr) {
         int valor;
-        cout << "\n> Ingrese valor para el nodo : ";
-        valor = controlINT();
+        bool existe;
+
+        // Checkeo para que no se repitan valores al inicio
+        while (true) {
+            cout << "\n> Ingrese valor para el nodo: ";
+            valor = controlINT();
+
+            // Comprobar si ya existe valor en la lista
+            existe = false;
+            for (int valorNodo : lista) {
+                if (valorNodo == valor) {
+                    existe = true;
+                    break;
+                }
+            }
+
+            if (existe == true) {
+                cout << "⚠️  El nodo " << valor << " ya existe, intente nuevamente.\n";
+            } else {
+                lista.push_back(valor); // guardar valor
+                break;
+            }
+        }
+
         apnodo = crearNodo(valor);
     }
 
@@ -69,7 +113,7 @@ void crearArbol(Nodo* &apnodo) {
     resp = userDecision();
     if (resp == 's') {
         apnodo->izquierda = nullptr; // inicializar
-        crearArbol(apnodo->izquierda); // llamada recursiva
+        crearArbol(apnodo->izquierda, lista); // llamada recursiva
     } else {
         apnodo->izquierda = nullptr;
     }
@@ -79,35 +123,13 @@ void crearArbol(Nodo* &apnodo) {
     resp = userDecision();
     if (resp == 's') {
         apnodo->derecha = nullptr;
-        crearArbol(apnodo->derecha); // llamada recursiva
+        crearArbol(apnodo->derecha, lista); // llamada recursiva
     } else {
         apnodo->derecha = nullptr;
     }
 }
 
-// Revisa si el valor que el usuario ingresa ya existe en el arbol o no
-bool existeEnArbol(Nodo* nodo, int valor) {
-    // Final de rama sin encontrar valor 
-    if (nodo == nullptr) {
-        return false;
-    }
 
-    // Nodo actual coincide con valor
-    if (nodo->info == valor) {
-        return true;
-    }
-
-    bool existeIzq = existeEnArbol(nodo->izquierda, valor); // Recorrer el subarbol izquierdo
-    bool existeDer = existeEnArbol(nodo->derecha, valor); // Recorrer el subarbol derecho
-
-    if (existeIzq || existeDer) {
-        // Encontrado en algun subarbol
-        return true;
-    } else {
-        // No encontrado
-        return false;
-    }
-}
 
 
 // Ediciones del Arbol...
@@ -252,10 +274,11 @@ int menu() {
 int main() {
     Nodo* raiz = nullptr;
     int opcion, valor;
+    vector<int> valoresIniciales;
 
     // Primero hace que el usuario construya el arbol
     cout << "──{ Construccion interactiva del arbol binario }──\n";
-    crearArbol(raiz);
+    crearArbol(raiz, valoresIniciales);
 
     // Para despues trabajar con el:
     
@@ -265,54 +288,56 @@ int main() {
 
         switch (opcion) {
             // 1. ⭕ Insertar nuevo nodo.
-            case 1: 
+            case 1: {
                 cout << "\n> Valor para el nodo nuevo : ";
                 valor = controlINT();
                 // Revisa primero si es que valor ya existe
-                if (existeEnArbol(raiz, valor)) {
+                Nodo* nodoEncontrado = buscarNodo(raiz, valor);
+                if (nodoEncontrado != nullptr) {
                     // Si es que existe, avisa y vuelve al menu
                     cout << "⚠️  El nodo " << valor << " ya existe en el arbol.\n";
                     break;
                 } // Si no existe, lo inserta
                 insertarEnArbol(raiz, valor);
                 break;
-
+            }
             // 2. ❌ Eliminar nodo.
-            case 2: 
+            case 2: {
             
                 break; 
-
+            }
             // 3. ✍️ Modificar nodo.
-            case 3: 
+            case 3: {
 
                 break;
-
+            }
             // 4. 👁️ Mostrar recorridos del arbol.
-            case 4: 
+            case 4: {
                 cout << "\n[ Recorrido en preorden: ";
                 printPreOrden(raiz);
 
-                cout << "]\n[ Recorrido en inorden: ";
+                cout << "\t]\n[ Recorrido en inorden: ";
                 printInOrden(raiz);
 
-                cout << "]\n[ Recorrido en postorden: ";
+                cout << "\t]\n[ Recorrido en postorden: ";
                 printPostOrden(raiz);
-                cout << "]" << endl;
+                cout << "\t]" << endl;
             
                 break;
-
+            }
             // 5. 🖨️ Generar grafo.
-            case 5:
+            case 5:{
                 visualizarArbol(raiz);
                 break;
-
+            }
             // 6. 🚪🏃 Salir.
-            case 6:  
+            case 6:  {
                 cout << "> Saliendo del programa...\n";
                 break;
-
-            default:
+            }
+            default:{
                 cout << "⚠️  Opcion no valida. Intente de nuevo .\n";
+            }
         }
     } 
 
