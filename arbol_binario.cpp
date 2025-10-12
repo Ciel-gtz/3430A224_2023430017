@@ -24,13 +24,13 @@ Nodo* crearNodo(const int data) {
 /* =========================||
 Controles de entrada para evadir errores...*/
 // Usuario debe escribir char
-char userDecision(){ // from: https://stackoverflow.com/questions/43972500/how-to-only-accept-y-or-n-in-users-input-in-c
+char userDecision(){
     char userAnswer;
     do {
         cout << "! [s/n] : ";
         cin >> userAnswer;
         cin.ignore(numeric_limits<streamsize>::max(), '\n');
-        userAnswer = (char)tolower(userAnswer); // from: https://www.geeksforgeeks.org/cpp/tolower-function-in-cpp/
+        userAnswer = (char)tolower(userAnswer);
     } 
     while( !cin.fail() && userAnswer!='s' && userAnswer!='n' );
 
@@ -158,6 +158,10 @@ void insertarNodo(Nodo* &apnodo, int infor) {
 
 // Eliminar en Arbol
 void eliminarNodo(Nodo* &apnodo, int valor) {
+    if (apnodo == nullptr) { // Parar recursion en null branches
+        return;
+    }
+
     // Buscar el nodo recursivamente
     if (valor < apnodo->info) {
         eliminarNodo(apnodo->izquierda, valor);
@@ -204,26 +208,28 @@ void eliminarNodo(Nodo* &apnodo, int valor) {
 
 // Editar en Arbol
 void editarNodo(Nodo* raiz, int valorViejo) {
-    int valorNuevo;
-    cout << "> Nuevo valor para el nodo '" << valorViejo << "' : ";
-    valorNuevo = controlINT();
-
-    // Buscar el nodo con el valor viejo
+    // Primero revisa si valorViejo siquiera existe
     Nodo* nodoEditar = buscarNodo(raiz, valorViejo);
 
+    // Si no existe: avisa y se cancela la operacion
     if (nodoEditar == nullptr) {
         cout << "⚠️  El nodo '" << valorViejo << "' no existe en el arbol.\n";
         return;
     }
 
-    // Antes de editar, revisa si el nuevo valor ya existe
+    // Si existe: se pide nuevo valor
+    int valorNuevo;
+    cout << "> Nuevo valor para el nodo '" << valorViejo << "' : ";
+    valorNuevo = controlINT();
+
+    // Pero si el valor nuevo ya existe, se cancela la operacion
     Nodo* nodoDuplicado = buscarNodo(raiz, valorNuevo);
     if (nodoDuplicado != nullptr) {
         cout << "⚠️  Ya existe el nodo '" << valorNuevo << "'.\n";
         return;
     }
 
-    // Editar valor
+    // Si no, entonces se modifica
     nodoEditar->info = valorNuevo;
     cout << "+x El nodo '" << valorViejo << "' ha sido actualizado a '" << valorNuevo << "' x+" << endl;
 }
@@ -234,7 +240,7 @@ Sobre el grafo...*/
 // Recorrer el arbol en preorden y escribir en el archivo
 void recorrer(Nodo* nodo, ofstream& fp) {
     if (nodo != nullptr) {
-        string nodoID = "_" + to_string(nodo->info); // sin _ me salen errores, con . tmb salen errores
+        string nodoID = "_" + to_string(nodo->info);
 
         if (nodo->izquierda != nullptr) {
             fp << nodoID << "->_" << nodo->izquierda->info << ";" << endl;
@@ -260,16 +266,19 @@ void recorrer(Nodo* nodo, ofstream& fp) {
 }
 
 // Generar y mostrar la visualizacion del Arbol
-void visualizarArbol(Nodo* root) {
-    ofstream fp("arbolW.txt");
+void visualizarArbol(Nodo* root, string nombreArchivo) {
+    string nombreTXT = nombreArchivo + ".txt";
+    string nombrePNG = nombreArchivo + ".png";
+   
+    ofstream fp(nombreTXT);
 
     if (!fp.is_open()) {
-        cerr << "⚠️  Error al abrir el archivo arbolW.txt" << endl;
+        cerr << "⚠️  Error al abrir el archivo " << nombreTXT << endl;
         return;
     }
 
     fp << "digraph G {\n";
-    fp << "node [style=filled fillcolor=\"#47e388ff\"];\n";
+    fp << "node [style=filled fillcolor=\"#b56cc3ff\"];\n";
 
     recorrer(root, fp);
 
@@ -277,8 +286,10 @@ void visualizarArbol(Nodo* root) {
 
     fp.close();
 
-    system("dot -Tpng -o arbolW.png arbolW.txt");
-    system("eog arbolW.png");
+    string comando = "dot -Tpng -o " + nombrePNG + " " + nombreTXT;
+    string abrir = "eog " + nombrePNG;
+    system(comando.c_str());
+    system(abrir.c_str());
 }
 
 
@@ -321,8 +332,8 @@ int menu() {
     int opcion = 0;
     cout << "\n\n++++++++++++\nMenu\n";
     cout << "1. ⭕ Insertar nuevo nodo.\n"; 
-    cout << "2. ❌ Eliminar nodo.\n"; // NOTYET : eliminar num buscado (recorrer -> eliminar)
-    cout << "3. ✍️  Modificar nodo.\n"; // NOTYET : modificar num buscado (recorrer -> eliminar)
+    cout << "2. ❌ Eliminar nodo.\n";
+    cout << "3. ✍️  Modificar nodo.\n";
     cout << "4. 👁️  Mostrar recorridos del arbol.\n";
     cout << "5. 🖨️  Generar grafo.\n";
     cout << "6. 🚪🏃 Salir.\n++++++++++++\n\n";
@@ -338,6 +349,7 @@ int menu() {
 int main() {
     Nodo* raiz = nullptr;
     int opcion, valor;
+    string nombre;
     vector<int> valoresIniciales;
 
     // Primero hace que el usuario construya el arbol
@@ -385,6 +397,10 @@ int main() {
                     cout << "⚠️  El nodo " << valor << " no existe.\n";   
                 }
 
+                cout << "Arbol actual: [ ";
+                printPreOrden(raiz);
+                cout << " ]" << endl;
+
                 break; 
             }
 
@@ -396,7 +412,7 @@ int main() {
 
                 valor = controlINT();
                 
-                editarNodo(raiz, valor);
+                editarNodo(raiz, valor);             
 
                 break;
             }
@@ -406,19 +422,21 @@ int main() {
                 cout << "\n[ Recorrido en preorden:   ";
                 printPreOrden(raiz);
 
-                cout << "\t]\n[ Recorrido en inorden:   ";
+                cout << " ]\n[ Recorrido en inorden:   ";
                 printInOrden(raiz);
 
-                cout << "\t]\n[ Recorrido en postorden:   ";
+                cout << " ]\n[ Recorrido en postorden:   ";
                 printPostOrden(raiz);
-                cout << "\t]" << endl;
+                cout << " ]" << endl;
             
                 break;
             }
 
             // 5. 🖨️ Generar grafo.
             case 5:{
-                visualizarArbol(raiz);
+                cout << "> Nombre de los archivos? (.png y .txt): ";
+                cin >> nombre; 
+                visualizarArbol(raiz, nombre);
 
                 break;
             }
