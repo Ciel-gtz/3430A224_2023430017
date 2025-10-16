@@ -6,9 +6,9 @@
 using namespace std;
 
 struct Nodo {
-    int info;
     Nodo* izquierda;
     Nodo* derecha;
+    int info, FE;
 };
 
 // Crear un nuevo nodo
@@ -235,112 +235,93 @@ void editarNodo(Nodo* raiz, int valorViejo) {
 }
 
 
+
+
+
+
+
 /* =========================||
-Sobre el grafo...*/
-// Recorrer el arbol en preorden y escribir en el archivo
-void recorrer(Nodo* nodo, ofstream& fp) {
+Para la generacion del grafo...*/
+// Recorrido preorden para generar el grafo
+void preOrden(Nodo* nodo, ofstream& fp) {
     if (nodo != nullptr) {
-        string nodoID = "_" + to_string(nodo->info);
+        if (nodo->izquierda != nullptr)
+            fp << nodo->info << " -> " << nodo->izquierda->info << ";\n";
+        else
+            fp << nodo->info << " -> " << "\"" << nodo->info << "i" << "\""<< " [shape=point];\n";
+        if (nodo->derecha != nullptr)
+            fp << nodo->info << " -> " << nodo->derecha->info << ";\n";
+        else
+            fp << nodo->info << " -> " << "\"" << nodo->info << "d" << "\""<< " [shape=point];\n";
 
-        if (nodo->izquierda != nullptr) {
-            fp << nodoID << "->_" << nodo->izquierda->info << ";" << endl;
-        } else {
-            string cadena = nodoID + "i";
-            fp << cadena << "[shape=point];" << endl;
-            fp << nodoID << "->" << cadena << ";" << endl;
-        }
-
-        if (nodo->derecha != nullptr) {
-            fp << nodoID << "->_" << nodo->derecha->info << ";" << endl;
-        } else {
-            string cadena = nodoID + "d";
-            fp << cadena << "[shape=point];" << endl;
-            fp << nodoID << "->" << cadena << ";" << endl;
-        }
-
-        recorrer(nodo->izquierda, fp);
-        recorrer(nodo->derecha, fp);
-    } else {
-        return;
+        preOrden(nodo->izquierda, fp);
+        preOrden(nodo->derecha, fp);
     }
 }
 
-// Generar y mostrar la visualizacion del Arbol
-void visualizarArbol(Nodo* root, string nombreArchivo) {
+// Generar grafo con Graphviz (.png y .txt) 
+void GenerarGrafo(Nodo* ArbolInt, string nombreArchivo) {
     string nombreTXT = nombreArchivo + ".txt";
     string nombrePNG = nombreArchivo + ".png";
-   
+
+    if (!ArbolInt) return;
     ofstream fp(nombreTXT);
-
-    if (!fp.is_open()) {
-        cerr << "⚠️  Error al abrir el archivo " << nombreTXT << endl;
-        return;
-    }
-
     fp << "digraph G {\n";
-    fp << "node [style=filled fillcolor=\"#b56cc3ff\"];\n";
+    fp << "node [style=filled fillcolor=y\"#b56cc3ff\"];\n";
+    fp << "nullraiz [shape=point];\n";
+    fp << "nullraiz -> " << ArbolInt->info << ";\n";
 
-    recorrer(root, fp);
+    preOrden(ArbolInt, fp);
 
     fp << "}" << endl;
 
     fp.close();
 
     string comando = "dot -Tpng -o " + nombrePNG + " " + nombreTXT;
-    string abrir = "eog " + nombrePNG;
+
     system(comando.c_str());
-    system(abrir.c_str());
+
 }
 
 
-/* =========================||
-Funciones recursivas para imprimir el arbol...*/
-// En Preorden
-void printPreOrden(Nodo* Nodo) {
-    if (Nodo == nullptr) {
-        return;
-    }
-    cout << Nodo->info << " ";   // Imprimir el dato del nodo actual
-    printPreOrden(Nodo->izquierda);   // Recorrer el subarbol izquierdo
-    printPreOrden(Nodo->derecha);  // Recorrer el subarbol derecho
-}
 
-// En Inorden
-void printInOrden(Nodo* Nodo) {
-    if (Nodo == nullptr) {
-        return;
-    }
-    printInOrden(Nodo->izquierda);    // Recorrer el subarbol izquierdo
-    cout << Nodo->info << " ";    // Imprimir el dato del nodo actual
-    printInOrden(Nodo->derecha);   // Recorrer el subarbol derecho
-}
+/*
+Funciones GO minimal.cs max 12 terminos, insertado via terminal
+(int argc, char ** arg
 
-// En Postorden
-void printPostOrden(Nodo* Nodo) {
-    if (Nodo == nullptr) {
-        return;
-    }
-    printPostOrden(Nodo->izquierda);   // Recorrer el subarbol izquierdo
-    printPostOrden(Nodo->derecha);  // Recorrer el subarbol derecho
-    cout << Nodo->info << " ";    // Imprimir el dato del nodo actual
-}
+que menu sea el de AVL.cpp
+
+
+por cada nodo insertado debe considerar GO, Function, Score, permitiendo mantener la estructura del AVL, a traves de los FE vistos en clases{
+que FE sea menor o igual a +- 1}
+
+- crear arbol terminos GO
+- insertar termino GO nuevo 
+-buscar termino GO
+- genera grafoYES!
+
+*/
+
+
+
+
+
 
 
 /* =========================||*/
 // Menu de opciones
 int menu() {
-    int opcion = 0;
+    int opcion;
     cout << "\n\n++++++++++++\nMenu\n";
-    cout << "1. ⭕ Insertar nuevo nodo.\n"; 
-    cout << "2. ❌ Eliminar nodo.\n";
-    cout << "3. ✍️  Modificar nodo.\n";
-    cout << "4. 👁️  Mostrar recorridos del arbol.\n";
-    cout << "5. 🖨️  Generar grafo.\n";
-    cout << "6. 🚪🏃 Salir.\n++++++++++++\n\n";
+    cout << "1. ⭕ Insertar dato.\n"; 
+    cout << "2. 👁️ Buscar dato.\n";
+    cout << "3. ❌  Eliminar dato.\n";
+    cout << "4. 🖨️  Generar grafo.\n";
+    cout << "5. 🚪🏃 Salir.\n++++++++++++\n\n";
     cout << "> Seleccione una opcion: ";
     opcion = controlINT();
-    while (opcion < 1 || opcion > 6) {
-        cout << "\t⚠️  [Debe elegir una opcion valida (1-6)] : ";
+    while (opcion < 1 || opcion > 5) {
+        cout << "\t⚠️  [Debe elegir una opcion valida (1-5)] : ";
         opcion = controlINT();
     }
     return opcion;
@@ -350,20 +331,19 @@ int main() {
     Nodo* raiz = nullptr;
     int opcion, valor;
     string nombre;
-    vector<int> valoresIniciales;
-
-    // Primero hace que el usuario construya el arbol
-    cout << "──{ Construccion interactiva del arbol binario }──\n";
-    crearArbol(raiz, valoresIniciales);
+    
+    // Primero inserta lo que puso el usuario via terminal NOTYET
+    cout << "──{ Construccion de un arbol balanceado AVL }──\n";
 
     // Para despues trabajar con este arbol inicial:
-    while (opcion != 6) {
+    while (opcion != 5) {
 
         opcion = menu();
 
         switch (opcion) {
-            // 1. ⭕ Insertar nuevo nodo.
+            // 1. ⭕ Insertar dato.
             case 1: {
+                /*
                 cout << "\n> Valor para el nodo nuevo : ";
                 valor = controlINT();
 
@@ -377,12 +357,20 @@ int main() {
                 
                 // Si no existe, lo inserta
                 insertarNodo(raiz, valor);
-                
+                */
+
                 break;
             }
 
-            // 2. ❌ Eliminar nodo.
+            // 2. 👁️ Buscar dato.
             case 2: {
+                
+                break; 
+            }
+
+            // 3. ❌  Eliminar dato.
+            case 3: {       
+                /*
                 cout << "Nodos elegibles: [ ";
                 printPreOrden(raiz);
                 cout << " ] > Nodo a eliminar : ";
@@ -400,54 +388,25 @@ int main() {
                 cout << "Arbol actual: [ ";
                 printPreOrden(raiz);
                 cout << " ]" << endl;
-
-                break; 
-            }
-
-            // 3. ✍️ Modificar nodo.
-            case 3: {
-                cout << "Nodos elegibles: [ ";
-                printPreOrden(raiz);
-                cout << " ] > Nodo a editar : ";
-
-                valor = controlINT();
-                
-                editarNodo(raiz, valor);             
+                */
 
                 break;
             }
-
-            // 4. 👁️ Mostrar recorridos del arbol.
+            // 4. 🖨️  Generar grafo.
             case 4: {
-                cout << "\n[ Recorrido en preorden:   ";
-                printPreOrden(raiz);
-
-                cout << " ]\n[ Recorrido en inorden:   ";
-                printInOrden(raiz);
-
-                cout << " ]\n[ Recorrido en postorden:   ";
-                printPostOrden(raiz);
-                cout << " ]" << endl;
+                cout << "> Ingrese un nombre para los archivos .png y .txt: ";
+                cin >> nombre; 
+                GenerarGrafo(raiz, nombre);
             
                 break;
             }
-
-            // 5. 🖨️ Generar grafo.
-            case 5:{
-                cout << "> Nombre de los archivos? (.png y .txt): ";
-                cin >> nombre; 
-                visualizarArbol(raiz, nombre);
-
-                break;
-            }
-
-            // 6. 🚪🏃 Salir.
-            case 6:  {
+            // 5. 🚪🏃 Salir.
+            case 5:  {
                 cout << "> Saliendo del programa...\n";
 
                 break;
             }
-            
+            // Err
             default:{
                 cout << "⚠️  Opcion no valida. Intente de nuevo .\n";
             }
