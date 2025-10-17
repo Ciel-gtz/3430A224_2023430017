@@ -1,6 +1,7 @@
 #include <limits>
 #include <vector> // Para guardar valores iniciales en lista
 #include <fstream>
+#include <sstream>
 #include <iostream>
 
 using namespace std;
@@ -9,11 +10,13 @@ using namespace std;
 typedef struct Nodo {
     Nodo* izquierda;
     Nodo* derecha;
-    int info, FE;
+    int FE, info, GO; // maybe del or change info bc idk what that would b anymor
+    string function;
+    float score;
 } Nodo;
 
-/* =========================||
-Controles de entrada para evadir errores...*/
+
+/* =========================|| Controles de entrada para evadir errores...*/
 // Usuario debe escribir char
 char userDecision(){
     char userAnswer;
@@ -45,17 +48,16 @@ int controlINT() {
 }
 
 
-/* =========================||
-Sobre el arbol...*/
+/* =========================|| Sobre el arbol...*/
 // Insercion balanceada AVL
-void InsercionBalanceado(Nodo** nodocabeza, bool* BO, int infor) {
+void insercionBalanceado(Nodo** nodocabeza, bool* BO, int infor) {
     Nodo* nodo = *nodocabeza;
     Nodo* nodo1;
     Nodo* nodo2;
 
     if (nodo != nullptr) {
         if (infor < nodo->info) {
-            InsercionBalanceado(&(nodo->izquierda), BO, infor);
+            insercionBalanceado(&(nodo->izquierda), BO, infor);
             if (*BO) {
                 switch (nodo->FE) {
                     case 1:
@@ -96,7 +98,7 @@ void InsercionBalanceado(Nodo** nodocabeza, bool* BO, int infor) {
                 }
             }
         } else if (infor > nodo->info) {
-            InsercionBalanceado(&(nodo->derecha), BO, infor);
+            insercionBalanceado(&(nodo->derecha), BO, infor);
             if (*BO) {
                 switch (nodo->FE) {
                     case -1:
@@ -138,12 +140,13 @@ void InsercionBalanceado(Nodo** nodocabeza, bool* BO, int infor) {
                 }
             }
         } else {
-            cout << "El nodo ya se encuentra en el árbol\n";
+            cout << "⚠️  El nodo ya se encuentra en el arbol.\n";
         }
     } else {
         nodo = new Nodo();
         nodo->izquierda = nullptr;
         nodo->derecha = nullptr;
+        // Add info**********************
         nodo->info = infor;
         nodo->FE = 0;
         *BO = true;
@@ -153,21 +156,20 @@ void InsercionBalanceado(Nodo** nodocabeza, bool* BO, int infor) {
 }
 
 // Busca un valor en el arbol
-void Busqueda(Nodo* nodo, int infor) {
+bool Busqueda(Nodo* nodo, int infor) {
     if (nodo != nullptr) {
         if (infor < nodo->info)
             Busqueda(nodo->izquierda, infor);
         else if (infor > nodo->info)
             Busqueda(nodo->derecha, infor);
         else
-            cout << "El nodo SÍ se encuentra en el árbol\n";
-    } else {
-        cout << "El nodo NO se encuentra en el árbol\n";
-    }
+            return true; // El nodo SI se encuentra en el arbol
+    } 
+    return false; // El nodo NO se encuentra en el arbol
 }
 
-/* =========================||
-Reestructuraciones...*/
+
+/* =========================|| Reestructuraciones...*/
 void Restructura1(Nodo** nodocabeza, bool* BO) {
     Nodo *nodo, *nodo1, *nodo2;
     nodo = *nodocabeza;
@@ -275,10 +277,7 @@ void Restructura2(Nodo** nodocabeza, bool* BO) {
 }
 
 
-
-
-/* =========================||
-Ediciones en Arbol...*/
+/* =========================|| Ediciones en Arbol...*/
 // Eliminar en Arbol
 void Borra(Nodo** aux1, Nodo** otro1, bool* BO) {
     Nodo *aux, *otro;
@@ -328,8 +327,8 @@ void EliminacionBalanceado(Nodo** nodocabeza, bool* BO, int infor) {
     *nodocabeza = nodo;
 }
 
-/* =========================||
-Para la generacion del grafo...*/
+
+/* =========================|| Para la generacion del grafo...*/
 // Recorrido preorden para generar el grafo
 void preOrden(Nodo* nodo, ofstream& fp) {
     if (nodo != nullptr) {
@@ -365,38 +364,17 @@ void GenerarGrafo(Nodo* ArbolInt, string nombreTXT, string nombrePNG) {
     string comando = "dot -Tpng -o " + nombrePNG + " " + nombreTXT;
 
     system(comando.c_str());
-
 }
 
 
-
-/*
-Funciones GO minimal.cs max 12 terminos, insertado via terminal
-(int argc, char ** arg
-
-que menu sea el de AVL.cpp
-
-
-por cada nodo insertado debe considerar GO, Function, Score, permitiendo mantener la estructura del AVL, a traves de los FE vistos en clases{
-que FE sea menor o igual a +- 1}
-
-- crear arbol terminos GO
-- insertar termino GO nuevo 
--buscar termino GO
-- genera grafoYES!
-
-*/
-
-
-/* =========================||*/
-// Menu de opciones
+/* =========================|| Menu de opciones */
 int menu() {
     int opcion;
     cout << "\n\n++++++++++++\nMenu\n";
     cout << "1. ⭕ Insertar dato.\n"; 
     cout << "2. 👁️  Buscar dato.\n";
     cout << "3. ❌ Eliminar dato.\n";
-    cout << "4. 🖨️  Generar grafo o guardar grafo en otro archivo.\n";
+    cout << "4. 🖨️  Generar + mostrar grafo o guardar grafo en otro archivo.\n";
     cout << "5. 🚪🏃 Salir.\n++++++++++++\n\n";
     cout << "> Seleccione una opcion: ";
     opcion = controlINT();
@@ -407,34 +385,50 @@ int menu() {
     return opcion;
 }
 
+
+/* =========================|| Main */
 int main(int argc, char* argv[]) {
+    /* Variables iniciales */
     Nodo* raiz = nullptr;
-    int opcion, valor, elemento;
-    string nombre, archivoGO, line;
+    int opcion, elemento, location, GO;
+    float score;
+    string nombre, fileGO, line, function, temp_score_GO, temp_GO, _;
     bool inicio;
     
-    //
-    // Se lee el archivo que el usuario ingrese
+
+    /* ===== > Esta seccion es para leer el archivo */
     if (argc < 2) {
         // Si no se ingresa archivo, se avisa y se sale
         cerr << "⚠️  Utilice: ./arbol_AVL <ruta_archivo_GO.csv>" << endl;
-        return 1; // Se retorna 1 para indicar error
-    }
-
-    archivoGO = argv[1];
-    ifstream file_GO(archivoGO);
-
-    if (!file_GO) {
-        cerr << "⚠️  No se pudo abrir el archivo: " << archivoGO << endl;
         return 1;
     }
 
-    while (getline(file_GO, line)) {
+    fileGO = argv[1];
+    ifstream file_csv(fileGO);
 
+    if (!file_csv) {
+        cerr << "⚠️  No se pudo abrir el archivo: " << fileGO << endl;
+        return 1;
+    }
+    
+    getline(file_csv, line); // Salta el header
+
+    while (getline(file_csv, line)) {
+        stringstream ss(line);
+        getline(ss, _, ':'); // salta 'GO:' de csv
+        getline(ss, temp_GO, ';');
+        getline(ss, function, ';'); // function es 'Function' del csv
+        getline(ss, temp_score_GO, ';');
+        
+        GO = stof(temp_GO); // GO es 'GO' del csv
+        score = stof(temp_score_GO); // score es 'Score' del csv
     }
 
+    // Y se cierra el archivo
+    file_csv.close();
 
-    // Primero inserta lo que puso el usuario via terminal NOTYET
+
+    /* ===== > Pide nombre de archivo para ir guardando */
     cout << "──{ Construccion de un arbol balanceado AVL }──\n";
 
     cout << "\n> Ingrese un nombre para los archivos .png y .txt del grafo que va a crear : ";
@@ -443,8 +437,9 @@ int main(int argc, char* argv[]) {
     string nombreTXT = nombre + ".txt";
     string nombrePNG = nombre + ".png";
 
-    // Para despues trabajar con este arbol inicial:
-    while (opcion != 5) { 
+
+    /* ===== > Desarrollo de las opciones presentes en el menu */
+    while (opcion) { 
         
         opcion = menu();
 
@@ -454,7 +449,7 @@ int main(int argc, char* argv[]) {
                 cout << "Ingresar elemento: ";
                 cin >> elemento;
                 inicio = false;
-                InsercionBalanceado(&raiz, &inicio, elemento);
+                insercionBalanceado(&raiz, &inicio, elemento);
                 GenerarGrafo(raiz, nombreTXT, nombrePNG);
 
                 break;
@@ -475,35 +470,40 @@ int main(int argc, char* argv[]) {
                 cout << "Eliminar elemento: ";
                 cin >> elemento;
                 inicio = false;
+
                 EliminacionBalanceado(&raiz, &inicio, elemento);
                 GenerarGrafo(raiz, nombreTXT, nombrePNG);
 
                 break;
             }
-            // 4. 🖨️  Generar grafo.
+
+            // 4. 🖨️  Generar + mostrar grafo o guardar grafo en otro archivo.
             case 4: {
-                // Pregunta en caso de que se quieran guardar más grafos
+                // Pregunta en caso de que se quiera guardar el grafo en otro archivo
                 cout << "> ¿Desea crear otro archivo en vez de '" << nombre << "'? : ";
                 if (userDecision() == 's') {
                     cout << "> Ingrese un nombre para los archivos .png y .txt del grafo nuevo: ";
                     cin >> nombre;
                 }
+
                 string nombreTXT = nombre + ".txt";
                 string nombrePNG = nombre + ".png";
 
-                GenerarGrafo(raiz, nombreTXT, nombrePNG);
-                
                 string abrir = "eog " + nombrePNG;
+
+                GenerarGrafo(raiz, nombreTXT, nombrePNG);
                 system(abrir.c_str());
             
                 break;
             }
+
             // 5. 🚪🏃 Salir.
             case 5:  {
                 system("clear");
 
                 break;
             }
+
             // Err
             default:{
                 cout << "⚠️  Opcion no valida. Intente de nuevo .\n";
