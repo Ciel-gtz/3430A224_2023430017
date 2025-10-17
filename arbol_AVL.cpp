@@ -5,21 +5,12 @@
 
 using namespace std;
 
-struct Nodo {
+/* estructura del nodo */
+typedef struct Nodo {
     Nodo* izquierda;
     Nodo* derecha;
     int info, FE;
-};
-
-// Crear un nuevo nodo
-Nodo* crearNodo(const int data) {
-    Nodo* newNode = new Nodo;
-    newNode->info = data;
-    newNode->izquierda = nullptr;
-    newNode->derecha = nullptr;
-    return newNode;
-}
-
+} Nodo;
 
 /* =========================||
 Controles de entrada para evadir errores...*/
@@ -56,189 +47,286 @@ int controlINT() {
 
 /* =========================||
 Sobre el arbol...*/
-// Funcion recursiva para construir el arbol manualmente
-void crearArbol(Nodo* &apnodo, vector<int>& lista) {
-    if (apnodo == nullptr) {
-        int valor;
-        bool existe;
+// Insercion balanceada AVL
+void InsercionBalanceado(Nodo** nodocabeza, bool* BO, int infor) {
+    Nodo* nodo = *nodocabeza;
+    Nodo* nodo1;
+    Nodo* nodo2;
 
-        // Checkeo para que no se repitan valores al inicio
-        while (true) {
-            cout << "\n> Ingrese valor para el nodo: ";
-            valor = controlINT();
+    if (nodo != nullptr) {
+        if (infor < nodo->info) {
+            InsercionBalanceado(&(nodo->izquierda), BO, infor);
+            if (*BO) {
+                switch (nodo->FE) {
+                    case 1:
+                        nodo->FE = 0;
+                        *BO = false;
+                        break;
+                    case 0:
+                        nodo->FE = -1;
+                        break;
+                    case -1:
+                        nodo1 = nodo->izquierda;
+                        if (nodo1->FE <= 0) { // Rotación II
+                            nodo->izquierda = nodo1->derecha;
+                            nodo1->derecha = nodo;
+                            nodo->FE = 0;
+                            nodo = nodo1;
+                        } else { // Rotación ID
+                            nodo2 = nodo1->derecha;
+                            nodo->izquierda = nodo2->derecha;
+                            nodo2->derecha = nodo;
+                            nodo1->derecha = nodo2->izquierda;
+                            nodo2->izquierda = nodo1;
 
-            // Comprobar si ya existe valor en la lista
-            existe = false;
-            for (int valorNodo : lista) {
-                if (valorNodo == valor) {
-                    existe = true;
-                    break;
+                            if (nodo2->FE == -1)
+                                nodo->FE = 1;
+                            else
+                                nodo->FE = 0;
+
+                            if (nodo2->FE == 1)
+                                nodo1->FE = -1;
+                            else
+                                nodo1->FE = 0;
+                            nodo = nodo2;
+                        }
+                        nodo->FE = 0;
+                        *BO = false;
+                        break;
                 }
             }
-            if (existe == true) {
-                cout << "⚠️  El nodo " << valor << " ya existe, intente nuevamente.\n";
-            } else {
-                lista.push_back(valor); // guardar valor
-                break;
+        } else if (infor > nodo->info) {
+            InsercionBalanceado(&(nodo->derecha), BO, infor);
+            if (*BO) {
+                switch (nodo->FE) {
+                    case -1:
+                        nodo->FE = 0;
+                        *BO = false;
+                        break;
+                    case 0:
+                        nodo->FE = 1;
+                        break;
+                    case 1:
+                        nodo1 = nodo->derecha;
+                        if (nodo1->FE >= 0) { // Rotación DD
+                            nodo->derecha = nodo1->izquierda;
+                            nodo1->izquierda = nodo;
+                            nodo->FE = 0;
+                            nodo = nodo1;
+                        } else { // Rotación DI
+                            nodo2 = nodo1->izquierda;
+                            nodo->derecha = nodo2->izquierda;
+                            nodo2->izquierda = nodo;
+                            nodo1->izquierda = nodo2->derecha;
+                            nodo2->derecha = nodo1;
+
+                            if (nodo2->FE == 1)
+                                nodo->FE = -1;
+                            else
+                                nodo->FE = 0;
+
+                            if (nodo2->FE == -1)
+                                nodo1->FE = 1;
+                            else
+                                nodo1->FE = 0;
+
+                            nodo = nodo2;
+                        }
+                        nodo->FE = 0;
+                        *BO = false;
+                        break;
+                }
             }
+        } else {
+            cout << "El nodo ya se encuentra en el árbol\n";
         }
-        apnodo = crearNodo(valor);
-    }
-
-    char resp;
-    // Preguntar por hijo izquierdo
-    cout << "◀ ¿Existe nodo a la izquierda de " << apnodo->info << "? ";
-    resp = userDecision();
-    apnodo->izquierda = nullptr; // inicializar
-    if (resp == 's') {
-        crearArbol(apnodo->izquierda, lista); // llamada recursiva
-    } 
-
-    // Preguntar por hijo derecho
-    cout << "▶ ¿Existe nodo a la derecha de " << apnodo->info << "? ";
-    resp = userDecision();
-    if (resp == 's') {
-        apnodo->derecha = nullptr;
-        crearArbol(apnodo->derecha, lista); // llamada recursiva
     } else {
-        apnodo->derecha = nullptr;
+        nodo = new Nodo();
+        nodo->izquierda = nullptr;
+        nodo->derecha = nullptr;
+        nodo->info = infor;
+        nodo->FE = 0;
+        *BO = true;
+    }
+
+    *nodocabeza = nodo;
+}
+
+// Busca un valor en el arbol
+void Busqueda(Nodo* nodo, int infor) {
+    if (nodo != nullptr) {
+        if (infor < nodo->info)
+            Busqueda(nodo->izquierda, infor);
+        else if (infor > nodo->info)
+            Busqueda(nodo->derecha, infor);
+        else
+            cout << "El nodo SÍ se encuentra en el árbol\n";
+    } else {
+        cout << "El nodo NO se encuentra en el árbol\n";
     }
 }
 
-// Busca un valor en el arbol y devuelve un puntero al nodo si existe, nullptr si no
-Nodo* buscarNodo(Nodo* nodo, int valor) {
-    if (nodo == nullptr){
-        // No se encuentra valor
-        return nullptr;
+/* =========================||
+Reestructuraciones...*/
+void Restructura1(Nodo** nodocabeza, bool* BO) {
+    Nodo *nodo, *nodo1, *nodo2;
+    nodo = *nodocabeza;
+    if (*BO) {
+        switch (nodo->FE) {
+            case -1:
+                nodo->FE = 0;
+                break;
+            case 0:
+                nodo->FE = 1;
+                *BO = false;
+                break;
+            case 1:
+                nodo1 = nodo->derecha;
+                if (nodo1->FE >= 0) { // Rotación DD
+                    nodo->derecha = nodo1->izquierda;
+                    nodo1->izquierda = nodo;
+                    switch (nodo1->FE) {
+                        case 0:
+                            nodo->FE = 1;
+                            nodo1->FE = -1;
+                            *BO = false;
+                            break;
+                        case 1:
+                            nodo->FE = 0;
+                            nodo1->FE = 0;
+                            *BO = false;
+                            break;
+                    }
+                    nodo = nodo1;
+                } else { // Rotación DI
+                    nodo2 = nodo1->izquierda;
+                    nodo->derecha = nodo2->izquierda;
+                    nodo2->izquierda = nodo;
+                    nodo1->izquierda = nodo2->derecha;
+                    nodo2->derecha = nodo1;
+                    if (nodo2->FE == 1)
+                        nodo->FE = -1;
+                    else
+                        nodo->FE = 0;
+                    if (nodo2->FE == -1)
+                        nodo1->FE = 1;
+                    else
+                        nodo1->FE = 0;
+                    nodo = nodo2;
+                    nodo2->FE = 0;
+                }
+                break;
+        }
     }
-
-    if (nodo->info == valor){
-        // Se encuentra valor -> devuelve puntero
-        return nodo;
-    } 
-
-    // Buscar subarbol izquierdo
-    Nodo* encontrado = buscarNodo(nodo->izquierda, valor);
-
-    if (encontrado != nullptr){
-        // Se encuentra valor izquierdo -> devuelve puntero
-        return encontrado;
-    }
-    
-    // Buscar subarbol derecho
-    return buscarNodo(nodo->derecha, valor);
+    *nodocabeza = nodo;
 }
+
+void Restructura2(Nodo** nodocabeza, bool* BO) {
+    Nodo *nodo, *nodo1, *nodo2;
+    nodo = *nodocabeza;
+    if (*BO) {
+        switch (nodo->FE) {
+            case 1:
+                nodo->FE = 0;
+                break;
+            case 0:
+                nodo->FE = -1;
+                *BO = false;
+                break;
+            case -1:
+                nodo1 = nodo->izquierda;
+                if (nodo1->FE <= 0) { // Rotación II
+                    nodo->izquierda = nodo1->derecha;
+                    nodo1->derecha = nodo;
+                    switch (nodo1->FE) {
+                        case 0:
+                            nodo->FE = -1;
+                            nodo1->FE = 1;
+                            *BO = false;
+                            break;
+                        case -1:
+                            nodo->FE = 0;
+                            nodo1->FE = 0;
+                            *BO = false;
+                            break;
+                    }
+                    nodo = nodo1;
+                } else { // Rotación ID
+                    nodo2 = nodo1->derecha;
+                    nodo->izquierda = nodo2->derecha;
+                    nodo2->derecha = nodo;
+                    nodo1->derecha = nodo2->izquierda;
+                    nodo2->izquierda = nodo1;
+                    if (nodo2->FE == -1)
+                        nodo->FE = 1;
+                    else
+                        nodo->FE = 0;
+                    if (nodo2->FE == 1)
+                        nodo1->FE = -1;
+                    else
+                        nodo1->FE = 0;
+                    nodo = nodo2;
+                    nodo2->FE = 0;
+                }
+                break;
+        }
+    }
+    *nodocabeza = nodo;
+}
+
+
 
 
 /* =========================||
 Ediciones en Arbol...*/
-// Insercion en Arbol
-void insertarNodo(Nodo* &apnodo, int infor) {
-    if (apnodo == nullptr) {
-        // arbol o subarbol vacio, crear nuevo nodo
-        apnodo = crearNodo(infor);
-    } 
-    else if (infor < apnodo->info) {
-        // Ir al subarbol izquierdo
-        if (apnodo->izquierda == nullptr) {
-            apnodo->izquierda = crearNodo(infor);
-        } else {
-            insertarNodo(apnodo->izquierda, infor); // llamada recursiva
-        }
-    } 
-    else if (infor > apnodo->info) {
-        // Ir al subarbol derecho
-        if (apnodo->derecha == nullptr) {
-            apnodo->derecha = crearNodo(infor);
-        } else {
-            insertarNodo(apnodo->derecha, infor); // llamada recursiva
-        }
-    } 
-}
-
 // Eliminar en Arbol
-void eliminarNodo(Nodo* &apnodo, int valor) {
-    if (apnodo == nullptr) { // Parar recursion en null branches
-        return;
+void Borra(Nodo** aux1, Nodo** otro1, bool* BO) {
+    Nodo *aux, *otro;
+    aux = *aux1;
+    otro = *otro1;
+    if (aux->derecha != nullptr) {
+        Borra(&(aux->derecha), &otro, BO);
+        Restructura2(&aux, BO);
+    } else {
+        otro->info = aux->info;
+        aux = aux->izquierda;
+        *BO = true;
     }
+    *aux1 = aux;
+    *otro1 = otro;
+}
 
-    // Buscar el nodo recursivamente
-    if (valor < apnodo->info) {
-        eliminarNodo(apnodo->izquierda, valor);
-    } 
-    else if (valor > apnodo->info) {
-        eliminarNodo(apnodo->derecha, valor);
-    } 
-    else {
-        // Caso 1: Nodo hoja 
-        if (apnodo->izquierda == nullptr && apnodo->derecha == nullptr) { // (No hay nodo a la izquierda ni derecha)
-            delete apnodo;
-            // Se redifine puntero a null
-            apnodo = nullptr;
-        }
-
-        // Caso 2: Un solo hijo 
-        else if (apnodo->izquierda == nullptr) { // (Nodo a la izquierda...
-            Nodo* temp = apnodo;
-            apnodo = apnodo->derecha;
-            delete temp;
-        }
-        else if (apnodo->derecha == nullptr) { //... o derecha)
-            Nodo* temp = apnodo;
-            apnodo = apnodo->izquierda;
-            delete temp;
-        }
-
-        // Caso 3: Dos hijos 
-        else { // (Nodo a la izquierda y derecha)
-            // Se usa el mas a la izquierda del subarbol derecho
-            Nodo* sucesor = apnodo->derecha;
-            while (sucesor->izquierda != nullptr){
-                sucesor = sucesor->izquierda;
+void EliminacionBalanceado(Nodo** nodocabeza, bool* BO, int infor) {
+    Nodo *nodo, *otro;
+    nodo = *nodocabeza;
+    if (nodo != nullptr) {
+        if (infor < nodo->info) {
+            EliminacionBalanceado(&(nodo->izquierda), BO, infor);
+            Restructura1(&nodo, BO);
+        } else if (infor > nodo->info) {
+            EliminacionBalanceado(&(nodo->derecha), BO, infor);
+            Restructura2(&nodo, BO);
+        } else {
+            otro = nodo;
+            if (otro->derecha == nullptr) {
+                nodo = otro->izquierda;
+                *BO = true;
+                delete otro;
+            } else if (otro->izquierda == nullptr) {
+                nodo = otro->derecha;
+                *BO = true;
+                delete otro;
+            } else {
+                Borra(&(otro->izquierda), &otro, BO);
+                Restructura1(&nodo, BO);
+                delete otro;
             }
-            
-            // Copiar valor del sucesor al nodo actual
-            apnodo->info = sucesor->info;
-
-            // Eliminar el nodo duplicado en el subarbol derecho
-            eliminarNodo(apnodo->derecha, sucesor->info);
         }
+    } else {
+        cout << "El nodo NO se encuentra en el arbol\n";
     }
+    *nodocabeza = nodo;
 }
-
-// Editar en Arbol
-void editarNodo(Nodo* raiz, int valorViejo) {
-    // Primero revisa si valorViejo siquiera existe
-    Nodo* nodoEditar = buscarNodo(raiz, valorViejo);
-
-    // Si no existe: avisa y se cancela la operacion
-    if (nodoEditar == nullptr) {
-        cout << "⚠️  El nodo '" << valorViejo << "' no existe en el arbol.\n";
-        return;
-    }
-
-    // Si existe: se pide nuevo valor
-    int valorNuevo;
-    cout << "> Nuevo valor para el nodo '" << valorViejo << "' : ";
-    valorNuevo = controlINT();
-
-    // Pero si el valor nuevo ya existe, se cancela la operacion
-    Nodo* nodoDuplicado = buscarNodo(raiz, valorNuevo);
-    if (nodoDuplicado != nullptr) {
-        cout << "⚠️  Ya existe el nodo '" << valorNuevo << "'.\n";
-        return;
-    }
-
-    // Si no, entonces se modifica
-    nodoEditar->info = valorNuevo;
-    cout << "+x El nodo '" << valorViejo << "' ha sido actualizado a '" << valorNuevo << "' x+" << endl;
-}
-
-
-
-
-
-
 
 /* =========================||
 Para la generacion del grafo...*/
@@ -260,14 +348,11 @@ void preOrden(Nodo* nodo, ofstream& fp) {
 }
 
 // Generar grafo con Graphviz (.png y .txt) 
-void GenerarGrafo(Nodo* ArbolInt, string nombreArchivo) {
-    string nombreTXT = nombreArchivo + ".txt";
-    string nombrePNG = nombreArchivo + ".png";
-
+void GenerarGrafo(Nodo* ArbolInt, string nombreTXT, string nombrePNG) {
     if (!ArbolInt) return;
     ofstream fp(nombreTXT);
     fp << "digraph G {\n";
-    fp << "node [style=filled fillcolor=y\"#b56cc3ff\"];\n";
+    fp << "node [style=filled fillcolor=\"#b56cc3ff\"];\n";
     fp << "nullraiz [shape=point];\n";
     fp << "nullraiz -> " << ArbolInt->info << ";\n";
 
@@ -303,106 +388,119 @@ que FE sea menor o igual a +- 1}
 */
 
 
-
-
-
-
-
 /* =========================||*/
 // Menu de opciones
 int menu() {
     int opcion;
     cout << "\n\n++++++++++++\nMenu\n";
     cout << "1. ⭕ Insertar dato.\n"; 
-    cout << "2. 👁️ Buscar dato.\n";
-    cout << "3. ❌  Eliminar dato.\n";
-    cout << "4. 🖨️  Generar grafo.\n";
+    cout << "2. 👁️  Buscar dato.\n";
+    cout << "3. ❌ Eliminar dato.\n";
+    cout << "4. 🖨️  Generar grafo o guardar grafo en otro archivo.\n";
     cout << "5. 🚪🏃 Salir.\n++++++++++++\n\n";
     cout << "> Seleccione una opcion: ";
     opcion = controlINT();
     while (opcion < 1 || opcion > 5) {
-        cout << "\t⚠️  [Debe elegir una opcion valida (1-5)] : ";
+        cout << "\t⚠️  [Debe elegir una opcion valida (1 - 5)] : ";
         opcion = controlINT();
     }
     return opcion;
 }
 
-int main() {
+int main(int argc, char* argv[]) {
     Nodo* raiz = nullptr;
-    int opcion, valor;
-    string nombre;
+    int opcion, valor, elemento;
+    string nombre, archivoGO, line;
+    bool inicio;
     
+    //
+    // Se lee el archivo que el usuario ingrese
+    if (argc < 2) {
+        // Si no se ingresa archivo, se avisa y se sale
+        cerr << "⚠️  Utilice: ./arbol_AVL <ruta_archivo_GO.csv>" << endl;
+        return 1; // Se retorna 1 para indicar error
+    }
+
+    archivoGO = argv[1];
+    ifstream file_GO(archivoGO);
+
+    if (!file_GO) {
+        cerr << "⚠️  No se pudo abrir el archivo: " << archivoGO << endl;
+        return 1;
+    }
+
+    while (getline(file_GO, line)) {
+
+    }
+
+
     // Primero inserta lo que puso el usuario via terminal NOTYET
     cout << "──{ Construccion de un arbol balanceado AVL }──\n";
 
-    // Para despues trabajar con este arbol inicial:
-    while (opcion != 5) {
+    cout << "\n> Ingrese un nombre para los archivos .png y .txt del grafo que va a crear : ";
+    cin >> nombre; 
 
+    string nombreTXT = nombre + ".txt";
+    string nombrePNG = nombre + ".png";
+
+    // Para despues trabajar con este arbol inicial:
+    while (opcion != 5) { 
+        
         opcion = menu();
 
         switch (opcion) {
             // 1. ⭕ Insertar dato.
             case 1: {
-                /*
-                cout << "\n> Valor para el nodo nuevo : ";
-                valor = controlINT();
-
-                // Revisa primero si es que valor ya existe
-                Nodo* nodoEncontrado = buscarNodo(raiz, valor);
-                if (nodoEncontrado != nullptr) {
-                    // Si es que existe, avisa y vuelve al menu
-                    cout << "⚠️  El nodo " << valor << " ya existe en el arbol.\n";
-                    break;
-                } 
-                
-                // Si no existe, lo inserta
-                insertarNodo(raiz, valor);
-                */
+                cout << "Ingresar elemento: ";
+                cin >> elemento;
+                inicio = false;
+                InsercionBalanceado(&raiz, &inicio, elemento);
+                GenerarGrafo(raiz, nombreTXT, nombrePNG);
 
                 break;
             }
 
             // 2. 👁️ Buscar dato.
             case 2: {
-                
+                // que busque identificador?? idk
+                cout << "Buscar elemento: ";
+                cin >> elemento;
+                Busqueda(raiz, elemento);
+
                 break; 
             }
 
             // 3. ❌  Eliminar dato.
             case 3: {       
-                /*
-                cout << "Nodos elegibles: [ ";
-                printPreOrden(raiz);
-                cout << " ] > Nodo a eliminar : ";
-
-                valor = controlINT();
-                
-                // Revisa primero si es que valor existe
-                Nodo* nodoEncontrado = buscarNodo(raiz, valor);
-                if (nodoEncontrado != nullptr) {
-                    eliminarNodo(raiz, valor);    
-                } else {
-                    cout << "⚠️  El nodo " << valor << " no existe.\n";   
-                }
-
-                cout << "Arbol actual: [ ";
-                printPreOrden(raiz);
-                cout << " ]" << endl;
-                */
+                cout << "Eliminar elemento: ";
+                cin >> elemento;
+                inicio = false;
+                EliminacionBalanceado(&raiz, &inicio, elemento);
+                GenerarGrafo(raiz, nombreTXT, nombrePNG);
 
                 break;
             }
             // 4. 🖨️  Generar grafo.
             case 4: {
-                cout << "> Ingrese un nombre para los archivos .png y .txt: ";
-                cin >> nombre; 
-                GenerarGrafo(raiz, nombre);
+                // Pregunta en caso de que se quieran guardar más grafos
+                cout << "> ¿Desea crear otro archivo en vez de '" << nombre << "'? : ";
+                if (userDecision() == 's') {
+                    cout << "> Ingrese un nombre para los archivos .png y .txt del grafo nuevo: ";
+                    cin >> nombre;
+                }
+                string nombreTXT = nombre + ".txt";
+                string nombrePNG = nombre + ".png";
+
+                GenerarGrafo(raiz, nombreTXT, nombrePNG);
+                
+                string abrir = "eog " + nombrePNG;
+                system(abrir.c_str());
             
                 break;
             }
             // 5. 🚪🏃 Salir.
             case 5:  {
-                cout << "> Saliendo del programa...\n";
+                system("clear");
 
                 break;
             }
@@ -412,6 +510,5 @@ int main() {
             }
         }
     } 
-
-    return 0;
+    return 0;    
 }

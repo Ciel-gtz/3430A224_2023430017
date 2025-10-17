@@ -1,1 +1,2 @@
-en GenerarGrafo  no puse eog porque se me hace mas comodo el abrir el archivo png en visual mientras interactuo con la terminal y asi ir viendo los cambios en vivo
+en GenerarGrafo no puse eog porque se me hace mas comodo el abrir el archivo png en visual mientras interactuo con la terminal y asi ir viendo los cambios en vivo
+opcion default ->Error (dificil que llegue aqui por como ya revisa los vaores en menu(), pero, lo pongo por si acaso)
