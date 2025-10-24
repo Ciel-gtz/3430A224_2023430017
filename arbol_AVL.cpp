@@ -10,9 +10,9 @@ using namespace std;
 typedef struct Nodo {
     Nodo* izquierda;
     Nodo* derecha;
-    int FE, info, GO; // maybe del or change info bc idk what that would b anymor
-    string function;
-    float score;
+    int FE;
+    string function; // Equivalente a Function de archivo GO
+    float score; // Equivalente a Score de archivo GO
 } Nodo;
 
 
@@ -47,17 +47,32 @@ int controlINT() {
     }
 }
 
+// Usuario debe escribir float
+float controlFLOAT() { 
+    float valor;
+    while (true){
+        cin >> valor;
+        if (!cin) {
+        cout << "⚠️  Solo se permiten numeros\n⚠️  Utilice '.' como decimal, no ',': ";
+        cin.clear();
+        cin.ignore(numeric_limits<streamsize>::max(), '\n');
+        continue;
+        } else {
+            return valor;
+        }
+    }
+}
 
 /* =========================|| Sobre el arbol...*/
 // Insercion balanceada AVL
-void insercionBalanceado(Nodo** nodocabeza, bool* BO, int infor) {
+void insercionBalanceado(Nodo** nodocabeza, bool* BO, string function, float score) {
     Nodo* nodo = *nodocabeza;
     Nodo* nodo1;
     Nodo* nodo2;
 
     if (nodo != nullptr) {
-        if (infor < nodo->info) {
-            insercionBalanceado(&(nodo->izquierda), BO, infor);
+        if (score < nodo->score) {
+            insercionBalanceado(&(nodo->izquierda), BO, function, score);
             if (*BO) {
                 switch (nodo->FE) {
                     case 1:
@@ -81,15 +96,8 @@ void insercionBalanceado(Nodo** nodocabeza, bool* BO, int infor) {
                             nodo1->derecha = nodo2->izquierda;
                             nodo2->izquierda = nodo1;
 
-                            if (nodo2->FE == -1)
-                                nodo->FE = 1;
-                            else
-                                nodo->FE = 0;
-
-                            if (nodo2->FE == 1)
-                                nodo1->FE = -1;
-                            else
-                                nodo1->FE = 0;
+                            nodo->FE = (nodo2->FE == -1) ? 1 : 0;
+                            nodo1->FE = (nodo2->FE == 1) ? -1 : 0;
                             nodo = nodo2;
                         }
                         nodo->FE = 0;
@@ -97,8 +105,8 @@ void insercionBalanceado(Nodo** nodocabeza, bool* BO, int infor) {
                         break;
                 }
             }
-        } else if (infor > nodo->info) {
-            insercionBalanceado(&(nodo->derecha), BO, infor);
+        } else if (score > nodo->score) {
+            insercionBalanceado(&(nodo->derecha), BO, function, score);
             if (*BO) {
                 switch (nodo->FE) {
                     case -1:
@@ -122,16 +130,8 @@ void insercionBalanceado(Nodo** nodocabeza, bool* BO, int infor) {
                             nodo1->izquierda = nodo2->derecha;
                             nodo2->derecha = nodo1;
 
-                            if (nodo2->FE == 1)
-                                nodo->FE = -1;
-                            else
-                                nodo->FE = 0;
-
-                            if (nodo2->FE == -1)
-                                nodo1->FE = 1;
-                            else
-                                nodo1->FE = 0;
-
+                            nodo->FE = (nodo2->FE == 1) ? -1 : 0;
+                            nodo1->FE = (nodo2->FE == -1) ? 1 : 0;
                             nodo = nodo2;
                         }
                         nodo->FE = 0;
@@ -140,14 +140,14 @@ void insercionBalanceado(Nodo** nodocabeza, bool* BO, int infor) {
                 }
             }
         } else {
-            cout << "⚠️  El nodo ya se encuentra en el arbol.\n";
+            cout << "⚠️  El nodo ya se encuentra en el árbol.\n";
         }
     } else {
         nodo = new Nodo();
         nodo->izquierda = nullptr;
         nodo->derecha = nullptr;
-        // Add info**********************
-        nodo->info = infor;
+        nodo->function = function;   // ← missing assignment fixed here
+        nodo->score = score;
         nodo->FE = 0;
         *BO = true;
     }
@@ -155,13 +155,14 @@ void insercionBalanceado(Nodo** nodocabeza, bool* BO, int infor) {
     *nodocabeza = nodo;
 }
 
+
 // Busca un valor en el arbol
-bool Busqueda(Nodo* nodo, int infor) {
+bool Busqueda(Nodo* nodo, float score) {
     if (nodo != nullptr) {
-        if (infor < nodo->info)
-            Busqueda(nodo->izquierda, infor);
-        else if (infor > nodo->info)
-            Busqueda(nodo->derecha, infor);
+        if (score < nodo->score)
+            Busqueda(nodo->izquierda, score);
+        else if (score > nodo->score)
+            Busqueda(nodo->derecha, score);
         else
             return true; // El nodo SI se encuentra en el arbol
     } 
@@ -287,7 +288,7 @@ void Borra(Nodo** aux1, Nodo** otro1, bool* BO) {
         Borra(&(aux->derecha), &otro, BO);
         Restructura2(&aux, BO);
     } else {
-        otro->info = aux->info;
+        otro->score = aux->score;
         aux = aux->izquierda;
         *BO = true;
     }
@@ -295,15 +296,15 @@ void Borra(Nodo** aux1, Nodo** otro1, bool* BO) {
     *otro1 = otro;
 }
 
-void EliminacionBalanceado(Nodo** nodocabeza, bool* BO, int infor) {
+void EliminacionBalanceado(Nodo** nodocabeza, bool* BO, float score) {
     Nodo *nodo, *otro;
     nodo = *nodocabeza;
     if (nodo != nullptr) {
-        if (infor < nodo->info) {
-            EliminacionBalanceado(&(nodo->izquierda), BO, infor);
+        if (score < nodo->score) {
+            EliminacionBalanceado(&(nodo->izquierda), BO, score);
             Restructura1(&nodo, BO);
-        } else if (infor > nodo->info) {
-            EliminacionBalanceado(&(nodo->derecha), BO, infor);
+        } else if (score > nodo->score) {
+            EliminacionBalanceado(&(nodo->derecha), BO, score);
             Restructura2(&nodo, BO);
         } else {
             otro = nodo;
@@ -332,14 +333,27 @@ void EliminacionBalanceado(Nodo** nodocabeza, bool* BO, int infor) {
 // Recorrido preorden para generar el grafo
 void preOrden(Nodo* nodo, ofstream& fp) {
     if (nodo != nullptr) {
-        if (nodo->izquierda != nullptr)
-            fp << nodo->info << " -> " << nodo->izquierda->info << ";\n";
-        else
-            fp << nodo->info << " -> " << "\"" << nodo->info << "i" << "\""<< " [shape=point];\n";
-        if (nodo->derecha != nullptr)
-            fp << nodo->info << " -> " << nodo->derecha->info << ";\n";
-        else
-            fp << nodo->info << " -> " << "\"" << nodo->info << "d" << "\""<< " [shape=point];\n";
+        string label = nodo->function + "\\n" + to_string(nodo->score);
+
+        // Hijo izquierdo
+        if (nodo->izquierda != nullptr) {
+            string leftLabel = nodo->izquierda->function + "\\n" + to_string(nodo->izquierda->score);
+            fp << "\"" << label << "\" -> \"" << leftLabel << "\" [label=0];\n";
+        } else {
+            string nullLeft = label + "i";
+            fp << "\"" << label << "\" -> \"" << nullLeft << "\" [label=0];\n";
+            fp << "\"" << nullLeft << "\" [fillcolor=\"#727275ff\"];\n";  // <- different color
+        }
+
+        // Hijo derecho
+        if (nodo->derecha != nullptr) {
+            string rightLabel = nodo->derecha->function + "\\n" + to_string(nodo->derecha->score);
+            fp << "\"" << label << "\" -> \"" << rightLabel << "\" [label=0];\n";
+        } else {
+            string nullRight = label + "d";
+            fp << "\"" << label << "\" -> \"" << nullRight << "\" [label=0];\n";
+            fp << "\"" << nullRight << "\" [fillcolor=\"#727275ff\"];\n";  // <- different color
+        }
 
         preOrden(nodo->izquierda, fp);
         preOrden(nodo->derecha, fp);
@@ -347,17 +361,20 @@ void preOrden(Nodo* nodo, ofstream& fp) {
 }
 
 // Generar grafo con Graphviz (.png y .txt) 
-void GenerarGrafo(Nodo* ArbolInt, string nombreTXT, string nombrePNG) {
+void generarGrafo(Nodo* ArbolInt, string nombreTXT, string nombrePNG) {
     if (!ArbolInt) return;
     ofstream fp(nombreTXT);
-    fp << "digraph G {\n";
-    fp << "node [style=filled fillcolor=\"#b56cc3ff\"];\n";
-    fp << "nullraiz [shape=point];\n";
-    fp << "nullraiz -> " << ArbolInt->info << ";\n";
+
+    fp << "digraph G {\n\n";
+    fp << "node [style=filled fillcolor=\"#89d1daff\" shape=box];\n";
+
+    string raiz_etiqueta = ArbolInt->function + "\\n" + to_string(ArbolInt->score);
+    fp << "null [shape=point];\n";
+    fp << "null -> \"" << raiz_etiqueta << "\" [label=1];\n";
 
     preOrden(ArbolInt, fp);
 
-    fp << "}" << endl;
+    fp << "\n}" << endl;
 
     fp.close();
 
@@ -389,12 +406,18 @@ int menu() {
 /* =========================|| Main */
 int main(int argc, char* argv[]) {
     /* Variables iniciales */
+        // Variables para el arbol
     Nodo* raiz = nullptr;
-    int opcion, elemento, location, GO;
+    bool inicio = false; // Bandera de balanceo (BO en inserciones/eliminaciones)
+        // Sobre la lectura del archivo
+    string fileGO, line, go_id, temp_score_GO;
+        // Control de menu + nodos
+    int opcion;
+    string function;
     float score;
-    string nombre, fileGO, line, function, temp_score_GO, temp_GO, _;
-    bool inicio;
-    
+        // Nombre base para archivos .png y .txt
+    string nombre;
+
 
     /* ===== > Esta seccion es para leer el archivo */
     if (argc < 2) {
@@ -413,15 +436,17 @@ int main(int argc, char* argv[]) {
     
     getline(file_csv, line); // Salta el header
 
+    // Obteniendo informacon del archivo
     while (getline(file_csv, line)) {
         stringstream ss(line);
-        getline(ss, _, ':'); // salta 'GO:' de csv
-        getline(ss, temp_GO, ';');
+        getline(ss, go_id, ';'); // salta 'GO:' de csv
+        // getline(ss, temp_GO, ';');
         getline(ss, function, ';'); // function es 'Function' del csv
         getline(ss, temp_score_GO, ';');
         
-        GO = stof(temp_GO); // GO es 'GO' del csv
         score = stof(temp_score_GO); // score es 'Score' del csv
+        bool inicio = false;
+        insercionBalanceado(&raiz, &inicio, function, score);
     }
 
     // Y se cierra el archivo
@@ -446,11 +471,14 @@ int main(int argc, char* argv[]) {
         switch (opcion) {
             // 1. ⭕ Insertar dato.
             case 1: {
-                cout << "Ingresar elemento: ";
-                cin >> elemento;
+                cout << "Ingresar Score: ";
+                score = controlFLOAT();
+                cout << "Ahora ingrese Function: ";
+                cin >> function; 
+
                 inicio = false;
-                insercionBalanceado(&raiz, &inicio, elemento);
-                GenerarGrafo(raiz, nombreTXT, nombrePNG);
+                insercionBalanceado(&raiz, &inicio, function, score);
+                generarGrafo(raiz, nombreTXT, nombrePNG);
 
                 break;
             }
@@ -458,21 +486,21 @@ int main(int argc, char* argv[]) {
             // 2. 👁️ Buscar dato.
             case 2: {
                 // que busque identificador?? idk
-                cout << "Buscar elemento: ";
-                cin >> elemento;
-                Busqueda(raiz, elemento);
+                cout << "Buscar via Score: ";
+                score = controlFLOAT();
+                Busqueda(raiz, score);
 
                 break; 
             }
 
             // 3. ❌  Eliminar dato.
             case 3: {       
-                cout << "Eliminar elemento: ";
-                cin >> elemento;
+                cout << "Eliminar via Score: ";
+                score = controlFLOAT();
                 inicio = false;
 
-                EliminacionBalanceado(&raiz, &inicio, elemento);
-                GenerarGrafo(raiz, nombreTXT, nombrePNG);
+                EliminacionBalanceado(&raiz, &inicio, score);
+                generarGrafo(raiz, nombreTXT, nombrePNG);
 
                 break;
             }
@@ -491,7 +519,7 @@ int main(int argc, char* argv[]) {
 
                 string abrir = "eog " + nombrePNG;
 
-                GenerarGrafo(raiz, nombreTXT, nombrePNG);
+                generarGrafo(raiz, nombreTXT, nombrePNG);
                 system(abrir.c_str());
             
                 break;
@@ -500,8 +528,7 @@ int main(int argc, char* argv[]) {
             // 5. 🚪🏃 Salir.
             case 5:  {
                 system("clear");
-
-                break;
+                return 0;
             }
 
             // Err
@@ -510,5 +537,5 @@ int main(int argc, char* argv[]) {
             }
         }
     } 
-    return 0;    
+    return 1;    
 }
