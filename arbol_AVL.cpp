@@ -84,20 +84,27 @@ void insercionBalanceado(Nodo** nodocabeza, bool* BO, string function, float sco
                         break;
                     case -1:
                         nodo1 = nodo->izquierda;
-                        if (nodo1->FE <= 0) { // Rotación II
+                        if (nodo1->FE <= 0) { // Rotacion II
                             nodo->izquierda = nodo1->derecha;
                             nodo1->derecha = nodo;
                             nodo->FE = 0;
                             nodo = nodo1;
-                        } else { // Rotación ID
+                        } else { // Rotacion ID
                             nodo2 = nodo1->derecha;
                             nodo->izquierda = nodo2->derecha;
                             nodo2->derecha = nodo;
                             nodo1->derecha = nodo2->izquierda;
                             nodo2->izquierda = nodo1;
 
-                            nodo->FE = (nodo2->FE == -1) ? 1 : 0;
-                            nodo1->FE = (nodo2->FE == 1) ? -1 : 0;
+                            if (nodo2->FE == -1)
+                                nodo->FE = 1;
+                            else
+                                nodo->FE = 0;
+
+                            if (nodo2->FE == 1)
+                                nodo1->FE = -1;
+                            else
+                                nodo1->FE = 0;
                             nodo = nodo2;
                         }
                         nodo->FE = 0;
@@ -118,20 +125,28 @@ void insercionBalanceado(Nodo** nodocabeza, bool* BO, string function, float sco
                         break;
                     case 1:
                         nodo1 = nodo->derecha;
-                        if (nodo1->FE >= 0) { // Rotación DD
+                        if (nodo1->FE >= 0) { // Rotacion DD
                             nodo->derecha = nodo1->izquierda;
                             nodo1->izquierda = nodo;
                             nodo->FE = 0;
                             nodo = nodo1;
-                        } else { // Rotación DI
+                        } else { // Rotacion DI
                             nodo2 = nodo1->izquierda;
                             nodo->derecha = nodo2->izquierda;
                             nodo2->izquierda = nodo;
                             nodo1->izquierda = nodo2->derecha;
                             nodo2->derecha = nodo1;
 
-                            nodo->FE = (nodo2->FE == 1) ? -1 : 0;
-                            nodo1->FE = (nodo2->FE == -1) ? 1 : 0;
+                            if (nodo2->FE == 1)
+                                nodo->FE = -1;
+                            else
+                                nodo->FE = 0;
+
+                            if (nodo2->FE == -1)
+                                nodo1->FE = 1;
+                            else
+                                nodo1->FE = 0;
+
                             nodo = nodo2;
                         }
                         nodo->FE = 0;
@@ -140,13 +155,13 @@ void insercionBalanceado(Nodo** nodocabeza, bool* BO, string function, float sco
                 }
             }
         } else {
-            cout << "⚠️  El nodo ya se encuentra en el árbol.\n";
+            cout << "⚠️  El nodo ya se encuentra en el arbol.\n";
         }
     } else {
         nodo = new Nodo();
         nodo->izquierda = nullptr;
         nodo->derecha = nullptr;
-        nodo->function = function;   // ← missing assignment fixed here
+        nodo->function = function;
         nodo->score = score;
         nodo->FE = 0;
         *BO = true;
@@ -154,7 +169,6 @@ void insercionBalanceado(Nodo** nodocabeza, bool* BO, string function, float sco
 
     *nodocabeza = nodo;
 }
-
 
 // Busca un valor en el arbol
 bool Busqueda(Nodo* nodo, float score) {
@@ -185,7 +199,7 @@ void Restructura1(Nodo** nodocabeza, bool* BO) {
                 break;
             case 1:
                 nodo1 = nodo->derecha;
-                if (nodo1->FE >= 0) { // Rotación DD
+                if (nodo1->FE >= 0) { // Rotacion DD
                     nodo->derecha = nodo1->izquierda;
                     nodo1->izquierda = nodo;
                     switch (nodo1->FE) {
@@ -201,7 +215,7 @@ void Restructura1(Nodo** nodocabeza, bool* BO) {
                             break;
                     }
                     nodo = nodo1;
-                } else { // Rotación DI
+                } else { // Rotacion DI
                     nodo2 = nodo1->izquierda;
                     nodo->derecha = nodo2->izquierda;
                     nodo2->izquierda = nodo;
@@ -238,7 +252,7 @@ void Restructura2(Nodo** nodocabeza, bool* BO) {
                 break;
             case -1:
                 nodo1 = nodo->izquierda;
-                if (nodo1->FE <= 0) { // Rotación II
+                if (nodo1->FE <= 0) { // Rotacion II
                     nodo->izquierda = nodo1->derecha;
                     nodo1->derecha = nodo;
                     switch (nodo1->FE) {
@@ -338,22 +352,25 @@ void preOrden(Nodo* nodo, ofstream& fp) {
         // Hijo izquierdo
         if (nodo->izquierda != nullptr) {
             string leftLabel = nodo->izquierda->function + "\\n" + to_string(nodo->izquierda->score);
-            fp << "\"" << label << "\" -> \"" << leftLabel << "\" [label=0];\n";
+            fp << "\"" << label << "\" -> \"" << leftLabel << "\" [label=\"" << nodo->izquierda->FE << "\"];\n";
+
         } else {
             string nullLeft = label + "i";
-            fp << "\"" << label << "\" -> \"" << nullLeft << "\" [label=0];\n";
+            fp << "\"" << label << "\" -> \"" << nullLeft << "\" [label=\"" << nodo->FE << "\"];\n";
             fp << "\"" << nullLeft << "\" [fillcolor=\"#727275ff\"];\n";  // <- different color
         }
 
         // Hijo derecho
         if (nodo->derecha != nullptr) {
             string rightLabel = nodo->derecha->function + "\\n" + to_string(nodo->derecha->score);
-            fp << "\"" << label << "\" -> \"" << rightLabel << "\" [label=0];\n";
+            fp << "\"" << label << "\" -> \"" << rightLabel << "\" [label=\"" << nodo->derecha->FE << "\"];\n";
         } else {
             string nullRight = label + "d";
-            fp << "\"" << label << "\" -> \"" << nullRight << "\" [label=0];\n";
+            fp << "\"" << label << "\" -> \"" << nullRight << "\" [label=\"" << nodo->FE << "\"];\n";
             fp << "\"" << nullRight << "\" [fillcolor=\"#727275ff\"];\n";  // <- different color
         }
+
+        fp << "\n";
 
         preOrden(nodo->izquierda, fp);
         preOrden(nodo->derecha, fp);
@@ -370,11 +387,12 @@ void generarGrafo(Nodo* ArbolInt, string nombreTXT, string nombrePNG) {
 
     string raiz_etiqueta = ArbolInt->function + "\\n" + to_string(ArbolInt->score);
     fp << "null [shape=point];\n";
-    fp << "null -> \"" << raiz_etiqueta << "\" [label=1];\n";
+    fp << "null -> \"" << raiz_etiqueta << "\" [label=\"" << ArbolInt->FE << "\"];\n";
+
 
     preOrden(ArbolInt, fp);
 
-    fp << "\n}" << endl;
+    fp << "}" << endl;
 
     fp.close();
 
@@ -408,15 +426,13 @@ int main(int argc, char* argv[]) {
     /* Variables iniciales */
         // Variables para el arbol
     Nodo* raiz = nullptr;
-    bool inicio = false; // Bandera de balanceo (BO en inserciones/eliminaciones)
+    bool inicio = false;
         // Sobre la lectura del archivo
     string fileGO, line, go_id, temp_score_GO;
-        // Control de menu + nodos
+        // Variables de trabajo con el usuario + info nodos
+    string function, nombre;
     int opcion;
-    string function;
     float score;
-        // Nombre base para archivos .png y .txt
-    string nombre;
 
 
     /* ===== > Esta seccion es para leer el archivo */
@@ -439,7 +455,7 @@ int main(int argc, char* argv[]) {
     // Obteniendo informacon del archivo
     while (getline(file_csv, line)) {
         stringstream ss(line);
-        getline(ss, go_id, ';'); // salta 'GO:' de csv
+        getline(ss, go_id, ';'); // salta 'GO:[code]' de csv
         // getline(ss, temp_GO, ';');
         getline(ss, function, ';'); // function es 'Function' del csv
         getline(ss, temp_score_GO, ';');
@@ -473,8 +489,10 @@ int main(int argc, char* argv[]) {
             case 1: {
                 cout << "Ingresar Score: ";
                 score = controlFLOAT();
+                
                 cout << "Ahora ingrese Function: ";
-                cin >> function; 
+                cin.ignore(numeric_limits<streamsize>::max(), '\n');
+                getline(cin, function); // Lee tambien espacios 
 
                 inicio = false;
                 insercionBalanceado(&raiz, &inicio, function, score);

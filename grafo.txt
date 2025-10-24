@@ -2,34 +2,54 @@ digraph G {
 
 node [style=filled fillcolor="#89d1daff" shape=box];
 null [shape=point];
-null -> "Replicative senescence\n0.970000" [label=1];
-"Replicative senescence\n0.970000" -> "Response to oxidative stress\n0.930000" [label=0];
-"Replicative senescence\n0.970000" -> "Inflammatory response\n1.860000" [label=0];
-"Response to oxidative stress\n0.930000" -> "Cellular response to DNA damage\n0.920000" [label=0];
-"Response to oxidative stress\n0.930000" -> "Cell cycle arrest\n0.960000" [label=0];
-"Cellular response to DNA damage\n0.920000" -> "Cellular response to DNA damage\n0.920000i" [label=0];
-"Cellular response to DNA damage\n0.920000i" [fillcolor="#727275ff"];
-"Cellular response to DNA damage\n0.920000" -> "Cellular response to DNA damage\n0.920000d" [label=0];
-"Cellular response to DNA damage\n0.920000d" [fillcolor="#727275ff"];
-"Cell cycle arrest\n0.960000" -> "Cell cycle arrest\n0.960000i" [label=0];
+null -> "Replicative senescence\n0.970000" [label="0"];
+"Replicative senescence\n0.970000" -> "Response to oxidative stress\n0.930000" [label="-1"];
+"Replicative senescence\n0.970000" -> "ECM remodeling\n1.800000" [label="0"];
+
+"Response to oxidative stress\n0.930000" -> "Cellular response to DNA damage\n0.920000" [label="0"];
+"Response to oxidative stress\n0.930000" -> "Cell cycle arrest\n0.960000" [label="0"];
+
+"Cellular response to DNA damage\n0.920000" -> "Autophagy\n0.860000" [label="0"];
+"Cellular response to DNA damage\n0.920000" -> "hola como estan\n0.923000" [label="0"];
+
+"Autophagy\n0.860000" -> "Autophagy\n0.860000i" [label="0"];
+"Autophagy\n0.860000i" [fillcolor="#727275ff"];
+"Autophagy\n0.860000" -> "Autophagy\n0.860000d" [label="0"];
+"Autophagy\n0.860000d" [fillcolor="#727275ff"];
+
+"hola como estan\n0.923000" -> "hola como estan\n0.923000i" [label="0"];
+"hola como estan\n0.923000i" [fillcolor="#727275ff"];
+"hola como estan\n0.923000" -> "hola como estan\n0.923000d" [label="0"];
+"hola como estan\n0.923000d" [fillcolor="#727275ff"];
+
+"Cell cycle arrest\n0.960000" -> "Cell cycle arrest\n0.960000i" [label="0"];
 "Cell cycle arrest\n0.960000i" [fillcolor="#727275ff"];
-"Cell cycle arrest\n0.960000" -> "Cell cycle arrest\n0.960000d" [label=0];
+"Cell cycle arrest\n0.960000" -> "Cell cycle arrest\n0.960000d" [label="0"];
 "Cell cycle arrest\n0.960000d" [fillcolor="#727275ff"];
-"Inflammatory response\n1.860000" -> "Stem cell exhaustion\n1.750000" [label=0];
-"Inflammatory response\n1.860000" -> "SASP - IL6 secretion\n1.880000" [label=0];
-"Stem cell exhaustion\n1.750000" -> "Cellular senescence\n1.000000" [label=0];
-"Stem cell exhaustion\n1.750000" -> "ECM remodeling\n1.800000" [label=0];
-"Cellular senescence\n1.000000" -> "Cellular senescence\n1.000000i" [label=0];
+
+"ECM remodeling\n1.800000" -> "Stem cell exhaustion\n1.750000" [label="-1"];
+"ECM remodeling\n1.800000" -> "Inflammatory response\n1.860000" [label="0"];
+
+"Stem cell exhaustion\n1.750000" -> "Cellular senescence\n1.000000" [label="0"];
+"Stem cell exhaustion\n1.750000" -> "Stem cell exhaustion\n1.750000d" [label="-1"];
+"Stem cell exhaustion\n1.750000d" [fillcolor="#727275ff"];
+
+"Cellular senescence\n1.000000" -> "Cellular senescence\n1.000000i" [label="0"];
 "Cellular senescence\n1.000000i" [fillcolor="#727275ff"];
-"Cellular senescence\n1.000000" -> "Cellular senescence\n1.000000d" [label=0];
+"Cellular senescence\n1.000000" -> "Cellular senescence\n1.000000d" [label="0"];
 "Cellular senescence\n1.000000d" [fillcolor="#727275ff"];
-"ECM remodeling\n1.800000" -> "ECM remodeling\n1.800000i" [label=0];
-"ECM remodeling\n1.800000i" [fillcolor="#727275ff"];
-"ECM remodeling\n1.800000" -> "ECM remodeling\n1.800000d" [label=0];
-"ECM remodeling\n1.800000d" [fillcolor="#727275ff"];
-"SASP - IL6 secretion\n1.880000" -> "SASP - IL6 secretion\n1.880000i" [label=0];
+
+"Inflammatory response\n1.860000" -> "Aging\n1.850000" [label="0"];
+"Inflammatory response\n1.860000" -> "SASP - IL6 secretion\n1.880000" [label="0"];
+
+"Aging\n1.850000" -> "Aging\n1.850000i" [label="0"];
+"Aging\n1.850000i" [fillcolor="#727275ff"];
+"Aging\n1.850000" -> "Aging\n1.850000d" [label="0"];
+"Aging\n1.850000d" [fillcolor="#727275ff"];
+
+"SASP - IL6 secretion\n1.880000" -> "SASP - IL6 secretion\n1.880000i" [label="0"];
 "SASP - IL6 secretion\n1.880000i" [fillcolor="#727275ff"];
-"SASP - IL6 secretion\n1.880000" -> "SASP - IL6 secretion\n1.880000d" [label=0];
+"SASP - IL6 secretion\n1.880000" -> "SASP - IL6 secretion\n1.880000d" [label="0"];
 "SASP - IL6 secretion\n1.880000d" [fillcolor="#727275ff"];
 
 }
