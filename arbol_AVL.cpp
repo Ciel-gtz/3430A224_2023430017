@@ -171,21 +171,25 @@ void insercionBalanceado(Nodo** nodocabeza, bool* BO, string function, float sco
 }
 
 // Busca un valor en el arbol
-bool Busqueda(Nodo* nodo, float score) {
-    if (nodo != nullptr) {
-        if (score < nodo->score)
-            Busqueda(nodo->izquierda, score);
-        else if (score > nodo->score)
-            Busqueda(nodo->derecha, score);
-        else
-            return true; // El nodo SI se encuentra en el arbol
-    } 
-    return false; // El nodo NO se encuentra en el arbol
+bool buscarNodo(Nodo* nodo, float infor) {
+    if (nodo == nullptr) {
+        // Nodo no encontrado
+        return false;
+    }
+
+    if (infor < nodo->score) {
+        return buscarNodo(nodo->izquierda, infor);
+    } else if (infor > nodo->score) {
+        return buscarNodo(nodo->derecha, infor);
+    } else {
+        // Nodo encontrado
+        return true;
+    }
 }
 
 
-/* =========================|| Reestructuraciones...*/
-void Restructura1(Nodo** nodocabeza, bool* BO) {
+/* =========================|| Reestructuracion...*/
+void reestructura(Nodo** nodocabeza, bool* BO) {
     Nodo *nodo, *nodo1, *nodo2;
     nodo = *nodocabeza;
     if (*BO) {
@@ -238,7 +242,8 @@ void Restructura1(Nodo** nodocabeza, bool* BO) {
     *nodocabeza = nodo;
 }
 
-void Restructura2(Nodo** nodocabeza, bool* BO) {
+/*
+void reestructura(Nodo** nodocabeza, bool* BO) {
     Nodo *nodo, *nodo1, *nodo2;
     nodo = *nodocabeza;
     if (*BO) {
@@ -289,37 +294,40 @@ void Restructura2(Nodo** nodocabeza, bool* BO) {
         }
     }
     *nodocabeza = nodo;
-}
+}*/
 
 
 /* =========================|| Ediciones en Arbol...*/
 // Eliminar en Arbol
-void Borra(Nodo** aux1, Nodo** otro1, bool* BO) {
-    Nodo *aux, *otro;
-    aux = *aux1;
-    otro = *otro1;
+void eliminarArbol(Nodo** raiz, Nodo** nodoAEliminar, bool* BO) {
+    Nodo* aux = *raiz;
+
     if (aux->derecha != nullptr) {
-        Borra(&(aux->derecha), &otro, BO);
-        Restructura2(&aux, BO);
+        eliminarArbol(&(aux->derecha), nodoAEliminar, BO);
+        reestructura(raiz, BO);
     } else {
-        otro->score = aux->score;
+        (*nodoAEliminar)->function = aux->function;
+        (*nodoAEliminar)->score = aux->score;
+
+        Nodo* temp = aux;
         aux = aux->izquierda;
         *BO = true;
+        delete temp;
     }
-    *aux1 = aux;
-    *otro1 = otro;
+    *raiz = aux;
 }
 
-void EliminacionBalanceado(Nodo** nodocabeza, bool* BO, float score) {
+
+void eliminacionBalanceado(Nodo** nodocabeza, bool* BO, float score) {
     Nodo *nodo, *otro;
     nodo = *nodocabeza;
     if (nodo != nullptr) {
         if (score < nodo->score) {
-            EliminacionBalanceado(&(nodo->izquierda), BO, score);
-            Restructura1(&nodo, BO);
+            eliminacionBalanceado(&(nodo->izquierda), BO, score);
+            reestructura(&nodo, BO);
         } else if (score > nodo->score) {
-            EliminacionBalanceado(&(nodo->derecha), BO, score);
-            Restructura2(&nodo, BO);
+            eliminacionBalanceado(&(nodo->derecha), BO, score);
+            reestructura(&nodo, BO);
         } else {
             otro = nodo;
             if (otro->derecha == nullptr) {
@@ -331,9 +339,8 @@ void EliminacionBalanceado(Nodo** nodocabeza, bool* BO, float score) {
                 *BO = true;
                 delete otro;
             } else {
-                Borra(&(otro->izquierda), &otro, BO);
-                Restructura1(&nodo, BO);
-                delete otro;
+                eliminarArbol(&(otro->izquierda), &otro, BO);
+                reestructura(&nodo, BO);
             }
         }
     } else {
@@ -356,7 +363,7 @@ void preOrden(Nodo* nodo, ofstream& fp) {
 
         } else {
             string nullLeft = label + "i";
-            fp << "\"" << label << "\" -> \"" << nullLeft << "\" [label=\"" << nodo->FE << "\"];\n";
+            fp << "\"" << label << "\" -> \"" << nullLeft << "\";\n";
             fp << "\"" << nullLeft << "\" [fillcolor=\"#727275ff\"];\n";  // <- different color
         }
 
@@ -366,7 +373,7 @@ void preOrden(Nodo* nodo, ofstream& fp) {
             fp << "\"" << label << "\" -> \"" << rightLabel << "\" [label=\"" << nodo->derecha->FE << "\"];\n";
         } else {
             string nullRight = label + "d";
-            fp << "\"" << label << "\" -> \"" << nullRight << "\" [label=\"" << nodo->FE << "\"];\n";
+            fp << "\"" << label << "\" -> \"" << nullRight << "\";\n";
             fp << "\"" << nullRight << "\" [fillcolor=\"#727275ff\"];\n";  // <- different color
         }
 
@@ -468,7 +475,6 @@ int main(int argc, char* argv[]) {
     // Y se cierra el archivo
     file_csv.close();
 
-
     /* ===== > Pide nombre de archivo para ir guardando */
     cout << "──{ Construccion de un arbol balanceado AVL }──\n";
 
@@ -479,6 +485,7 @@ int main(int argc, char* argv[]) {
     string nombrePNG = nombre + ".png";
 
 
+    
     /* ===== > Desarrollo de las opciones presentes en el menu */
     while (opcion) { 
         
@@ -487,10 +494,10 @@ int main(int argc, char* argv[]) {
         switch (opcion) {
             // 1. ⭕ Insertar dato.
             case 1: {
-                cout << "Ingresar Score: ";
+                cout << "< Ingresar Score\n⚠️  Utilice '.' como decimal, no ',': ";
                 score = controlFLOAT();
-                
-                cout << "Ahora ingrese Function: ";
+
+                cout << "< Ahora ingrese Function: ";
                 cin.ignore(numeric_limits<streamsize>::max(), '\n');
                 getline(cin, function); // Lee tambien espacios 
 
@@ -503,21 +510,25 @@ int main(int argc, char* argv[]) {
 
             // 2. 👁️ Buscar dato.
             case 2: {
-                // que busque identificador?? idk
-                cout << "Buscar via Score: ";
+                cout << "< Buscar via Score: ";
                 score = controlFLOAT();
-                Busqueda(raiz, score);
 
+                if (buscarNodo(raiz, score)){
+                    cout << "+ El nodo SI existe +" << endl;
+                } else {
+                    cout << "- El nodo NO existe -" << endl;
+                }
+                
                 break; 
             }
 
             // 3. ❌  Eliminar dato.
             case 3: {       
-                cout << "Eliminar via Score: ";
+                cout << "< Eliminar via Score: ";
                 score = controlFLOAT();
                 inicio = false;
 
-                EliminacionBalanceado(&raiz, &inicio, score);
+                eliminacionBalanceado(&raiz, &inicio, score);
                 generarGrafo(raiz, nombreTXT, nombrePNG);
 
                 break;
