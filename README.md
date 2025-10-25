@@ -17,3 +17,6 @@ en GenerarGrafo no puse eog porque se me hace mas comodo el abrir el archivo png
 opcion default ->Error (dificil que llegue aqui por como ya revisa los vaores en menu(), pero, lo pongo por si acaso)
 
 al leer el archivo insercionAVL revisa inmediatamente si se repite un valor o no, si se repite entonces no se va a agregar, manejando así posibles repeticiones del archivo csv
+
+- se va actualizando el archivo de grafo cada vez que borras o insertas un nodo para una fácil visualización mientras se corre el código
+cuando borra nodo raiz, se usa subarbol izquierdo, nodo más a la derecha

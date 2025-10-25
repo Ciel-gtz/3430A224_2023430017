@@ -189,7 +189,7 @@ bool buscarNodo(Nodo* nodo, float infor) {
 
 
 /* =========================|| Reestructuracion...*/
-void reestructura(Nodo** nodocabeza, bool* BO) {
+void reestructura1(Nodo** nodocabeza, bool* BO) {
     Nodo *nodo, *nodo1, *nodo2;
     nodo = *nodocabeza;
     if (*BO) {
@@ -242,8 +242,7 @@ void reestructura(Nodo** nodocabeza, bool* BO) {
     *nodocabeza = nodo;
 }
 
-/*
-void reestructura(Nodo** nodocabeza, bool* BO) {
+void reestructura2(Nodo** nodocabeza, bool* BO) {
     Nodo *nodo, *nodo1, *nodo2;
     nodo = *nodocabeza;
     if (*BO) {
@@ -294,40 +293,42 @@ void reestructura(Nodo** nodocabeza, bool* BO) {
         }
     }
     *nodocabeza = nodo;
-}*/
+}
 
 
 /* =========================|| Ediciones en Arbol...*/
 // Eliminar en Arbol
-void eliminarArbol(Nodo** raiz, Nodo** nodoAEliminar, bool* BO) {
-    Nodo* aux = *raiz;
+void eliminarArbol(Nodo** aux1, Nodo** otro1, bool* BO) {
+    Nodo* aux = *aux1;
+    Nodo* otro = *otro1;
 
+    if (aux == nullptr) return; // En caso de cualquier cosa
+    
     if (aux->derecha != nullptr) {
-        eliminarArbol(&(aux->derecha), nodoAEliminar, BO);
-        reestructura(raiz, BO);
+        eliminarArbol(&(aux->derecha), &otro, BO);
+        reestructura2(&aux, BO);
+        *aux1 = aux;
     } else {
-        (*nodoAEliminar)->function = aux->function;
-        (*nodoAEliminar)->score = aux->score;
+        otro->function = aux->function;
+        otro->score = aux->score;
 
-        Nodo* temp = aux;
-        aux = aux->izquierda;
+        *aux1 = aux->izquierda;
+        delete aux;
         *BO = true;
-        delete temp;
     }
-    *raiz = aux;
 }
 
 
-void eliminacionBalanceado(Nodo** nodocabeza, bool* BO, float score) {
+void eliminacionBalanceado(Nodo** nodocabeza, bool* BO, float info) {
     Nodo *nodo, *otro;
     nodo = *nodocabeza;
     if (nodo != nullptr) {
-        if (score < nodo->score) {
-            eliminacionBalanceado(&(nodo->izquierda), BO, score);
-            reestructura(&nodo, BO);
-        } else if (score > nodo->score) {
-            eliminacionBalanceado(&(nodo->derecha), BO, score);
-            reestructura(&nodo, BO);
+        if (info < nodo->score) {
+            eliminacionBalanceado(&(nodo->izquierda), BO, info);
+            reestructura1(&nodo, BO);
+        } else if (info > nodo->score) {
+            eliminacionBalanceado(&(nodo->derecha), BO, info);
+            reestructura2(&nodo, BO);
         } else {
             otro = nodo;
             if (otro->derecha == nullptr) {
@@ -340,11 +341,11 @@ void eliminacionBalanceado(Nodo** nodocabeza, bool* BO, float score) {
                 delete otro;
             } else {
                 eliminarArbol(&(otro->izquierda), &otro, BO);
-                reestructura(&nodo, BO);
+                reestructura1(&nodo, BO);
             }
         }
     } else {
-        cout << "El nodo NO se encuentra en el arbol\n";
+        cout << "⚠️  El nodo NO se encuentra en el arbol\n";
     }
     *nodocabeza = nodo;
 }
@@ -413,9 +414,9 @@ void generarGrafo(Nodo* ArbolInt, string nombreTXT, string nombrePNG) {
 int menu() {
     int opcion;
     cout << "\n\n++++++++++++\nMenu\n";
-    cout << "1. ⭕ Insertar dato.\n"; 
-    cout << "2. 👁️  Buscar dato.\n";
-    cout << "3. ❌ Eliminar dato.\n";
+    cout << "1. ⭕ Insertar nodo.\n"; 
+    cout << "2. 👁️  Buscar nodo.\n"; //// DEL TERMINO GO de del csv *****
+    cout << "3. ❌ Eliminar nodo.\n";
     cout << "4. 🖨️  Generar + mostrar grafo o guardar grafo en otro archivo.\n";
     cout << "5. 🚪🏃 Salir.\n++++++++++++\n\n";
     cout << "> Seleccione una opcion: ";
