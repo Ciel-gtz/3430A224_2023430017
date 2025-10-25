@@ -1,22 +1,22 @@
 <div align="center">
-<h1>Creación de un árbol AVL<sub>Adelson-Velsky and Landis</sub></h1>
+<h1>Creación de un árbol AVL<sub> "Adelson-Velsky and Landis"</sub></h1>
 </div>
 
 Para que el código pueda correr es necesario tener instalado:
 - Compilador de C++. instalable utilizando `sudo apt install g++`
 - Graphviz. instalable utilizando `sudo apt install graphviz -y`
 
+
 Para la compilación del código se utiliza:
 ```
 ./arbol_AVL funciones_GO_minimal.csv 
 ```
-<strong>funciones_GO_minimal.csv</strong> puede reemplazarse por otro archivo GO
-<strong>arbol_AVL</strong> puede reemplazarse por <strong>arbol_AVL_SS</strong> dependiendo cuál se desee utilizar en el momento
+`funciones_GO_minimal.csv` puede reemplazarse por otro archivo GO
+`arbol_AVL` puede reemplazarse por `arbol_AVL_SS` dependiendo cuál se desee utilizar en el momento
 
 <div align="center">
-<h2><sub>⭐</sub>Sobre el código<sub>⭐</sub></h2>
+<h2><sub>⭐ </sub>Sobre el código<sub> ⭐</sub></h2>
 </div>
-
 
 
 El archivo arbol_AVL_SS.cpp<sub>SS viene de ScoreSearch</sub> fue realizado como preferencia porque me agrada más la idea de buscar via score y eliminar via score, ya que es un valor más simple de escribir. En cambio, el archivo arbol_AVL.cpp utiliza el término GO para búsqueda y eliminación<sub>ya que el pdf lo pide</sub>
@@ -27,12 +27,18 @@ El archivo arbol_AVL_SS.cpp<sub>SS viene de ScoreSearch</sub> fue realizado como
 
 - Cuando se borra un nodo con 2 hijos, para reemplazarlo, se utiliza del subarbol izquierdo el nodo que se encuentre más a la derecha.
 
-- En arbol_AVL se implementa controlGO(), el cual, sirve para mantener el formato de los códigos GO del archivo CSV.
+- En `arbol_AVL` se implementa <strong>controlGO()</strong>, el cual, sirve para mantener el formato de los códigos GO del archivo CSV.
+
+- En `arbol_AVL` en vez de utilizar <strong>buscarNodo()</strong> se utiliza <strong>buscarNodoviaGO()</strong>. Esto se debe a que el árbol sigue estando ordenado por `score`, y <strong>buscarNodo()</strong> busca específicamente por ese valor siguiendo la estructura del árbol. En cambio, <strong>buscarNodoviaGO()</strong> brecorre todos los nodos y compara su código GO, permitiendo encontrar el nodo correcto sin depender del ordenamiento por `score`.
+
 
 <div align="center">
 <h3>Notas:</h3>
 </div>
-Las siguientes partes del código vienen de (esta página)[https://stackoverflow.com/questions/2839592/equivalent-of-02d-with-stdstringstream]:
+
+
+🔷 Las siguientes partes del código vienen de [esta página](https://stackoverflow.com/questions/2839592/equivalent-of-02d-with-stdstringstream) :
+
 ```
 #include <iomanip> // setw() y setfill()
 #include <sstream> // Para stringstream
@@ -41,10 +47,24 @@ stringstream stream;
 ...
 stream << setfill('0') << setw(7) << GO;
 ```
+
 Son sólamente para que se mantenga el formato de código GO de los archivos csv, el cual es de 7 números, rellenando los espacios vacíos con 0.
 
-La linea:
+
+🔷 La linea:
+
 ```
 fp << "\"" << label << "\" [xlabel=< <FONT COLOR=\"#3c5c95ff\">" << nodo->GO << "</FONT> >];\n";
 ```
 Agrega el código GO a las cajas de los nodos, colocándolo en la esquina superior izquierda. Así que, si se quiere buscar un nodo, la caja a la derecha del código corresponde al nodo buscado.
+
+
+🔷 Si el usuario ingresa una coma o espacio en vez de escribir un número decimal con punto [ej: 0.94] lo que esté después de la coma se ignorará. Por ello se puso como mensaje:
+
+```
+< Ingresar Score
+⚠️  Utilice '.' como decimal, no ',': 
+```
+
+
+🔷 En `arbol_AVL_GO.cpp` se sigue eliminando via `score` ya que no hubo indicación en la guía de que se debería eliminar via GO.

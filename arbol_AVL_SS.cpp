@@ -15,7 +15,8 @@ typedef struct Nodo {
 } Nodo;
 
 
-/* =========================|| Controles de entrada para evadir errores...*/
+/* =======================
+|| Controles de entrada para evadir errores...*/
 // Usuario debe escribir char
 char userDecision(){
     char userAnswer;
@@ -63,7 +64,8 @@ float controlFLOAT() {
 }
 
 
-/* =========================|| Sobre el arbol...*/
+/* =======================
+|| Sobre el arbol...*/
 // Insercion balanceada AVL
 void insercionBalanceado(Nodo** nodocabeza, bool* BO, string function, float score) {
     Nodo* nodo = *nodocabeza;
@@ -188,7 +190,8 @@ bool buscarNodo(Nodo* nodo, float infor) {
 }
 
 
-/* =========================|| Reestructuracion...*/
+/* =======================
+|| Reestructuracion...*/
 void reestructura1(Nodo** nodocabeza, bool* BO) {
     Nodo *nodo, *nodo1, *nodo2;
     nodo = *nodocabeza;
@@ -296,7 +299,8 @@ void reestructura2(Nodo** nodocabeza, bool* BO) {
 }
 
 
-/* =========================|| Eliminaciones...*/
+/* =======================
+|| Eliminaciones...*/
 void eliminarArbol(Nodo** aux1, Nodo** otro1, bool* BO) {
     Nodo* aux = *aux1;
     Nodo* otro = *otro1;
@@ -349,7 +353,8 @@ void eliminacionBalanceado(Nodo** nodocabeza, bool* BO, float info) {
 }
 
 
-/* =========================|| Para la generacion del grafo...*/
+/* =======================
+|| Para la generacion del grafo...*/
 // Recorrido preorden para generar el grafo
 void preOrden(Nodo* nodo, ofstream& fp) {
     if (nodo != nullptr) {
@@ -407,7 +412,8 @@ void generarGrafo(Nodo* ArbolInt, string nombreTXT, string nombrePNG) {
 }
 
 
-/* =========================|| Menu de opciones */
+/* =======================
+|| Menu de opciones */
 int menu() {
     int opcion;
     cout << "\n\n++++++++++++\nMenu\n";
@@ -426,14 +432,17 @@ int menu() {
 }
 
 
-/* =========================|| Main */
+/* =======================
+|| Main */
 int main(int argc, char* argv[]) {
-    /* Variables iniciales */
+    /* ===== > Variables iniciales */
         // Variables para el arbol
     Nodo* raiz = nullptr;
     bool inicio = false;
+
         // Sobre la lectura del archivo
     string file_GO, line, go_id, temp_score_GO;
+
         // Variables de trabajo con el usuario + info nodos ⭐
     string function, nombre;
     int opcion;
@@ -472,6 +481,7 @@ int main(int argc, char* argv[]) {
     // Y se cierra el archivo
     file_csv.close();
 
+
     /* ===== > Pide nombre de archivo para ir guardando */
     cout << "──{ Construccion de un arbol balanceado AVL }──\n";
 
@@ -480,7 +490,6 @@ int main(int argc, char* argv[]) {
 
     string nombreTXT = nombre + ".txt";
     string nombrePNG = nombre + ".png";
-
 
     
     /* ===== > Desarrollo de las opciones presentes en el menu */
