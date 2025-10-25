@@ -80,7 +80,7 @@ string controlGO() {
             break;
     } while (true);
 
-    // Y esto para rellenar los espacios vacios
+    // Esto para rellenar los espacios vacios
     stream << setfill('0') << setw(7) << valor;
     string GO = stream.str();
 
@@ -381,6 +381,9 @@ void eliminacionBalanceado(Nodo** nodocabeza, bool* BO, float info) {
 void preOrden(Nodo* nodo, ofstream& fp) {
     if (nodo != nullptr) {
         string label = nodo->function + "\\n" + to_string(nodo->score);
+
+        // Se utiliza xlabel para mostrar GO
+        fp << "\"" << label << "\" [xlabel=< <FONT COLOR=\"#3c5c95ff\">" << nodo->GO << "</FONT> >];\n";
 
         // Hijo izquierdo
         if (nodo->izquierda != nullptr) {

@@ -1,0 +1,52 @@
+digraph G {
+
+node [style=filled fillcolor="#89d1daff" shape=box];
+null [shape=point];
+null -> "Replicative senescence\n0.970000" [label="1"];
+"Replicative senescence\n0.970000" [xlabel=< <FONT COLOR="#3c5c95ff">0001302</FONT> >, xlp=10];
+"Replicative senescence\n0.970000" -> "Response to oxidative stress\n0.930000" [label="0"];
+"Replicative senescence\n0.970000" -> "Inflammatory response\n1.860000" [label="-1"];
+
+"Response to oxidative stress\n0.930000" [xlabel=< <FONT COLOR="#3c5c95ff">0006979</FONT> >, xlp=10];
+"Response to oxidative stress\n0.930000" -> "Cellular response to DNA damage\n0.920000" [label="0"];
+"Response to oxidative stress\n0.930000" -> "Cell cycle arrest\n0.960000" [label="0"];
+
+"Cellular response to DNA damage\n0.920000" [xlabel=< <FONT COLOR="#3c5c95ff">0006974</FONT> >, xlp=10];
+"Cellular response to DNA damage\n0.920000" -> "Cellular response to DNA damage\n0.920000i";
+"Cellular response to DNA damage\n0.920000i" [fillcolor="#727275ff"];
+"Cellular response to DNA damage\n0.920000" -> "Cellular response to DNA damage\n0.920000d";
+"Cellular response to DNA damage\n0.920000d" [fillcolor="#727275ff"];
+
+"Cell cycle arrest\n0.960000" [xlabel=< <FONT COLOR="#3c5c95ff">0007050</FONT> >, xlp=10];
+"Cell cycle arrest\n0.960000" -> "Cell cycle arrest\n0.960000i";
+"Cell cycle arrest\n0.960000i" [fillcolor="#727275ff"];
+"Cell cycle arrest\n0.960000" -> "Cell cycle arrest\n0.960000d";
+"Cell cycle arrest\n0.960000d" [fillcolor="#727275ff"];
+
+"Inflammatory response\n1.860000" [xlabel=< <FONT COLOR="#3c5c95ff">0006954</FONT> >, xlp=10];
+"Inflammatory response\n1.860000" -> "Stem cell exhaustion\n1.750000" [label="0"];
+"Inflammatory response\n1.860000" -> "SASP - IL6 secretion\n1.880000" [label="0"];
+
+"Stem cell exhaustion\n1.750000" [xlabel=< <FONT COLOR="#3c5c95ff">0031099</FONT> >, xlp=10];
+"Stem cell exhaustion\n1.750000" -> "Cellular senescence\n1.000000" [label="0"];
+"Stem cell exhaustion\n1.750000" -> "ECM remodeling\n1.800000" [label="0"];
+
+"Cellular senescence\n1.000000" [xlabel=< <FONT COLOR="#3c5c95ff">0090398</FONT> >, xlp=10];
+"Cellular senescence\n1.000000" -> "Cellular senescence\n1.000000i";
+"Cellular senescence\n1.000000i" [fillcolor="#727275ff"];
+"Cellular senescence\n1.000000" -> "Cellular senescence\n1.000000d";
+"Cellular senescence\n1.000000d" [fillcolor="#727275ff"];
+
+"ECM remodeling\n1.800000" [xlabel=< <FONT COLOR="#3c5c95ff">0030198</FONT> >, xlp=10];
+"ECM remodeling\n1.800000" -> "ECM remodeling\n1.800000i";
+"ECM remodeling\n1.800000i" [fillcolor="#727275ff"];
+"ECM remodeling\n1.800000" -> "ECM remodeling\n1.800000d";
+"ECM remodeling\n1.800000d" [fillcolor="#727275ff"];
+
+"SASP - IL6 secretion\n1.880000" [xlabel=< <FONT COLOR="#3c5c95ff">0004956</FONT> >, xlp=10];
+"SASP - IL6 secretion\n1.880000" -> "SASP - IL6 secretion\n1.880000i";
+"SASP - IL6 secretion\n1.880000i" [fillcolor="#727275ff"];
+"SASP - IL6 secretion\n1.880000" -> "SASP - IL6 secretion\n1.880000d";
+"SASP - IL6 secretion\n1.880000d" [fillcolor="#727275ff"];
+
+}

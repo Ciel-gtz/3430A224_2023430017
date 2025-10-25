@@ -43,3 +43,8 @@ stream << setfill('0') << setw(7) << GO;
 ```
 Son sólamente para que se mantenga el formato de código GO de los archivos csv, el cual es de 7 números, rellenando los espacios vacíos con 0.
 
+La linea:
+```
+fp << "\"" << label << "\" [xlabel=< <FONT COLOR=\"#3c5c95ff\">" << nodo->GO << "</FONT> >];\n";
+```
+Agrega el código GO a las cajas de los nodos, colocándolo en la esquina superior izquierda. Así que, si se quiere buscar un nodo, la caja a la derecha del código corresponde al nodo buscado.
