@@ -1,7 +1,6 @@
 #include <limits>
-#include <iomanip> // setw() y setfill()
-#include <sstream> // Para stringstream
 #include <fstream>
+#include <sstream>
 #include <iostream>
 
 using namespace std;
@@ -11,14 +10,12 @@ typedef struct Nodo {
     Nodo* izquierda;
     Nodo* derecha;
     int FE;
-    string function;
-    string GO;
-    float score;
+    string function; // Equivalente a Function de archivo GO
+    float score; // Equivalente a Score de archivo GO
 } Nodo;
 
 
-/* =========================
-|| Controles de entrada para evadir errores...*/
+/* =========================|| Controles de entrada para evadir errores...*/
 // Usuario debe escribir char
 char userDecision(){
     char userAnswer;
@@ -65,39 +62,17 @@ float controlFLOAT() {
     }
 }
 
-// Usuario debe ingresar codigo GO
-string controlGO() {
-    int valor;
-    stringstream stream;
-
-    cout << "Ingrese codigo GO\n⚠️  solo los ultimos 7 son relevantes : "; 
-
-    do {
-        valor = controlINT();
-        if (valor > 9999999 || valor < 0)
-            cout << "⚠️ Solo hasta 7 numeros positivos: ";
-        else
-            break;
-    } while (true);
-
-    // Y esto para rellenar los espacios vacios
-    stream << setfill('0') << setw(7) << valor;
-    string GO = stream.str();
-
-    return GO;
-}
-
 
 /* =========================|| Sobre el arbol...*/
 // Insercion balanceada AVL
-void insercionBalanceado(Nodo** nodocabeza, bool* BO, string function, float score, string GO) {
+void insercionBalanceado(Nodo** nodocabeza, bool* BO, string function, float score) {
     Nodo* nodo = *nodocabeza;
     Nodo* nodo1;
     Nodo* nodo2;
 
     if (nodo != nullptr) {
         if (score < nodo->score) {
-            insercionBalanceado(&(nodo->izquierda), BO, function, score, GO);
+            insercionBalanceado(&(nodo->izquierda), BO, function, score);
             if (*BO) {
                 switch (nodo->FE) {
                     case 1:
@@ -138,7 +113,7 @@ void insercionBalanceado(Nodo** nodocabeza, bool* BO, string function, float sco
                 }
             }
         } else if (score > nodo->score) {
-            insercionBalanceado(&(nodo->derecha), BO, function, score, GO);
+            insercionBalanceado(&(nodo->derecha), BO, function, score);
             if (*BO) {
                 switch (nodo->FE) {
                     case -1:
@@ -188,7 +163,6 @@ void insercionBalanceado(Nodo** nodocabeza, bool* BO, string function, float sco
         nodo->derecha = nullptr;
         nodo->function = function;
         nodo->score = score;
-        nodo->GO = GO;
         nodo->FE = 0;
         *BO = true;
     }
@@ -214,7 +188,7 @@ bool buscarNodo(Nodo* nodo, float infor) {
 }
 
 
-/* =========================|| Reestructuraciones...*/
+/* =========================|| Reestructuracion...*/
 void reestructura1(Nodo** nodocabeza, bool* BO) {
     Nodo *nodo, *nodo1, *nodo2;
     nodo = *nodocabeza;
@@ -336,7 +310,6 @@ void eliminarArbol(Nodo** aux1, Nodo** otro1, bool* BO) {
     } else {
         otro->function = aux->function;
         otro->score = aux->score;
-        otro->GO = aux->GO;
 
         *aux1 = aux->izquierda;
         delete aux;
@@ -446,7 +419,7 @@ int menu() {
     cout << "> Seleccione una opcion: ";
     opcion = controlINT();
     while (opcion < 1 || opcion > 5) {
-        cout << "⚠️  [Debe elegir una opcion valida (1 - 5)] : ";
+        cout << "\t⚠️  [Debe elegir una opcion valida (1 - 5)] : ";
         opcion = controlINT();
     }
     return opcion;
@@ -460,9 +433,9 @@ int main(int argc, char* argv[]) {
     Nodo* raiz = nullptr;
     bool inicio = false;
         // Sobre la lectura del archivo
-    string file_GO, line, temp;
+    string file_GO, line, go_id, temp_score_GO;
         // Variables de trabajo con el usuario + info nodos ⭐
-    string function, nombre, GO;
+    string function, nombre;
     int opcion;
     float score;
 
@@ -487,15 +460,13 @@ int main(int argc, char* argv[]) {
     // Obteniendo informacion del archivo
     while (getline(file_csv, line)) {
         stringstream ss(line);
-        getline(ss, temp, ':'); // salta 'GO:' de csv...
-        getline(ss, GO, ';'); // y se reescribe para utilizar el codigo GO⭐
+        getline(ss, go_id, ';'); // salta 'GO:[code]' de csv
         getline(ss, function, ';'); // function es 'Function' del csv ⭐
-        getline(ss, temp, ';');
+        getline(ss, temp_score_GO, ';');
         
-        score = stof(temp); // score es 'Score' del csv ⭐
-
+        score = stof(temp_score_GO); // score es 'Score' del csv ⭐
         bool inicio = false;
-        insercionBalanceado(&raiz, &inicio, function, score, GO);
+        insercionBalanceado(&raiz, &inicio, function, score);
     }
 
     // Y se cierra el archivo
@@ -520,17 +491,15 @@ int main(int argc, char* argv[]) {
         switch (opcion) {
             // 1. ⭕ Insertar dato.
             case 1: {
-                GO = controlGO();
-
-                cout << "\n< Ingresar Score\n⚠️  Utilice '.' como decimal, no ',': ";
+                cout << "< Ingresar Score\n⚠️  Utilice '.' como decimal, no ',': ";
                 score = controlFLOAT();
 
-                cout << "\n< Ahora ingrese Function: ";
+                cout << "< Ahora ingrese Function: ";
                 cin.ignore(numeric_limits<streamsize>::max(), '\n');
                 getline(cin, function); // Lee tambien espacios 
 
                 inicio = false;
-                insercionBalanceado(&raiz, &inicio, function, score, GO);
+                insercionBalanceado(&raiz, &inicio, function, score);
                 generarGrafo(raiz, nombreTXT, nombrePNG);
 
                 break;
