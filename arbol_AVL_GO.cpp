@@ -70,7 +70,7 @@ string controlGO() {
     int valor;
     stringstream stream;
 
-    cout << "Ingrese codigo GO\n⚠️  solo los ultimos 7 son relevantes : "; 
+    cout << "Ingrese codigo GO : "; 
 
     do {
         valor = controlINT();
@@ -451,7 +451,7 @@ int menu() {
     cout << "1. ⭕ Insertar nodo.\n"; 
     cout << "2. 👁️  Buscar nodo.\n";
     cout << "3. ❌ Eliminar nodo.\n";
-    cout << "4. 🖨️  Generar + mostrar grafo o guardar grafo en otro archivo.\n";
+    cout << "4. 🖨️  Generar grafo y/o guardar grafo en otro archivo.\n";
     cout << "5. 🚪🏃 Salir.\n++++++++++++\n\n";
     cout << "> Seleccione una opcion: ";
     opcion = controlINT();

@@ -420,7 +420,7 @@ int menu() {
     cout << "1. ⭕ Insertar nodo.\n"; 
     cout << "2. 👁️  Buscar nodo.\n";
     cout << "3. ❌ Eliminar nodo.\n";
-    cout << "4. 🖨️  Generar + mostrar grafo o guardar grafo en otro archivo.\n";
+    cout << "4. 🖨️  Generar grafo y/o guardar grafo en otro archivo.\n";
     cout << "5. 🚪🏃 Salir.\n++++++++++++\n\n";
     cout << "> Seleccione una opcion: ";
     opcion = controlINT();
