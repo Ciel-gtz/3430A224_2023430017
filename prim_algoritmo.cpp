@@ -215,9 +215,9 @@ void actualizar_pesos(int *D, string *VS, int **M, string *V, string v, int tota
 }
 
 
-// ─────────────| Algoritmo de Dijkstra |─────────────¬
+// ─────────────| Algoritmo de Prim |─────────────¬
 
-void aplicar_dijkstra(string *V, string *S, string *VS, int *D, int **M, int totalElem) {
+void aplicar_prim(string *V, string *S, string *VS, int *D, int **M, int totalElem) {
     cout << "\n─────────| Estados iniciales |─────────¬\n";
 
     // V: todos los vértices
@@ -240,7 +240,7 @@ void aplicar_dijkstra(string *V, string *S, string *VS, int *D, int **M, int tot
     cout << "\n- Distancia inicial:\n";
     imprimir_vector_entero(D, totalElem);
 
-    cout << "\n─────────────| Dijkstra |─────────────¬\n";
+    cout << "\n─────────────| Prim |─────────────¬\n";
 
       // agrega primer vértice (V[0]) al conjunto S
     cout << "<─| Agrega primer valor V[0] a S[] y actualiza VS[] |─>\n\n";
@@ -345,9 +345,9 @@ int main(int argc, char **argv) {
     leer_nodos(V, totalElem); // llena V con 'a', 'b', 'c', etc.
     imprimir_vector_caracter(V, totalElem, "V");
     
-// <──| Ejecución del algoritmo de Dijkstra. |──>
+// <──| Ejecución del algoritmo de Prim. |──>
     int D[totalElem];
-    aplicar_dijkstra(V, S, VS, D, matriz, totalElem);
+    aplicar_prim(V, S, VS, D, matriz, totalElem);
     
 // <──| Creación y visualización del grafo |──>
     imprimir_grafo(matriz, V, totalElem);
