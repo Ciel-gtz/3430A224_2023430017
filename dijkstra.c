@@ -300,7 +300,7 @@ void imprimir_grafo(int matriz[N][N], char vector[N]) {
   int i, j;
   FILE *fp;
   
-  fp = fopen("grafo.txt", "w");
+  fp = fopen("grafoEX.txt", "w");
   fprintf(fp, "%s\n", "digraph G {");
   fprintf(fp, "%s\n", "graph [rankdir=LR]");
   fprintf(fp, "%s\n", "node [style=filled fillcolor=yellow];");
@@ -319,6 +319,6 @@ void imprimir_grafo(int matriz[N][N], char vector[N]) {
   fprintf(fp, "%s\n", "}");
   fclose(fp);
 
-  system("dot -Tpng -ografo.png grafo.txt");
-  system("eog grafo.png &");
+  system("dot -Tpng -ografoEX.png grafoEX.txt");
+  system("eog grafoEX.png &");
 }

@@ -4,20 +4,6 @@
 using namespace std;
 
 // ─────────────| Controles de entrada |─────────────¬
-// Usuario debe escribir char
-char userDecision(){
-    char userAnswer;
-    do {
-        cout << "! [s/n] : ";
-        cin >> userAnswer;
-        cin.ignore(numeric_limits<streamsize>::max(), '\n');
-        userAnswer = (char)tolower(userAnswer);
-    } 
-    while( !cin.fail() && userAnswer!='s' && userAnswer!='n' );
-
-    return userAnswer;   
-}
-
 // Usuario debe escribir int
 int controlINT() { 
     int valor;
@@ -34,6 +20,7 @@ int controlINT() {
         }
     }
 }
+
 
 // ─────────────| Sobre los caracteres |─────────────¬
 void leer_nodos(string *vector, int totalElem) {
@@ -82,7 +69,7 @@ void imprimir_matriz(int **matriz, int totalElem) {
 
 
 /// asjdas weas dentro de la dijjstar
-int busca_caracter(string c, string *vector, int totalElem) {
+bool busca_caracter(string c, string *vector, int totalElem) {
     for (int j = 0; j < totalElem; j++) {
         if (c == vector[j]) {
             return true;
@@ -105,18 +92,14 @@ void actualizar_VS(string *V, string *S, string *VS, int totalElem) {
     inicializar_vector_caracter(VS, totalElem);
 
     int k = 0;
-    // Recorre todos los vértices del grafo
-    for (int j = 0; j < totalElem; j++) {
-        bool found = false;
-
-        for (int j = 0; j < totalElem; j++) {
-        if (busca_caracter(V[j], S, totalElem) != true) {
-            VS[k] = V[j];
+    for (int i = 0; i < totalElem; i++) {
+        if (!busca_caracter(V[i], S, totalElem)) {
+            VS[k] = V[i];
             k++;
-            }
         }
     }
 }
+
 
 /// otra wea dijkstra
 int buscar_indice_caracter(string *vector, string caracter, int totalElem) {
@@ -153,7 +136,7 @@ int elegir_vertice(string *VS, int *D, string *V, int totalElem) {
 
     if (indice_vertice != -1){
         cout << "\n- vertice elegido: " << V[indice_vertice] << " [peso: " << menor << "]\n";
-        return menor;
+        return indice_vertice;
     }
         
     else{
@@ -162,6 +145,46 @@ int elegir_vertice(string *VS, int *D, string *V, int totalElem) {
     }
 }
 
+
+int calcular_minimo(int dw, int dv, int mvw) {
+    int minimo;
+
+    if (dw == -1) {
+        if (dv != -1 && mvw != -1)
+            minimo = dv + mvw;
+        else
+            minimo = -1;
+    } else {
+        if (dv != -1 && mvw != -1) {
+            if (dw <= (dv + mvw))
+                minimo = dw;
+            else
+                minimo = (dv + mvw);
+        } else {
+            minimo = dw;
+        }
+    }
+
+    cout << "dw: " << dw << " dv: " << dv << " mvw: " << mvw << " min: " << minimo << endl;
+    return minimo;
+}
+
+
+void actualizar_pesos(int *D, string *VS, int **M, string *V, string v, int totalElem) {
+    cout << "\n> actualiza pesos en D[]\n";
+
+    int i = 0;
+    int indice_w, indice_v;
+
+    indice_v = buscar_indice_caracter(V, v, totalElem);
+    while ((VS[i] != " ") && (i < totalElem)) {
+        if (VS[i] != v) {
+            indice_w = buscar_indice_caracter(V, VS[i], totalElem);
+            D[indice_w] = calcular_minimo(D[indice_w], D[indice_v], M[indice_v][indice_w]);
+        }
+        i++;
+    }
+}
 
 
 // ─────────────| Ingresa datos a la matriz |─────────────¬
@@ -224,13 +247,50 @@ void aplicar_dijkstra(string *V, string *S, string *VS, int *D, int **M, int tot
         cout << "> lo agrega a S[] y actualiza VS[]\n";
         int v = elegir_vertice(VS, D, V, totalElem);
         
-        
+        agrega_vertice_a_S(S, V[v], totalElem);
+        imprimir_vector_caracter(S, totalElem, "S");
 
+        actualizar_VS(V, S, VS, totalElem);
+        imprimir_vector_caracter(VS, totalElem, "VS");
 
+        actualizar_pesos(D, VS, M, V, V[v], totalElem);
+        imprimir_vector_entero(D, totalElem);
     }
     
     cout << "\n───────────| Fin Dijkstra |────────────\n";
 }
+
+
+// ─────────────| Imprime grafo con Graphviz |─────────────¬
+void imprimir_grafo(int **matriz, string *vector, int totalElem) {
+    FILE *fp = fopen("grafo.txt", "w");
+
+    if (!fp) {
+        cerr << "⚠️  Error al abrir el archivo grafo.txt" << endl;
+        return;
+    }
+
+    fprintf(fp, "digraph G {\n");
+    fprintf(fp, "\tgraph [rankdir=LR];\n");
+    fprintf(fp, "\tnode [style=filled, fillcolor=\"#ae73cfff\" ];\n");
+
+    for (int i = 0; i < totalElem; i++) {
+        for (int j = 0; j < totalElem; j++) {
+            if (i != j && matriz[i][j] > 0) {
+                // vector[i][0] -> toma el carácter (ej: "a", "b", etc.)
+                fprintf(fp, "\t%s -> %s [label=%d];\n", vector[i].c_str(), vector[j].c_str(), matriz[i][j]);
+            }
+        }
+    }
+
+    fprintf(fp, "}\n");
+    fclose(fp);
+    
+    system("dot -Tpng -ografo.png grafo.txt");
+    system("eog grafo.png &");
+}
+
+
 
 
 // ─────────────| Main |─────────────¬
@@ -281,6 +341,9 @@ int main(int argc, char **argv) {
     aplicar_dijkstra(V, S, VS, D, matriz, totalElem);
     imprimir_vector_caracter(V, totalElem, "V");
     
+// <──| Crea el grafo. |──>
+    imprimir_grafo(matriz, V, totalElem);
+
 // <──| Libera memoria de la matriz. |──>
     for (int i = 0; i < totalElem; i++)
         delete[] matriz[i];
