@@ -35,41 +35,39 @@ int controlINT() {
     }
 }
 
+// ─────────────| Sobre los caracteres |─────────────¬
+void leer_nodos(string *vector, int totalElem) {
+    int inicio = 97; // 'a'
+    for (int i = 0; i < totalElem; i++) {
+        vector[i] = static_cast<char>(inicio + i);  // a, b, c, etc.
+    }
+}
+
 
 // ─────────────| Sobre la matriz |─────────────¬
 // inicializa un vector. recibe el vector como un puntero.
-void inicializar_vector_caracter (string *vector, int n) {
+void inicializar_vector_caracter(string *vector, int totalElem) {
     int col;
   
     // recorre el vector.
-    for (col=0; col<n; col++) {
+    for (col=0; col<totalElem; col++) {
         vector[col] = ' ';
     }
 }
 
 // imprime un vector. recibe el vector como un puntero.
-void imprimir_vector_caracter(string *vector, int n) {
-    cout << endl;
-    for (int i=0; i<n; i++) {
-        cout << "vector[" << i << "]: " << vector[i] << " ";
+void imprimir_vector_caracter(string *vector, int totalElem, string nombreVector) {
+    for (int i=0; i<totalElem; i++) {
+        cout << nombreVector << "[" << i << "]: " << vector[i] << " ";
     }
     cout << endl;
-}
-
-// inicializa matriz nxn. recibe puntero a la matriz.
-void inicializar_matriz_enteros (int **matriz, int n) {
-    for (int fila=0; fila<n; fila++) {
-        for (int col=0; col<n; col++) {
-            matriz[fila][col] = -1;
-        }
-    }
 }
 
 // Imprime matriz
-void imprimir_matriz(int **matriz, int n) {
+void imprimir_matriz(int **matriz, int totalElem) {
     cout << endl;
-    for (int fila=0; fila<n; fila++) {
-        for (int col=0; col<n; col++) {
+    for (int fila=0; fila<totalElem; fila++) {
+        for (int col=0; col<totalElem; col++) {
             cout << "\t|" << matriz[fila][col] << " ";
         }
         cout << endl;
@@ -100,38 +98,102 @@ void leer_datos_matriz(int **matriz, int matriz_size) {
 }
 
 
+// ─────────────| Dijkstra |─────────────¬
+void aplicar_dijkstra(string *V, string *S, string *VS, int *D, int **M, int totalElem) {
+    cout << "\n─────────────| Dijkstra |─────────────¬\n";
+
+    // Inicializa D con la fila 0 de la matriz (distancias desde el primer nodo)
+    for (int col = 0; col < totalElem; col++)
+        D[col] = M[0][col];
+    
+    // Muestra estado inicial
+    cout << "<──| Estados iniciales |──>\n\n- matriz:";
+    imprimir_matriz(M, totalElem);
+    cout << "\n- vectores:\n";
+    imprimir_vector_caracter(S, totalElem, "S");
+    imprimir_vector_caracter(VS, totalElem, "VS");
+    
+    cout << "\n- Distancias iniciales:\n";
+    for (int i = 0; i < totalElem; i++)
+        cout << "D[" << i << "] = " << D[i] << " ";
+    cout << endl;
+    cout << "\n──────────────────────────────────────¬\n";
+
+    // Agrega el primer vértice (V[0]) a S
+    S[0] = V[0];
+    cout << "\nPrimer vértice agregado a S: " << S[0] << endl;
+
+    // Actualiza VS (vertices que no están en S)
+    int k = 0;
+    for (int j = 0; j < totalElem; j++) {
+        bool found = false;
+        for (int i = 0; i < totalElem; i++)
+            if (S[i] == V[j]) found = true;
+        if (!found)
+            VS[k++] = V[j];
+    }
+
+    imprimir_vector_caracter(VS, totalElem, "VS");
+    cout << "\n───────────| Fin Dijkstra |────────────\n";
+}
+
+
 // ─────────────| Main |─────────────¬
 int main(int argc, char **argv) {
     // número de elementos.
-    int n;
+    int totalElem; 
 
-    /* ===== > Err: mala ejecucion */
+// <──| Err: mala ejecucion. |──>
     if (argc<2) {
         cout << "⚠️  Utilice: ./[ejecutable] [n° de nodos]" << endl;
         return 1;
-    } if (atoi(argv[1])<=0) {
-        cout << "⚠️  El número de nodos debe ser mayor a 0." << endl;
+    } 
+    if (atoi(argv[1])<2) {
+        cout << "⚠️  El número de nodos debe ser mayor o igual a 2." << endl;
         return 1;
     }
 
-    // convierte string a entero.
-    n = atoi(argv[1]);
-    //***string V[n];
+// <──| Convierte string a entero. |──>
+    totalElem = atoi(argv[1]);
 
-    // inicializa e imprime vectores.
-    //***inicializar_vector_caracter(V, n);
-    //***imprimir_vector_caracter(V, n);
-
+    
+// <──| Creación de matriz. |──>
     // crea matriz nxn de enteros.
     int **matriz;
-    matriz = new int*[n];
-    for(int i=0; i<n; i++)
-        matriz[i] = new int[n];
+    matriz = new int*[totalElem];
+    for(int i=0; i<totalElem; i++)
+        matriz[i] = new int[totalElem];
 
-    //***inicializar_matriz_enteros(matriz, n);
     // Lee los datos de la matriz.
-    leer_datos_matriz(matriz, n);
-    imprimir_matriz(matriz, n);
+    leer_datos_matriz(matriz, totalElem);
+
+// <──| Creación de vectores. |──>
+    // Vectores de carácteres
+    string V[totalElem];
+    string S[totalElem];
+    string VS[totalElem];
+
+    // inicializa vectores.
+    inicializar_vector_caracter(V, totalElem);
+    inicializar_vector_caracter(S, totalElem);
+    inicializar_vector_caracter(VS, totalElem);
+
+    // Lee los nodos para agregar caracteres [a, b, c...] al vector V.
+    leer_nodos(V, totalElem);
+
+
+// <──| Imprime la matriz. |──>
+    imprimir_matriz(matriz, totalElem);
+
+// <──| Aplica el algoritmo de Dijkstra. |──>
+    int D[totalElem];
+    aplicar_dijkstra(V, S, VS, D, matriz, totalElem);
+    imprimir_vector_caracter(V, totalElem, "V");
+    
+// <──| Libera memoria de la matriz. |──>
+    for (int i = 0; i < totalElem; i++)
+        delete[] matriz[i];
+    delete[] matriz;
 
     return 0;
 }
