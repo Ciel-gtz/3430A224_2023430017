@@ -3,8 +3,7 @@
 #include <limits>
 using namespace std;
 
- /* =======================
-|| Controles de entrada  */
+// ─────────────| Controles de entrada |─────────────¬
 // Usuario debe escribir char
 char userDecision(){
     char userAnswer;
@@ -36,8 +35,8 @@ int controlINT() {
     }
 }
 
- /* =======================
-|| Sobre la matriz  */
+
+// ─────────────| Sobre la matriz |─────────────¬
 // inicializa un vector. recibe el vector como un puntero.
 void inicializar_vector_caracter (string *vector, int n) {
     int col;
@@ -66,22 +65,19 @@ void inicializar_matriz_enteros (int **matriz, int n) {
     }
 }
 
-
- /* =======================
-|| Imprime matriz  */
+// Imprime matriz
 void imprimir_matriz(int **matriz, int n) {
     cout << endl;
     for (int fila=0; fila<n; fila++) {
         for (int col=0; col<n; col++) {
-            cout << "\t" << matriz[fila][col] << " ";
+            cout << "\t|" << matriz[fila][col] << " ";
         }
         cout << endl;
     }
 }
 
 
- /* =======================
-|| Ingresa datos matriz  */
+// ─────────────| Ingresa datos a la matriz |─────────────¬
 void leer_datos_matriz(int **matriz, int matriz_size) {
     int valor;
     char decision;
@@ -104,8 +100,7 @@ void leer_datos_matriz(int **matriz, int matriz_size) {
 }
 
 
- /* =======================
-|| Main  */
+// ─────────────| Main |─────────────¬
 int main(int argc, char **argv) {
     // número de elementos.
     int n;
