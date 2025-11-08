@@ -158,7 +158,7 @@ int elegir_vertice(string *VS, int *D, string *V, int totalElem) {
 
 
     // Recorre todos los vértices en VS[] mientras no haya espacios vacíos
-    while ((VS[i] != " ") && (i < totalElem)) {
+    while ((i < totalElem) && (VS[i] != " ")) {
         int indice_VS = buscar_indice_caracter(V, VS[i], totalElem);
         peso = D[indice_VS]; // Obtiene el peso (distancia) desde el vector D[]
 
