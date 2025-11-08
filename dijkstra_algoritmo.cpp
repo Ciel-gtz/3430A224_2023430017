@@ -43,6 +43,12 @@ void leer_nodos(string *vector, int totalElem) {
     }
 }
 
+void imprimir_vector_entero(int *vector, int totalElem) {
+    for (int i = 0; i < totalElem; i++){
+        cout << "D[" << i << "] = " << vector[i] << " ";
+    }
+    cout << endl;
+}
 
 // ─────────────| Sobre la matriz |─────────────¬
 // inicializa un vector. recibe el vector como un puntero.
@@ -75,6 +81,46 @@ void imprimir_matriz(int **matriz, int totalElem) {
 }
 
 
+/// asjdas weas dentro de la dijjstar
+int busca_caracter(string c, string *vector, int totalElem) {
+    for (int j = 0; j < totalElem; j++) {
+        if (c == vector[j]) {
+            return true;
+        }
+    }
+    return false;
+}
+
+
+void agrega_vertice_a_S(string *S, string vertice, int totalElem) {
+    for (int i = 0; i < totalElem; i++) {
+        if (S[i] == " " || S[i].empty()) { // busca primer espacio vacío
+            S[i] = vertice;
+            break;
+        }
+    }
+}
+
+void actualizar_VS(string *V, string *S, string *VS, int totalElem) {
+    inicializar_vector_caracter(VS, totalElem);
+
+    int k = 0;
+    // Recorre todos los vértices del grafo
+    for (int j = 0; j < totalElem; j++) {
+        bool found = false;
+
+        for (int j = 0; j < totalElem; j++) {
+        if (busca_caracter(V[j], S, totalElem) != true) {
+            VS[k] = V[j];
+            k++;
+            }
+        }
+    }
+}
+
+/// otra wea dijkstra
+
+
 // ─────────────| Ingresa datos a la matriz |─────────────¬
 void leer_datos_matriz(int **matriz, int matriz_size) {
     int valor;
@@ -100,40 +146,35 @@ void leer_datos_matriz(int **matriz, int matriz_size) {
 
 // ─────────────| Dijkstra |─────────────¬
 void aplicar_dijkstra(string *V, string *S, string *VS, int *D, int **M, int totalElem) {
-    cout << "\n─────────────| Dijkstra |─────────────¬\n";
+    cout << "\n─────────| Estados iniciales |─────────¬\n";
 
     // Inicializa D con la fila 0 de la matriz (distancias desde el primer nodo)
     for (int col = 0; col < totalElem; col++)
         D[col] = M[0][col];
     
     // Muestra estado inicial
-    cout << "<──| Estados iniciales |──>\n\n- matriz:";
+    cout << "- matriz:";
     imprimir_matriz(M, totalElem);
     cout << "\n- vectores:\n";
     imprimir_vector_caracter(S, totalElem, "S");
     imprimir_vector_caracter(VS, totalElem, "VS");
     
-    cout << "\n- Distancias iniciales:\n";
-    for (int i = 0; i < totalElem; i++)
-        cout << "D[" << i << "] = " << D[i] << " ";
-    cout << endl;
-    cout << "\n──────────────────────────────────────¬\n";
+    cout << "\n- Distancia inicial:\n";
+    imprimir_vector_entero(D, totalElem);
 
-    // Agrega el primer vértice (V[0]) a S
-    S[0] = V[0];
-    cout << "\nPrimer vértice agregado a S: " << S[0] << endl;
+    cout << "\n─────────────| Dijkstra |─────────────¬\n";
 
-    // Actualiza VS (vertices que no están en S)
-    int k = 0;
-    for (int j = 0; j < totalElem; j++) {
-        bool found = false;
-        for (int i = 0; i < totalElem; i++)
-            if (S[i] == V[j]) found = true;
-        if (!found)
-            VS[k++] = V[j];
-    }
+    cout << "<─| Agrega primer valor V[0] a S[] y actualiza VS[] |─>\n\n";
 
+    agrega_vertice_a_S(S, V[0], totalElem);
+    imprimir_vector_caracter(S, totalElem, "S");
+
+    actualizar_VS(V, S, VS, totalElem);
     imprimir_vector_caracter(VS, totalElem, "VS");
+    
+    imprimir_vector_entero(D, totalElem);
+    cout << "\n──────────────────────────────────────¬\n";
+    
     cout << "\n───────────| Fin Dijkstra |────────────\n";
 }
 
@@ -156,7 +197,7 @@ int main(int argc, char **argv) {
 // <──| Convierte string a entero. |──>
     totalElem = atoi(argv[1]);
 
-    
+
 // <──| Creación de matriz. |──>
     // crea matriz nxn de enteros.
     int **matriz;
@@ -180,10 +221,6 @@ int main(int argc, char **argv) {
 
     // Lee los nodos para agregar caracteres [a, b, c...] al vector V.
     leer_nodos(V, totalElem);
-
-
-// <──| Imprime la matriz. |──>
-    imprimir_matriz(matriz, totalElem);
 
 // <──| Aplica el algoritmo de Dijkstra. |──>
     int D[totalElem];
