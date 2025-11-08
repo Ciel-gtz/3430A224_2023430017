@@ -74,7 +74,6 @@ void imprimir_matriz(int **matriz, int totalElem) {
 // Solicita al usuario ingresar los valores de la matriz.
 void leer_datos_matriz(int **matriz, int matriz_size) {
     int valor;
-    char decision;
 
     cout << "\n+x Ingrese los datos de la matriz de adyacencia x+\n";
     cout << "\tOrganizados de forma: matriz[Fila][columna]\n\t(ingrese -1 si no hay conexión)\n" << endl;
