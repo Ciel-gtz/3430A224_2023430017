@@ -25,7 +25,6 @@ int controlINT() {
 
 // ─────────────| Operaciones sobre vectores y matrices |─────────────¬
 
-
 // Genera los nombres de los nodos en el vector.
 void leer_nodos(string *vector, int totalElem) {
     int inicio = 97; // 'a'
@@ -75,31 +74,38 @@ void imprimir_matriz(int **matriz, int totalElem) {
 void leer_datos_matriz(int **matriz, int matriz_size) {
     int valor;
 
-    cout << "\n+x Ingrese los datos de la matriz de adyacencia x+\n";
-    cout << "\tOrganizados de forma: matriz[Fila][columna]\n\t(ingrese -1 si no hay conexión)\n" << endl;
+    cout << "\n+x Ingrese los datos de la matriz de adyacencia x+\n" 
+         << "\tOrganizados de forma: matriz[Fila][columna]\n" 
+         << "\t(ingrese -1 si no hay conexión)\n" << endl;
     
     for (int fila = 0; fila < matriz_size; fila++) {
         for (int col = 0; col < matriz_size; col++) {
+
+            // La diagonal principal siempre vale 0.
             if (fila == col) {
                 matriz[fila][col] = 0;
                 continue;
             }
+
+            // Copia el valor simétrico ya ingresado para no reiterar pedirlo innecesariamente.
             if (col < fila) {
-                // copiar el valor simétrico ya ingresado
                 matriz[fila][col] = matriz[col][fila];
                 continue;
             }
 
+            // Solicita el valor del usuario para esta posición
             cout << ">> matriz[" << fila << "][" << col << "] ---> ";
             valor = controlINT();
+
+            // Asigna el valor ingresado y su copia simétrica
             matriz[fila][col] = valor;
-            matriz[col][fila] = valor; // copia simétrica
+            matriz[col][fila] = valor;
         }
     }
 }
 
 
-// ─────────────| Funciones de apoyo a Dijkstra |─────────────¬
+// ─────────────| Funciones de apoyo a Prim |─────────────¬
 
 // Busca si un carácter está en un vector.
 bool busca_caracter(string c, string *vector, int totalElem) {
@@ -143,35 +149,43 @@ void actualizar_VS(string *V, string *S, string *VS, int totalElem) {
     }
 }
 
-// Selecciona el vértice con menor distancia dentro de VS.******DEL?
+// Selecciona el vértice con menor distancia dentro de VS.
 int elegir_vertice(string *VS, int *D, string *V, int totalElem) {
     int i = 0;
     int menor = 0;
     int peso;
-    int indice_vertice = -1; // -1 si no se encuentra
+    int indice_vertice = -1; // -1 si no se encuentra un vértice válido
 
+
+    // Recorre todos los vértices en VS[] mientras no haya espacios vacíos
     while ((VS[i] != " ") && (i < totalElem)) {
         int indice_VS = buscar_indice_caracter(V, VS[i], totalElem);
-        peso = D[indice_VS];
+        peso = D[indice_VS]; // Obtiene el peso (distancia) desde el vector D[]
 
+        // Ignora pesos inválidos (sin conexión o distancia 0)
         if ((peso != -1) && (peso != 0)) {
+            // Si es el primer vértice válido, se guarda directamente como menor
             if (indice_vertice == -1) {
                 menor = peso;
                 indice_vertice = indice_VS;
-            } else {
-                if (peso < menor) {
-                    menor = peso;
-                    indice_vertice = indice_VS;
-                }
+            } 
+            // Si ya hay uno seleccionado, compara y guarda el menor peso
+            else if (peso < menor) {
+                menor = peso;
+                indice_vertice = indice_VS;
             }
         }
+        // Avanza al siguiente vértice de VS[]
         i++;
     }
+
+    // Si encontró un vértice válido, lo muestra y lo retorna
     if (indice_vertice != -1){
         cout << "\n- vertice elegido: " << V[indice_vertice] << " [peso: " << menor << "]\n";
         return indice_vertice;
     }
-        
+    
+    // Si no encontró ninguno válido, avisa y retorna -1
     else{
         cout << "\n⚠️  No se ha encontrado vertice valido\n";
         return indice_vertice;
@@ -200,24 +214,24 @@ void actualizar_pesos_prim(int *D, string *S, int **M, string *V, int totalElem)
 }
 
 
-
 // ─────────────| Algoritmo de Prim |─────────────¬
 
 void aplicar_prim(string *V, string *S, string *VS, int *D, int **M, int **MST, int totalElem) {
     cout << "\n─────────| Estados iniciales |─────────¬\n";
 
     /*
-    S → representa el conjunto de vértices ya en el árbol (selected en el ejemplo).
-    V → lista de todos los nombres de nodos (a, b, c, …).
-    M → matriz de adyacencia con pesos.
-    imprimir_vector_caracter() → para mostrar estados.
+    MST -> Matriz del árbol de expansión mínima (Minimum Spanning Tree).
+    S -> Conjunto de vértices ya en el MST.
+    V -> Lista de todos los vertices del grafo(a, b, c, …).
+    M -> matriz de adyacencia original con los pesos.
     */
 
-    // Inicializa D con la fila 0 de la matriz (distancias desde el primer nodo)
+    // <──| Inicializa D con los pesos de la fila 0 de la matriz |──>
     for (int col = 0; col < totalElem; col++)
         D[col] = M[0][col];
     
-    // Muestra estado inicial
+
+    // <──| Muestra estados iniciales |──>
     cout << "- matriz:";
     imprimir_matriz(M, totalElem);
     cout << "\n- vectores:\n";
@@ -227,9 +241,10 @@ void aplicar_prim(string *V, string *S, string *VS, int *D, int **M, int **MST, 
     cout << "\n- Distancia inicial:\n";
     imprimir_vector_entero(D, totalElem);
 
-    cout << "\n───────────────| Prim |───────────────¬\n";
 
-    // agrega primer vértice (V[0]) al conjunto S
+    cout << "\n───────────────| Prim |───────────────¬\n";
+    // <──| agrega primer vértice (V[0]) a S |──>
+
     cout << "<─| Agrega primer valor V[0] a S[] y actualiza VS[] |─>\n\n";
 
     agrega_vertice_a_S(S, V[0], totalElem);
@@ -241,20 +256,22 @@ void aplicar_prim(string *V, string *S, string *VS, int *D, int **M, int **MST, 
     imprimir_vector_entero(D, totalElem);
 
     cout << "\n──────────────────────────────────────¬\n";
+    // <──| Bucle principal del algoritmo de Prim |──>
 
-    // Bucle principal del algoritmo
     for (int step = 1; step < totalElem; step++) {
-        // elige un vértice en v de VS[] tal que D[v] sea el mínimo 
-        cout << "\n> elige vertice menor en VS[] según valores en D[]\n";
-        cout << "> lo agrega a S[] y actualiza VS[]\n";
+        // Selecciona vértice con menor D dentro de VS
+        cout << "<─| elige vertice menor en VS[] según valores en D[] |─>\n\n";
+        cout << "\t<─| lo agrega a S[] y actualiza VS[] |─>\n\n";
 
-        int v = elegir_vertice(VS, D, V, totalElem);  // índice del vértice elegido
-        if (v == -1) break;
+        int v = elegir_vertice(VS, D, V, totalElem); // índice del vértice elegido
+        if (v == -1) break; // si no hay vértice válido, termina
 
-        // ── Buscar la conexión mínima entre el vértice elegido y el conjunto S ──
+
+        // Busca la conexión mínima entre el vértice elegido y el conjunto S
         int from = -1;
         int peso_min = numeric_limits<int>::max();
 
+        // Recorre todos los vértices que ya están en S para buscar el peso más bajo
         for (int i = 0; i < totalElem; i++) {
             if (busca_caracter(V[i], S, totalElem) && M[i][v] > 0) {
                 if (M[i][v] < peso_min) {
@@ -264,7 +281,7 @@ void aplicar_prim(string *V, string *S, string *VS, int *D, int **M, int **MST, 
             }
         }
 
-        // Guarda la arista en el MST
+        // Guarda la arista elegida en el MST
         if (from != -1 && peso_min != numeric_limits<int>::max()) {
             MST[from][v] = peso_min;
             MST[v][from] = peso_min; // grafo no dirigido
@@ -272,29 +289,31 @@ void aplicar_prim(string *V, string *S, string *VS, int *D, int **M, int **MST, 
                  << " (peso " << peso_min << ")\n";
         }
 
-        // ── Añade el vértice elegido a S ──
+        // -> Añade el vértice elegido a S
         agrega_vertice_a_S(S, V[v], totalElem);
         imprimir_vector_caracter(S, totalElem, "S");
 
+        // -> Actualiza VS
         actualizar_VS(V, S, VS, totalElem);
         imprimir_vector_caracter(VS, totalElem, "VS");
 
+        // -> Actualiza los pesos mínimos hacia el conjunto S
         actualizar_pesos_prim(D, S, M, V, totalElem);
         imprimir_vector_entero(D, totalElem);
     }
 
+    // <──| Muestra las aristas finales del MST (conjunto L) |──>
     cout << "\n────────────── Conjunto L ──────────────\n";
 
     for (int i = 0; i < totalElem; i++) {
         for (int j = i + 1; j < totalElem; j++) {
             if (MST[i][j] > 0)
-                cout << V[i] << " - " << V[j] << " (peso " << MST[i][j] << ")\n";
+                cout << V[i] << " -- " << V[j] << " [peso: " << MST[i][j] << "]\n";
         }
     }
 
     cout << "\n─────────────| Fin Prim |──────────────\n";
 }
-
 
 
 // ─────────────| Crea y visualiza grafo con Graphviz |─────────────¬
@@ -309,13 +328,13 @@ void imprimir_grafo(int **matriz, string *vector, int totalElem, string nombreAr
     }
 
     fprintf(fp, "graph G {\n");
+    fprintf(fp, "graph [rankdir=LR];\n");
     fprintf(fp, "node [style=filled, fillcolor=\"#ae73cfff\"];\n");
 
     for (int i = 0; i < totalElem; i++) {
         for (int j = i + 1; j < totalElem; j++) {
             if (matriz[i][j] > 0) {
-                fprintf(fp, "%s -- %s [label=%d];\n",
-                        vector[i].c_str(), vector[j].c_str(), matriz[i][j]);
+                fprintf(fp, "%s -- %s [label=%d];\n", vector[i].c_str(), vector[j].c_str(), matriz[i][j]);
             }
         }
     }
@@ -323,11 +342,9 @@ void imprimir_grafo(int **matriz, string *vector, int totalElem, string nombreAr
     fprintf(fp, "}\n");
     fclose(fp);
 
-    string cmd = "dot -Tpng -o" + nombreArchivo + ".png " + nombreArchivo + ".txt";
-    system(cmd.c_str());
+    system(("dot -Tpng -o" + nombreArchivo + ".png " + nombreArchivo + ".txt").c_str());
     system(("eog " + nombreArchivo + ".png &").c_str());
 }
-
 
 
 // ─────────────| Main |─────────────¬
@@ -347,6 +364,7 @@ int main(int argc, char **argv) {
 
     totalElem = atoi(argv[1]); // conversión de argumento a entero
 
+
 // <──| inicialización de vectores. |──>
     string V[totalElem];
     string S[totalElem];
@@ -358,6 +376,7 @@ int main(int argc, char **argv) {
     
     leer_nodos(V, totalElem); // llena V con 'a', 'b', 'c', etc.
     imprimir_vector_caracter(V, totalElem, "V"); // Muestra los nodos
+
 
 // <──| Creación de matriz interactuable. |──>
     int **matriz;
@@ -377,17 +396,23 @@ int main(int argc, char **argv) {
             matrizMST[i][j] = 0; // inicializa en 0
     }
 
+
 // <──| Ejecución del algoritmo de Prim. |──>
     int D[totalElem];
     aplicar_prim(V, S, VS, D, matriz, matrizMST, totalElem);
     
+
 // <──| Creación y visualización del grafo |──>
     imprimir_grafo(matriz, V, totalElem, "grafo_original");
     imprimir_grafo(matrizMST, V, totalElem, "grafo_minimo");
 
-// <──| Libera memoria de la matriz. |──>
-    for (int i = 0; i < totalElem; i++)
-    delete[] matrizMST[i];
+
+// <──| Libera memoria de las matrices |──>
+    for (int i = 0; i < totalElem; i++) {
+        delete[] matriz[i];
+        delete[] matrizMST[i];
+    }
+    delete[] matriz;
     delete[] matrizMST;
 
     return 0;

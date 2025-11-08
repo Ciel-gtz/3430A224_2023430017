@@ -1,4 +1,5 @@
 graph G {
+graph [rankdir=LR];
 node [style=filled, fillcolor="#ae73cfff"];
 a -- b [label=6];
 a -- c [label=1];
