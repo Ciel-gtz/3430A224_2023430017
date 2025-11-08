@@ -119,6 +119,49 @@ void actualizar_VS(string *V, string *S, string *VS, int totalElem) {
 }
 
 /// otra wea dijkstra
+int buscar_indice_caracter(string *vector, string caracter, int totalElem) {
+    for (int i = 0; i < totalElem; i++) {
+        if (vector[i] == caracter)
+            return i;
+    }
+    return totalElem; // no encontrado
+}
+
+int elegir_vertice(string *VS, int *D, string *V, int totalElem) {
+    int i = 0;
+    int menor = 0;
+    int peso;
+    int indice_vertice = -1; // -1 si no se encuentra
+
+    while ((VS[i] != " ") && (i < totalElem)) {
+        int indice_VS = buscar_indice_caracter(V, VS[i], totalElem);
+        peso = D[indice_VS];
+
+        if ((peso != -1) && (peso != 0)) {
+            if (indice_vertice == -1) {
+                menor = peso;
+                indice_vertice = indice_VS;
+            } else {
+                if (peso < menor) {
+                    menor = peso;
+                    indice_vertice = indice_VS;
+                }
+            }
+        }
+        i++;
+    }
+
+    if (indice_vertice != -1){
+        cout << "\n- vertice elegido: " << V[indice_vertice] << " [peso: " << menor << "]\n";
+        return menor;
+    }
+        
+    else{
+        cout << "\n⚠️  No se ha encontrado vertice valido\n";
+        return indice_vertice;
+    }
+}
+
 
 
 // ─────────────| Ingresa datos a la matriz |─────────────¬
@@ -164,6 +207,7 @@ void aplicar_dijkstra(string *V, string *S, string *VS, int *D, int **M, int tot
 
     cout << "\n─────────────| Dijkstra |─────────────¬\n";
 
+      // agrega primer véctice.
     cout << "<─| Agrega primer valor V[0] a S[] y actualiza VS[] |─>\n\n";
 
     agrega_vertice_a_S(S, V[0], totalElem);
@@ -174,6 +218,16 @@ void aplicar_dijkstra(string *V, string *S, string *VS, int *D, int **M, int tot
     
     imprimir_vector_entero(D, totalElem);
     cout << "\n──────────────────────────────────────¬\n";
+    for (int i = 1; i < totalElem; i++) {
+        // elige un vértice en v de VS[] tal que D[v] sea el mínimo 
+        cout << "\n> elige vertice menor en VS[] según valores en D[]\n";
+        cout << "> lo agrega a S[] y actualiza VS[]\n";
+        int v = elegir_vertice(VS, D, V, totalElem);
+        
+        
+
+
+    }
     
     cout << "\n───────────| Fin Dijkstra |────────────\n";
 }
