@@ -4,7 +4,8 @@
 using namespace std;
 
 // ─────────────| Controles de entrada |─────────────¬
-// Usuario debe escribir int
+
+    // Usuario debe escribir int
 int controlINT() { 
     int valor;
     while (true){
@@ -22,7 +23,10 @@ int controlINT() {
 }
 
 
-// ─────────────| Sobre los caracteres |─────────────¬
+// ─────────────| Operaciones sobre vectores y matrices |─────────────¬
+
+
+// Genera los nombres de los nodos en el vector.
 void leer_nodos(string *vector, int totalElem) {
     int inicio = 97; // 'a'
     for (int i = 0; i < totalElem; i++) {
@@ -30,15 +34,7 @@ void leer_nodos(string *vector, int totalElem) {
     }
 }
 
-void imprimir_vector_entero(int *vector, int totalElem) {
-    for (int i = 0; i < totalElem; i++){
-        cout << "D[" << i << "] = " << vector[i] << " ";
-    }
-    cout << endl;
-}
-
-// ─────────────| Sobre la matriz |─────────────¬
-// inicializa un vector. recibe el vector como un puntero.
+// Inicializa un vector de strings con espacios en blanco .
 void inicializar_vector_caracter(string *vector, int totalElem) {
     int col;
   
@@ -48,15 +44,23 @@ void inicializar_vector_caracter(string *vector, int totalElem) {
     }
 }
 
-// imprime un vector. recibe el vector como un puntero.
+// Imprime un vector de strings con su nombre como etiqueta.
 void imprimir_vector_caracter(string *vector, int totalElem, string nombreVector) {
     for (int i=0; i<totalElem; i++) {
-        cout << nombreVector << "[" << i << "]: " << vector[i] << " ";
+        cout << " | " << nombreVector << "[" << i << "]: " << vector[i] << " ";
     }
     cout << endl;
 }
 
-// Imprime matriz
+// Imprime un vector de enteros,
+void imprimir_vector_entero(int *vector, int totalElem) {
+    for (int i = 0; i < totalElem; i++){
+        cout << " | D[" << i << "] = " << vector[i] << " ";
+    }
+    cout << endl;
+}
+
+// Imprime una matriz.
 void imprimir_matriz(int **matriz, int totalElem) {
     cout << endl;
     for (int fila=0; fila<totalElem; fila++) {
@@ -67,8 +71,32 @@ void imprimir_matriz(int **matriz, int totalElem) {
     }
 }
 
+// Solicita al usuario ingresar los valores de la matriz.
+void leer_datos_matriz(int **matriz, int matriz_size) {
+    int valor;
+    char decision;
 
-/// asjdas weas dentro de la dijjstar
+    cout << "\n+x Ingrese los datos de la matriz de adyacencia x+\n";
+    cout << "\tOrganizados de forma: matriz[Fila][columna]\n\t(ingrese -1 si no hay conexión)\n" << endl;
+    for (int fila=0; fila<matriz_size; fila++) {
+        for (int col=0; col<matriz_size; col++) {
+            // Evita que se pida el valor de si mismo
+            if (fila == col) {
+                matriz[fila][col] = 0;
+                continue;
+            }
+            
+            cout << ">> matriz[" << fila << "][" << col << "] ---> ";
+            valor = controlINT();
+            matriz[fila][col] = valor;
+        }
+    }
+}
+
+
+// ─────────────| Funciones de apoyo a Dijkstra |─────────────¬
+
+// Busca si un carácter está en un vector.
 bool busca_caracter(string c, string *vector, int totalElem) {
     for (int j = 0; j < totalElem; j++) {
         if (c == vector[j]) {
@@ -78,7 +106,7 @@ bool busca_caracter(string c, string *vector, int totalElem) {
     return false;
 }
 
-
+// Agrega un vértice al conjunto S
 void agrega_vertice_a_S(string *S, string vertice, int totalElem) {
     for (int i = 0; i < totalElem; i++) {
         if (S[i] == " " || S[i].empty()) { // busca primer espacio vacío
@@ -88,6 +116,16 @@ void agrega_vertice_a_S(string *S, string vertice, int totalElem) {
     }
 }
 
+// Devuelve el índice de un carácter dentro de un vector.
+int buscar_indice_caracter(string *vector, string caracter, int totalElem) {
+    for (int i = 0; i < totalElem; i++) {
+        if (vector[i] == caracter)
+            return i;
+    }
+    return totalElem; // no encontrado
+}
+
+// Actualiza el conjunto VS = V - S
 void actualizar_VS(string *V, string *S, string *VS, int totalElem) {
     inicializar_vector_caracter(VS, totalElem);
 
@@ -100,16 +138,7 @@ void actualizar_VS(string *V, string *S, string *VS, int totalElem) {
     }
 }
 
-
-/// otra wea dijkstra
-int buscar_indice_caracter(string *vector, string caracter, int totalElem) {
-    for (int i = 0; i < totalElem; i++) {
-        if (vector[i] == caracter)
-            return i;
-    }
-    return totalElem; // no encontrado
-}
-
+// Selecciona el vértice con menor distancia dentro de VS.
 int elegir_vertice(string *VS, int *D, string *V, int totalElem) {
     int i = 0;
     int menor = 0;
@@ -133,7 +162,6 @@ int elegir_vertice(string *VS, int *D, string *V, int totalElem) {
         }
         i++;
     }
-
     if (indice_vertice != -1){
         cout << "\n- vertice elegido: " << V[indice_vertice] << " [peso: " << menor << "]\n";
         return indice_vertice;
@@ -145,7 +173,7 @@ int elegir_vertice(string *VS, int *D, string *V, int totalElem) {
     }
 }
 
-
+// Calcula el mínimo entre el peso actual y una posible ruta alternativa.
 int calcular_minimo(int dw, int dv, int mvw) {
     int minimo;
 
@@ -169,7 +197,7 @@ int calcular_minimo(int dw, int dv, int mvw) {
     return minimo;
 }
 
-
+// Actualiza los pesos de los vértices según la última elección en Dijkstra.
 void actualizar_pesos(int *D, string *VS, int **M, string *V, string v, int totalElem) {
     cout << "\n> actualiza pesos en D[]\n";
 
@@ -187,32 +215,16 @@ void actualizar_pesos(int *D, string *VS, int **M, string *V, string v, int tota
 }
 
 
-// ─────────────| Ingresa datos a la matriz |─────────────¬
-void leer_datos_matriz(int **matriz, int matriz_size) {
-    int valor;
-    char decision;
+// ─────────────| Algoritmo de Dijkstra |─────────────¬
 
-    cout << "\n+x Ingrese los datos de la matriz de adyacencia x+\n";
-    cout << "\tOrganizados de forma: matriz[Fila][columna]\n\t(ingrese -1 si no hay conexión)\n" << endl;
-    for (int fila=0; fila<matriz_size; fila++) {
-        for (int col=0; col<matriz_size; col++) {
-            // Evita que se pida valor por si mismo
-            if (fila == col) {
-                matriz[fila][col] = 0;
-                continue;
-            }
-            
-            cout << ">> matriz[" << fila << "][" << col << "] ---> ";
-            valor = controlINT();
-            matriz[fila][col] = valor;
-        }
-    }
-}
-
-
-// ─────────────| Dijkstra |─────────────¬
 void aplicar_dijkstra(string *V, string *S, string *VS, int *D, int **M, int totalElem) {
     cout << "\n─────────| Estados iniciales |─────────¬\n";
+
+    // V: todos los vértices
+    // S: vértices ya visitados
+    // VS: vértices aún no visitados
+    // D: distancias mínimas
+
 
     // Inicializa D con la fila 0 de la matriz (distancias desde el primer nodo)
     for (int col = 0; col < totalElem; col++)
@@ -230,7 +242,7 @@ void aplicar_dijkstra(string *V, string *S, string *VS, int *D, int **M, int tot
 
     cout << "\n─────────────| Dijkstra |─────────────¬\n";
 
-      // agrega primer véctice.
+      // agrega primer vértice (V[0]) al conjunto S
     cout << "<─| Agrega primer valor V[0] a S[] y actualiza VS[] |─>\n\n";
 
     agrega_vertice_a_S(S, V[0], totalElem);
@@ -240,7 +252,10 @@ void aplicar_dijkstra(string *V, string *S, string *VS, int *D, int **M, int tot
     imprimir_vector_caracter(VS, totalElem, "VS");
     
     imprimir_vector_entero(D, totalElem);
+
     cout << "\n──────────────────────────────────────¬\n";
+
+    // Bucle principal del algoritmo
     for (int i = 1; i < totalElem; i++) {
         // elige un vértice en v de VS[] tal que D[v] sea el mínimo 
         cout << "\n> elige vertice menor en VS[] según valores en D[]\n";
@@ -261,7 +276,8 @@ void aplicar_dijkstra(string *V, string *S, string *VS, int *D, int **M, int tot
 }
 
 
-// ─────────────| Imprime grafo con Graphviz |─────────────¬
+// ─────────────| Crea y visualiza grafo con Graphviz |─────────────¬
+
 void imprimir_grafo(int **matriz, string *vector, int totalElem) {
     FILE *fp = fopen("grafo.txt", "w");
 
@@ -271,14 +287,13 @@ void imprimir_grafo(int **matriz, string *vector, int totalElem) {
     }
 
     fprintf(fp, "digraph G {\n");
-    fprintf(fp, "\tgraph [rankdir=LR];\n");
-    fprintf(fp, "\tnode [style=filled, fillcolor=\"#ae73cfff\" ];\n");
+    fprintf(fp, "graph [rankdir=LR];\n");
+    fprintf(fp, "node [style=filled, fillcolor=\"#ae73cfff\" ];\n");
 
     for (int i = 0; i < totalElem; i++) {
         for (int j = 0; j < totalElem; j++) {
             if (i != j && matriz[i][j] > 0) {
-                // vector[i][0] -> toma el carácter (ej: "a", "b", etc.)
-                fprintf(fp, "\t%s -> %s [label=%d];\n", vector[i].c_str(), vector[j].c_str(), matriz[i][j]);
+                fprintf(fp, "%s -> %s [label=%d];\n", vector[i].c_str(), vector[j].c_str(), matriz[i][j]);
             }
         }
     }
@@ -286,19 +301,18 @@ void imprimir_grafo(int **matriz, string *vector, int totalElem) {
     fprintf(fp, "}\n");
     fclose(fp);
     
+    // Genera imagen y la abre con eog
     system("dot -Tpng -ografo.png grafo.txt");
     system("eog grafo.png &");
 }
 
 
-
-
 // ─────────────| Main |─────────────¬
-int main(int argc, char **argv) {
-    // número de elementos.
-    int totalElem; 
 
-// <──| Err: mala ejecucion. |──>
+int main(int argc, char **argv) {
+    int totalElem; // cantidad de nodos del grafo
+
+// <──| Validación de argumentos de entrada |──>
     if (argc<2) {
         cout << "⚠️  Utilice: ./[ejecutable] [n° de nodos]" << endl;
         return 1;
@@ -308,40 +322,34 @@ int main(int argc, char **argv) {
         return 1;
     }
 
-// <──| Convierte string a entero. |──>
-    totalElem = atoi(argv[1]);
+    totalElem = atoi(argv[1]); // conversión de argumento a entero
 
 
-// <──| Creación de matriz. |──>
-    // crea matriz nxn de enteros.
+// <──| Creación de matriz interactuable. |──>
     int **matriz;
     matriz = new int*[totalElem];
     for(int i=0; i<totalElem; i++)
         matriz[i] = new int[totalElem];
 
-    // Lee los datos de la matriz.
     leer_datos_matriz(matriz, totalElem);
 
-// <──| Creación de vectores. |──>
-    // Vectores de carácteres
+// <──| inicialización de vectores. |──>
     string V[totalElem];
     string S[totalElem];
     string VS[totalElem];
 
-    // inicializa vectores.
     inicializar_vector_caracter(V, totalElem);
     inicializar_vector_caracter(S, totalElem);
     inicializar_vector_caracter(VS, totalElem);
-
-    // Lee los nodos para agregar caracteres [a, b, c...] al vector V.
-    leer_nodos(V, totalElem);
-
-// <──| Aplica el algoritmo de Dijkstra. |──>
-    int D[totalElem];
-    aplicar_dijkstra(V, S, VS, D, matriz, totalElem);
+    
+    leer_nodos(V, totalElem); // llena V con 'a', 'b', 'c', etc.
     imprimir_vector_caracter(V, totalElem, "V");
     
-// <──| Crea el grafo. |──>
+// <──| Ejecución del algoritmo de Dijkstra. |──>
+    int D[totalElem];
+    aplicar_dijkstra(V, S, VS, D, matriz, totalElem);
+    
+// <──| Creación y visualización del grafo |──>
     imprimir_grafo(matriz, V, totalElem);
 
 // <──| Libera memoria de la matriz. |──>
