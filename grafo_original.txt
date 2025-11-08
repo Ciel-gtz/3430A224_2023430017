@@ -1,0 +1,13 @@
+graph G {
+node [style=filled, fillcolor="#ae73cfff"];
+a -- b [label=6];
+a -- c [label=1];
+a -- d [label=5];
+b -- c [label=5];
+b -- e [label=3];
+c -- d [label=5];
+c -- e [label=6];
+c -- f [label=4];
+d -- f [label=2];
+e -- f [label=6];
+}
