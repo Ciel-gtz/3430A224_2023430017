@@ -3,6 +3,7 @@
 #include <ctime>     // time
 #include <chrono>    // timing
 
+
 using namespace std;
 using std::chrono::duration;
 using std::chrono::high_resolution_clock;
@@ -20,6 +21,7 @@ void imprimir_vector(const int *arregloDatos, int cantidadElementos) {
     cout << "\n";
 }
 
+// Si el usuario puso 's', imprime el arreglo
 void decision_imprimir(char opcion, int *arregloDatos, int cantidadElementos) {
 
     if (opcion == 's') {
@@ -103,7 +105,7 @@ void seleccion(int *arreglo, int cantidadElementos) {
             }
         }
 
-        // Si se encontró un nuevo mínimo → intercambiar
+        // Si se encontró un nuevo mínimo -> intercambiar
         if (minIdx != i) {
 
             int temp = arreglo[i];
@@ -145,6 +147,7 @@ void shellsort(int *arreglo, int cantidadElementos) {
     }
 }
 
+
 // <──| quickSort |──>
 
 // Partición del quickSort
@@ -177,7 +180,7 @@ int particionar(int *arreglo, int izquierda, int derecha) {
             }
         }
 
-        // Si los índices se cruzan → partición terminada
+        // Si los índices se cruzan -> partición terminada
         if (i >= j) {
             return j;
         }
@@ -192,7 +195,6 @@ int particionar(int *arreglo, int izquierda, int derecha) {
         j = j - 1;
     }
 }
-
 
 // Función recursiva del quickSort, ordena parte izq y der del pivote
 void quickSortRec(int *arreglo, int izquierda, int derecha) {
@@ -210,7 +212,6 @@ void quickSortRec(int *arreglo, int izquierda, int derecha) {
         quickSortRec(arreglo, indicePivote + 1, derecha);
     }
 }
-
 
 // Para utilizar tiempoMS
 void quickSort(int *arreglo, int cantidadElementos) {
