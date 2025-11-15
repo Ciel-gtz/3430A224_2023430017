@@ -1,9 +1,0 @@
-graph G {
-graph [rankdir=LR];
-node [style=filled, fillcolor="#ae73cfff"];
-a -- c [label=1];
-b -- c [label=5];
-b -- e [label=3];
-c -- f [label=4];
-d -- f [label=2];
-}
