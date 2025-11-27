@@ -14,12 +14,18 @@ bash RUN.bash
 
 > Lo obtenido de correr este archivo es lo que se muestra en la carpeta `Lab_10_FIN` 
 
----
 <div align="center">
 <h2>Información:<h2>
 </div>
 
-
 - La carpeta `scripts` contiene todos los scripts de bash creados
 - La carpeta `all_csv` contiene todos los csv de `Lab_10_FIN`
 - El archivo *RUN.bash* es el único que se mantendrá en la carpeta original, los demás scripts se mueven a `Obtencion_Aminoacidos` (creada por el mismo *RUN.bash*)
+
+---
+
+La línea para guardar todo lo mostrado via terminal:
+```
+exec > >(tee resumenCSV.csv) 2>&1
+```
+viene de [stackoverflow.com](https://stackoverflow.com/questions/49509264/explain-the-bash-command-exec-tee-log-file-21)

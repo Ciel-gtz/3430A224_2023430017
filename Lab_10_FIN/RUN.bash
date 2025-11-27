@@ -1,3 +1,7 @@
+# Grabar en un csv la información que va a mostrarse/crearse
+exec > >(tee resumenCSV.csv) 2>&1
+
+
 # Entrar a la carpeta uniprot y des-ocultar los archivos txt
 cd uniprot_info/
 mv .ACE2.txt ACE2.txt
@@ -28,7 +32,7 @@ wc -l GO*
 # Creación e información del archivo GO_proteinas_de_trabajo.csv
 cat *.csv > GO_proteinas_de_trabajo.csv
 echo ""
-echo "lineas;palabras;caracteres;archivo"
+echo "  lineas;palabras;caracteres;archivo"
 wc -wlc GO_proteinas_de_trabajo.csv
 
 # Borrar el archivo recién creado
