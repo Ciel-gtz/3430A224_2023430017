@@ -27,7 +27,8 @@ wc -l GO*
 
 # Creación e información del archivo GO_proteinas_de_trabajo.csv
 cat *.csv > GO_proteinas_de_trabajo.csv
-printf "\nlineas;palabras;caracteres;archivo\n"
+echo ""
+echo "lineas;palabras;caracteres;archivo"
 wc -wlc GO_proteinas_de_trabajo.csv
 
 # Borrar el archivo recién creado
@@ -48,8 +49,8 @@ awk 'BEGIN { FS=";" } { print $NF }' GO_ACE2.csv > "FuncionesBiologica_ACE2.csv"
 # Se crea carpeta Obtencion_Aminoacidos con archivos *.pdb
 mkdir Obtencion_Aminoacidos && cp *.pdb Obtencion_Aminoacidos
 
-# Mover los archivos bash relacionados LYS dentro de una carpeta para ejecutarlos
-mv *LYS.bash Obtencion_Aminoacidos
+# Mover los archivos bash correspondientes dentro de la carpeta para ejecutarlos
+mv *S.bash Obtencion_Aminoacidos
 
 # Guardar residuos de LYS utilizando otro script
 cd Obtencion_Aminoacidos
@@ -57,4 +58,5 @@ bash residues-LYS.bash
 
 
 # Finalización del trabajo
-printf "\nTrabajo finalizado.\n"
+echo ""
+echo "Trabajo finalizado."

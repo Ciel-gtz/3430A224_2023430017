@@ -15,7 +15,7 @@ cat GFP_A-Residues-Count.csv >> Residues-Count.csv
 cat ACE2_A-Residues-Count.csv >> Residues-Count.csv 
 
 echo ""
-echo "Contenidos de 'Residues-Count.csv"
+echo "Contenidos de Residues-Count.csv"
 cat Residues-Count.csv
 
 
@@ -32,9 +32,9 @@ cat LYS-per-PDB.csv
 
 echo ""
 echo "Más residuos:"
-bash count_residues.bash HEM_A
+bash count_residueS.bash HEM_A
 echo ""
-bash count_residues.bash GFP_A
+bash count_residueS.bash GFP_A
 echo ""
-bash count_residues.bash ACE2_A
+bash count_residueS.bash ACE2_A
 
