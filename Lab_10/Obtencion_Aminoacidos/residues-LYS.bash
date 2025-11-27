@@ -1,12 +1,12 @@
 # Ejecutar todos los archivos bash
 # HEM
-bash HEM_A-LYS.bash
+bash FILE_A-LYS.bash HEM_A
 
 # GFP
-bash GFP_A-LYS.bash
+bash FILE_A-LYS.bash GFP_A
 
 # ACE2
-bash ACE2_A-LYS.bash
+bash FILE_A-LYS.bash ACE2_A
 
 
 # Guardar todo en 1 csv y mostrar

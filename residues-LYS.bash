@@ -1,12 +1,7 @@
-# Ejecutar todos los archivos bash
-# HEM
-bash FILE-LYS.bash HEM_A
-
-# GFP
-bash FILE-LYS.bash GFP_A
-
-# ACE2
-bash FILE-LYS.bash ACE2_A
+# Ejecutar para todos los archivos pdb
+bash FILE_A-LYS.bash HEM_A
+bash FILE_A-LYS.bash GFP_A
+bash FILE_A-LYS.bash ACE2_A
 
 
 # Guardar todo en 1 csv y mostrar
@@ -38,6 +33,8 @@ cat LYS-per-PDB.csv
 echo ""
 echo "Más residuos:"
 bash count_residues.bash HEM_A
+echo ""
 bash count_residues.bash GFP_A
+echo ""
 bash count_residues.bash ACE2_A
 
