@@ -46,12 +46,15 @@ awk 'BEGIN { FS=";" } { print $NF }' GO_ACE2.csv > "FuncionesBiologica_ACE2.csv"
 
 
 # Se crea carpeta Obtencion_Aminoacidos con archivos *.pdb
-mkdir Obtencion_Aminoacidos
-cp *.pdb Obtencion_Aminoacidos && cd Obtencion_Aminoacidos
+mkdir Obtencion_Aminoacidos && cp *.pdb Obtencion_Aminoacidos
 
-# Guardar residuos de LYS
-#bash residues.bash
+# Mover los archivos bash relacionados LYS dentro de una carpeta para ejecutarlos
+mv *LYS.bash Obtencion_Aminoacidos
+
+# Guardar residuos de LYS utilizando otro script
+cd Obtencion_Aminoacidos
+bash residues-LYS.bash
+
 
 # Finalización del trabajo
-cd ..
 printf "\nTrabajo finalizado.\n"
