@@ -1,12 +1,12 @@
 # Ejecutar todos los archivos bash
 # HEM
-bash HEM_A-LYS.bash
+bash FILE-LYS.bash HEM_A
 
 # GFP
-bash GFP_A-LYS.bash
+bash FILE-LYS.bash GFP_A
 
 # ACE2
-bash ACE2_A-LYS.bash
+bash FILE-LYS.bash ACE2_A
 
 
 # Guardar todo en 1 csv y mostrar
@@ -34,3 +34,10 @@ cat Residues-Count.csv
 echo ""
 echo "Contenidos de LYS-per-PDB.csv"
 cat LYS-per-PDB.csv
+
+echo ""
+echo "Más residuos:"
+bash count_residues.bash HEM_A
+bash count_residues.bash GFP_A
+bash count_residues.bash ACE2_A
+

@@ -34,3 +34,10 @@ cat Residues-Count.csv
 echo ""
 echo "Contenidos de LYS-per-PDB.csv"
 cat LYS-per-PDB.csv
+
+echo ""
+echo "Más residuos:"
+bash count_residues.bash HEM_A
+bash count_residues.bash GFP_A
+bash count_residues.bash ACE2_A
+
